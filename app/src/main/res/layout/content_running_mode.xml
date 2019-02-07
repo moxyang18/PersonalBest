@@ -8,4 +8,11 @@
     tools:context=".RunningMode"
     tools:showIn="@layout/activity_running_mode">
 
+    <Button
+        android:id="@+id/end_run"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="234dp" />
 </android.support.constraint.ConstraintLayout>

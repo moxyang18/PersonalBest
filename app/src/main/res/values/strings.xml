@@ -6,4 +6,11 @@
     <string name="title_activity_bar_chart">BarChart</string>
     <string name="title_activity_running_mode">RunningMode</string>
     <string name="title_activity_home_page">HomePage</string>
+    <string name="congrats_message">Congratulations! Do you want to set a new step goal?</string>
+    <string name="yes_button">Yes</string>
+    <string name="not_now">Not Now</string>
+    <string name="goal_updated_toast">Step count has been updated</string>
+    <string name="suggested">Use suggested: </string>
+    <string name="custom">Set Custom</string>
+    <string name="set_method">How will you set the new step goal?</string>
 </resources>
