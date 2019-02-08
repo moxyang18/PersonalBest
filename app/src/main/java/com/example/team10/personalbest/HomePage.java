@@ -92,6 +92,8 @@ public class HomePage extends AppCompatActivity implements Observer {
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fit =((GoogleFitAdapter)fitnessService);
         fit.setup();
+        fit.addObserver(this);
+
 
         //try to run Async Task since OnCreate
         AsyncTaskRunner runner = new AsyncTaskRunner();

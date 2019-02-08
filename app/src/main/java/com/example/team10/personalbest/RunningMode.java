@@ -9,7 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class RunningMode extends AppCompatActivity {
+import java.util.Observable;
+import java.util.Observer;
+
+public class RunningMode extends AppCompatActivity implements Observer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,14 @@ public class RunningMode extends AppCompatActivity {
                 finish();
             }
         });
+
+    }
+
+    /*
+    Fit part
+     */
+    @Override
+    public void update(Observable o, Object arg){
 
     }
 
