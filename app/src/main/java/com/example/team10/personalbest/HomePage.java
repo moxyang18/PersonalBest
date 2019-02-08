@@ -3,6 +3,9 @@ package com.example.team10.personalbest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +19,28 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class HomePage extends AppCompatActivity {
+import com.example.team10.personalbest.fitness.FitnessService;
+import com.example.team10.personalbest.fitness.FitnessServiceFactory;
+import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+
+import java.util.Observable;
+import java.util.Observer;
+
+public class HomePage extends AppCompatActivity implements Observer {
 
     private int currentGoal = 5000;
     private int stepCount = 0;
+    protected TextView step_text;
+    protected TextView goal_text;
 
+    //Include Fitness part
+    private String fitnessServiceKey = "GOOGLE_FIT";
+    public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
+    private static final String TAG = "StepCountActivity";
+    private GoogleFitAdapter fit;
+    private FitnessService fitnessService;
+
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +78,29 @@ public class HomePage extends AppCompatActivity {
 
         int updatedGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(updatedGoal));
+
+
+        /*
+        * FitAdapter Initialize
+        */
+        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+            @Override
+            public FitnessService create(HomePage homePage) {
+                return new GoogleFitAdapter(homePage);
+            }
+        });
+        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+        fit =((GoogleFitAdapter)fitnessService);
+        fit.setup();
+
+        //try to run Async Task since OnCreate
+        AsyncTaskRunner runner = new AsyncTaskRunner();
+        runner.execute();
+        /*
+        *
+        * END OF FIT PART
+        */
+
 
     }
 
@@ -160,6 +203,58 @@ public class HomePage extends AppCompatActivity {
         AlertDialog customDialog = customBuilder.create();
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
+    }
+
+    /*Fitness Methods
+
+    ***
+    *
+    *
+    * /
+    * */
+    public void setFitnessServiceKey(String fitnessServiceKey) {
+        this.fitnessServiceKey = fitnessServiceKey;
+    }
+
+    @Override
+    public void update(Observable o, Object arg){
+        setStepCount((int)arg);
+        showStepCount();
+    }
+
+    public void setStepCount(int count){
+        stepCount = count;
+    }
+    public void showStepCount(){
+        step_text.setText(Integer.toString(stepCount));
+    }
+
+    private class AsyncTaskRunner extends AsyncTask<String,String,String> {
+
+        private String index;
+        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
+        @Override
+        protected String doInBackground(String... paras){
+            //publishProgress("Counting...");
+
+            fit.startListen();
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            //finalResult.setText(getString(R.string.ten));
+
+        }
+        @Override
+        protected void onPreExecute(){
+
+        }
+        @Override
+        protected void onProgressUpdate(String... text){
+
+        }
     }
 
 }
