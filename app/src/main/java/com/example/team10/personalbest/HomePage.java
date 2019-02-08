@@ -47,10 +47,10 @@ public class HomePage extends AppCompatActivity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
-        TextView goal_text = findViewById(R.id.currentGoal);
+        goal_text = findViewById(R.id.currentGoal);
         goal_text.setText(Integer.toString(currentGoal));
 
-        TextView step_text = findViewById(R.id.stepsCount);
+        step_text = findViewById(R.id.stepsCount);
         step_text.setText(Integer.toString(stepCount));
 
         Button run_button = findViewById(R.id.startButton);
