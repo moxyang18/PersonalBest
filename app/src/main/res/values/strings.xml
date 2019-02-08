@@ -13,4 +13,8 @@
     <string name="suggested">Use suggested: </string>
     <string name="custom">Set Custom</string>
     <string name="set_method">How will you set the new step goal?</string>
+    <string name="cancel">Cancel</string>
+    <string name="custom_prompt">How many steps will your custom goal be?</string>
+    <string name="confirm_custom">Confirm</string>
+    <string name="custom_empty_prompt">Please enter a number.</string>
 </resources>

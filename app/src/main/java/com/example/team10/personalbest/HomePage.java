@@ -6,10 +6,12 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -117,10 +119,47 @@ public class HomePage extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //add custom goal functionality later
+                openCustomDialog();
             }
         });
         AlertDialog newGoalDialog = newGoalBuilder.create();
         newGoalDialog.setCanceledOnTouchOutside(false);
         newGoalDialog.show();
     }
+
+    public void openCustomDialog() {
+        AlertDialog.Builder customBuilder = new AlertDialog.Builder(this);
+        customBuilder.setMessage(R.string.custom_prompt);
+
+        final EditText customField = new EditText(this);
+        customField.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        customBuilder.setView(customField);
+        customBuilder.setPositiveButton(R.string.confirm_custom, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
+                SharedPreferences.Editor editor = goalPreferences.edit();
+                //currentGoal = goalPreferences.getInt("goalCount", 5000) + 500;
+                TextView goal_text = findViewById(R.id.currentGoal);
+
+                //TODO: if there is no input, display a toast and prevent the user from moving forward
+                goal_text.setText(customField.getText());
+
+                editor.putInt("goalCount", Integer.parseInt(goal_text.getText().toString()));
+                editor.apply();
+
+                Toast.makeText(HomePage.this, R.string.goal_updated_toast, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        customBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        });
+        AlertDialog customDialog = customBuilder.create();
+        customDialog.setCanceledOnTouchOutside(false);
+        customDialog.show();
+    }
+
 }
