@@ -22,6 +22,11 @@ import android.widget.Toast;
 import com.example.team10.personalbest.fitness.FitnessService;
 import com.example.team10.personalbest.fitness.FitnessServiceFactory;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.Task;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -29,7 +34,9 @@ import java.util.Observer;
 public class HomePage extends AppCompatActivity implements Observer {
 
     private int currentGoal = 5000;
-    private int stepCount = 0;
+    private long stepCount = 0;
+    private final int RC_SIGN_IN = 1; //For Google Log-in Intent
+
     protected TextView step_text;
     protected TextView goal_text;
 
@@ -51,7 +58,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         goal_text.setText(Integer.toString(currentGoal));
 
         step_text = findViewById(R.id.stepsCount);
-        step_text.setText(Integer.toString(stepCount));
+        step_text.setText(Long.toString(stepCount));
 
         Button run_button = findViewById(R.id.startButton);
         run_button.setOnClickListener(new View.OnClickListener() {
@@ -79,10 +86,29 @@ public class HomePage extends AppCompatActivity implements Observer {
         int updatedGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(updatedGoal));
 
+        /** Log into Google Account:
+         * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
+         * https://developers.google.com/identity/sign-in/android/sign-in
+         */
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
 
-        /*
-        * FitAdapter Initialize
-        */
+        // Build a GoogleSignInClient with the options specified by gso.
+        //https://developers.google.com/identity/sign-in/android/sign-in
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        //launches an activity that prompts sign in
+        //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
+        Log.d(TAG, "About to send intent");
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult( signInIntent, RC_SIGN_IN );
+        Log.d(TAG, "Intent is sent");
+
+        /**
+          * FitAdapter Initialize
+          */
+        /** Not sure how this works, maybe integrate later/ TODO
         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
             @Override
             public FitnessService create(HomePage homePage) {
@@ -91,19 +117,41 @@ public class HomePage extends AppCompatActivity implements Observer {
         });
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fit =((GoogleFitAdapter)fitnessService);
-        fit.setup();
+        */
+        fit = new GoogleFitAdapter(this);
+        //fit.setup();
         fit.addObserver(this);
 
 
         //try to run Async Task since OnCreate
         AsyncTaskRunner runner = new AsyncTaskRunner();
         runner.execute();
-        /*
-        *
-        * END OF FIT PART
-        */
 
+        /**
+         * End of Fit Part
+         */
 
+    }
+
+    //onActivityResult is called after startActivityForResult() (called in onCreate() ) is finished
+    //Code from: https://developers.google.com/identity/sign-in/android/sign-in
+    //After the user signs in, GoogleSignInAccount can be reached here.
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d( TAG, "Intent is done/closed");
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data); //do something with GoogleSignInAccount TODO delete later?
+
+            Log.d(TAG, "Preparing to run Async Task");
+            AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute();
+            Log.d(TAG, "Async Task is run");
+        }
     }
 
     public void launchRunning() {
@@ -220,15 +268,17 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable o, Object arg){
-        setStepCount((int)arg);
+        Log.d(TAG, "Inside update()");
+        setStepCount((long)arg);
         showStepCount();
     }
 
-    public void setStepCount(int count){
+    public void setStepCount(long count){
         stepCount = count;
     }
     public void showStepCount(){
-        step_text.setText(Integer.toString(stepCount));
+        Log.d(TAG, "Textview is updated");
+        step_text.setText(Long.toString(stepCount));
     }
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
@@ -238,9 +288,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         @Override
         protected String doInBackground(String... paras){
             //publishProgress("Counting...");
-
-            fit.startListen();
-
+            fit.setup();
             return "";
         }
 

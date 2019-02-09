@@ -22,7 +22,6 @@ import com.google.android.gms.tasks.Task;
 import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 
-import edu.ucsd.cse110.googlefitapp.StepCountActivity;
 
 public class GoogleFitAdapter extends Observable implements FitnessService{
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
@@ -36,11 +35,13 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
 
     public void setup() {
+        //Handles what we want from Fitness data later
         FitnessOptions fitnessOptions = FitnessOptions.builder()
                 .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .build();
 
+        //Actually request permission from user
         if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(activity), fitnessOptions)) {
             GoogleSignIn.requestPermissions(
                     activity, // your activity
@@ -48,9 +49,11 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                     GoogleSignIn.getLastSignedInAccount(activity),
                     fitnessOptions);
         } else {
-            updateStepCount();
-            startRecording();
+            //updateStepCount();
+            startRecording(); //Record API
+            startListen(); //Sensor API
         }
+        Log.d(TAG, "End setup");
     }
     public void startListen(){
 
@@ -58,13 +61,15 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 new OnDataPointListener() {
                     @Override
                     public void onDataPoint(DataPoint dataPoint) {
+                            //If the Listener detects 1+ steps have been taken, update
                             int val =dataPoint.getValue(Field.FIELD_STEPS).asInt();
                             if(val != 0){
                                 updateStepCount();
-
                         }
                     }
                 };
+
+        //Register Listener
         Fitness.getSensorsClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
                 .add(
                         new SensorRequest.Builder()
@@ -88,6 +93,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private void startRecording() {
         GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (lastSignedInAccount == null) {
+            Log.d(TAG, "No Google Sign In Account at startRecording()");
             return;
         }
 
@@ -118,6 +124,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
             return;
         }
 
+        //Use History API to grab the last stored "Daily Total", then sum that with val to get the
+        //updated Daily Step Count value.
         Fitness.getHistoryClient(activity, lastSignedInAccount)
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
@@ -130,9 +138,11 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
+                                setChanged();
                                 notifyObservers(total); // notify HomePage and Running Mode
                                 //currently only notify with total steps daily
-                                //activity.setStepCount(total);
+                                activity.setStepCount(total);
+                                activity.showStepCount();
 
                                 //activity.updateDebugging();
                                 Log.d(TAG, "Total steps: " + total);
