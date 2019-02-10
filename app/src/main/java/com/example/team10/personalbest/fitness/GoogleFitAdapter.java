@@ -139,7 +139,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
                                 setChanged();
-                                notifyObservers(total); // notify HomePage and Running Mode
+                                //notifyObservers(total); // notify HomePage and Running Mode
                                 //currently only notify with total steps daily
                                 activity.setStepCount(total);
                                 activity.showStepCount();

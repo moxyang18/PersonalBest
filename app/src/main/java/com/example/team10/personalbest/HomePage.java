@@ -27,6 +27,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -46,6 +47,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private static final String TAG = "StepCountActivity";
     private GoogleFitAdapter fit;
     private FitnessService fitnessService;
+    private GoogleSignInAccount account;
 
     //
 
@@ -86,24 +88,55 @@ public class HomePage extends AppCompatActivity implements Observer {
         int updatedGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(updatedGoal));
 
-        /** Log into Google Account:
-         * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
-         * https://developers.google.com/identity/sign-in/android/sign-in
-         */
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
+        SharedPreferences  mPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor mPrefEditor = mPref.edit();
+        final Gson gson = new Gson();
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        //https://developers.google.com/identity/sign-in/android/sign-in
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        if(!mPref.contains("google_account")){
+            /** Log into Google Account:
+             * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
+             * https://developers.google.com/identity/sign-in/android/sign-in
+             */
 
-        //launches an activity that prompts sign in
-        //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.d(TAG, "About to send intent");
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult( signInIntent, RC_SIGN_IN );
-        Log.d(TAG, "Intent is sent");
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+
+            // Build a GoogleSignInClient with the options specified by gso.
+            //https://developers.google.com/identity/sign-in/android/sign-in
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+            //launches an activity that prompts sign in
+            //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
+            Log.d(TAG, "About to send intent");
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            fit = new GoogleFitAdapter(this);
+            //fit.setup();
+            fit.addObserver(this);
+            startActivityForResult( signInIntent, RC_SIGN_IN );
+            Log.d(TAG, "Intent is sent");
+
+            //save account
+            account =GoogleSignIn.getLastSignedInAccount(this);
+            mPref = getPreferences(MODE_PRIVATE);
+            String serializedObject = gson.toJson(account);
+            mPrefEditor.putString("google_account", serializedObject);
+            mPrefEditor.apply();
+
+        }else{
+            account =gson.fromJson(mPref.getString("google_account", ""), GoogleSignInAccount.class);
+            fit = new GoogleFitAdapter(this);
+            //fit.setup();
+            fit.addObserver(this);
+            Log.d(TAG, "Preparing to run Async Task");
+            AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute();
+            Log.d(TAG, "Async Task is run");
+
+
+        }
+
+        */
 
         /**
           * FitAdapter Initialize
@@ -118,14 +151,12 @@ public class HomePage extends AppCompatActivity implements Observer {
         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
         fit =((GoogleFitAdapter)fitnessService);
         */
-        fit = new GoogleFitAdapter(this);
-        //fit.setup();
-        fit.addObserver(this);
+
 
 
         //try to run Async Task since OnCreate
-        AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute();
+        //AsyncTaskRunner runner = new AsyncTaskRunner();
+        //runner.execute();
 
         /**
          * End of Fit Part
@@ -295,7 +326,12 @@ public class HomePage extends AppCompatActivity implements Observer {
         @Override
         protected void onPostExecute(String result){
             //finalResult.setText(getString(R.string.ten));
-
+            SharedPreferences mPref = getPreferences(MODE_PRIVATE);
+            Gson gson = new Gson();
+            String serializedObject = gson.toJson(account);
+            SharedPreferences.Editor mPrefEditor = mPref.edit();
+            mPrefEditor.putString("google_account", serializedObject);
+            mPrefEditor.apply();
         }
         @Override
         protected void onPreExecute(){

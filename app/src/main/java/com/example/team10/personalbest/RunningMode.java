@@ -17,6 +17,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_running_mode);
 
         Button end_run_button = findViewById(R.id.end_run);
