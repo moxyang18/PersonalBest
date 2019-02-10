@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -44,7 +45,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     //Include Fitness part
     private String fitnessServiceKey = "GOOGLE_FIT";
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
-    private static final String TAG = "StepCountActivity";
+    private static final String TAG = "HomepageActivity";
     private GoogleFitAdapter fit;
     private FitnessService fitnessService;
     private GoogleSignInAccount account;
@@ -80,7 +81,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
-        openCongratsDialog();
+        //openCongratsDialog();
 
 
         SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
@@ -88,6 +89,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         int updatedGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(updatedGoal));
 
+       /*
         SharedPreferences  mPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor mPrefEditor = mPref.edit();
         final Gson gson = new Gson();
@@ -98,9 +100,10 @@ public class HomePage extends AppCompatActivity implements Observer {
              * https://developers.google.com/identity/sign-in/android/sign-in
              */
 
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
+
+       GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+               .requestEmail()
+               .build();
 
             // Build a GoogleSignInClient with the options specified by gso.
             //https://developers.google.com/identity/sign-in/android/sign-in
@@ -110,10 +113,21 @@ public class HomePage extends AppCompatActivity implements Observer {
             //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
             Log.d(TAG, "About to send intent");
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            fit = new GoogleFitAdapter(this);
+
+            /*
+            FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+                @Override
+                public FitnessService create(HomePage homePage) {
+                    return new GoogleFitAdapter(homePage);
+                }
+            });
+            fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+            fit =((GoogleFitAdapter)fitnessService);
+            GoogleFitAdapter.setInstance(fit);
             //fit.setup();
             fit.addObserver(this);
             startActivityForResult( signInIntent, RC_SIGN_IN );
+            Log.d(TAG, "Intent is sent"); startActivityForResult( signInIntent, RC_SIGN_IN );
             Log.d(TAG, "Intent is sent");
 
             //save account
@@ -125,7 +139,15 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         }else{
             account =gson.fromJson(mPref.getString("google_account", ""), GoogleSignInAccount.class);
-            fit = new GoogleFitAdapter(this);
+            FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+                @Override
+                public FitnessService create(HomePage homePage) {
+                    return new GoogleFitAdapter(homePage);
+                }
+            });
+            fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+            fit =((GoogleFitAdapter)fitnessService);
+            GoogleFitAdapter.setInstance(fit);
             //fit.setup();
             fit.addObserver(this);
             Log.d(TAG, "Preparing to run Async Task");
@@ -134,39 +156,23 @@ public class HomePage extends AppCompatActivity implements Observer {
             Log.d(TAG, "Async Task is run");
 
 
-        }
-
-        */
-
-        /**
-          * FitAdapter Initialize
-          */
-        /** Not sure how this works, maybe integrate later/ TODO
-        FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
-            @Override
-            public FitnessService create(HomePage homePage) {
-                return new GoogleFitAdapter(homePage);
-            }
-        });
-        fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
-        fit =((GoogleFitAdapter)fitnessService);
-        */
+        }*/
 
 
 
-        //try to run Async Task since OnCreate
-        //AsyncTaskRunner runner = new AsyncTaskRunner();
-        //runner.execute();
+        startActivityForResult( signInIntent, RC_SIGN_IN );
+        Log.d(TAG, "Intent is sent");
 
-        /**
-         * End of Fit Part
-         */
+
+
+
 
     }
 
     //onActivityResult is called after startActivityForResult() (called in onCreate() ) is finished
     //Code from: https://developers.google.com/identity/sign-in/android/sign-in
     //After the user signs in, GoogleSignInAccount can be reached here.
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -177,13 +183,25 @@ public class HomePage extends AppCompatActivity implements Observer {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data); //do something with GoogleSignInAccount TODO delete later?
+            FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
+                @Override
+                public FitnessService create(HomePage homePage) {
+                    return new GoogleFitAdapter(homePage);
+                }
+            });
+            //fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
+            //fit =((GoogleFitAdapter)fitnessService);
+            fit = new GoogleFitAdapter(this);
+            GoogleFitAdapter.setInstance(fit);
 
             Log.d(TAG, "Preparing to run Async Task");
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute();
             Log.d(TAG, "Async Task is run");
+
         }
     }
+
 
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
@@ -286,6 +304,9 @@ public class HomePage extends AppCompatActivity implements Observer {
         customDialog.show();
     }
 
+    public String getTag(){
+        return TAG;
+    }
     /*Fitness Methods
 
     ***
@@ -319,7 +340,20 @@ public class HomePage extends AppCompatActivity implements Observer {
         @Override
         protected String doInBackground(String... paras){
             //publishProgress("Counting...");
-            fit.setup();
+
+
+            /*int a;
+            for (a = 1; a<=50 ;a++) {
+                try {
+                    Thread.sleep(1000);
+                    //fit.notifyObservers();
+                    publishProgress(Integer.toString(a));
+                }catch (Exception e){
+
+                }
+            }
+            */
+        
             return "";
         }
 
@@ -335,11 +369,20 @@ public class HomePage extends AppCompatActivity implements Observer {
         }
         @Override
         protected void onPreExecute(){
-
+            fit.setup();
         }
         @Override
         protected void onProgressUpdate(String... text){
-
+            /*
+            int a =Integer.valueOf(text[0]);
+            ((HomePage)fit.getActivity(0)).setStepCount(a*10);
+            ((HomePage) fit.getActivity(0)).showStepCount();
+            RunningMode r = ((RunningMode)fit.getActivity(1));
+            if(r !=null) {
+                r.setStepCount(a * 10);
+                r.showStepCount();
+                Log.d(TAG, "Running is updated");
+            }*/
         }
     }
 

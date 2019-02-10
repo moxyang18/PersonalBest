@@ -5,20 +5,29 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 
 import java.util.Observable;
 import java.util.Observer;
 
 public class RunningMode extends AppCompatActivity implements Observer {
+    private GoogleFitAdapter fit;
+    private long runCount;
+    private TextView t;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_running_mode);
+
+        t= findViewById(R.id.testTextView);
 
         Button end_run_button = findViewById(R.id.end_run);
 
@@ -50,6 +59,10 @@ public class RunningMode extends AppCompatActivity implements Observer {
                 finish();
             }
         });
+        fit = GoogleFitAdapter.getInstance();
+        fit.addObserver(this);
+        fit.setActivity(this,1);
+        fit.updateStepCount();
 
     }
 
@@ -58,9 +71,15 @@ public class RunningMode extends AppCompatActivity implements Observer {
      */
     @Override
     public void update(Observable o, Object arg){
-
+        t.setText(Integer.toString((int)arg));
     }
 
-
+    public void setStepCount(long count){
+        runCount = count;
+    }
+    public void showStepCount(){
+        //Log.d( "Textview is updated");
+        t.setText(Long.toString(runCount));
+    }
 
 }
