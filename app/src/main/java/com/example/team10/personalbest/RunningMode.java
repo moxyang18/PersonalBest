@@ -7,10 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class RunningMode extends AppCompatActivity {
+import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 
+public class RunningMode extends AppCompatActivity {
+    private GoogleFitAdapter fit;
+    private long runCount;
+    private TextView t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +25,7 @@ public class RunningMode extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        t= findViewById(R.id.testTextView);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +52,19 @@ public class RunningMode extends AppCompatActivity {
                 finish();
             }
         });
+        fit = GoogleFitAdapter.getInstance();
+        //fit.addObserver(this);
+        fit.setActivity(this,1);
+        fit.updateStepCount();
 
+
+    }
+    public void setStepCount(long count){
+        runCount = count;
+    }
+    public void showStepCount(){
+        //Log.d( "Textview is updated");
+        t.setText(Long.toString(runCount));
     }
 
 

@@ -1,9 +1,11 @@
 package com.example.team10.personalbest.fitness;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.team10.personalbest.HomePage;
+import com.example.team10.personalbest.RunningMode;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.fitness.Fitness;
@@ -28,11 +30,39 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private final String TAG = "GoogleFitAdapter";
 
     private HomePage activity;
+    private RunningMode activity_2;
+    private static GoogleFitAdapter INSTANCE;
 
+
+    public GoogleFitAdapter(){
+
+    }
     public GoogleFitAdapter(HomePage activity) {
         this.activity = activity;
     }
 
+    public static  void setInstance(GoogleFitAdapter f){
+        INSTANCE = f;
+    }
+
+    public  static GoogleFitAdapter getInstance(){
+        if(INSTANCE != null){
+            return INSTANCE;
+        }else{
+            INSTANCE = new GoogleFitAdapter();
+            return  INSTANCE;
+        }
+    }
+
+    public void setActivity(Activity a, int i){
+        if(i ==0) activity = (HomePage)a;
+        else if (i ==1) activity_2 =(RunningMode)a;
+
+    }
+    public Activity getActivity(int i){
+        if(i ==0) return (Activity)activity;
+        else return (Activity)activity_2;
+    }
 
     public void setup() {
         //Handles what we want from Fitness data later
@@ -52,8 +82,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
             //updateStepCount();
         startRecording(); //Record API
-        startListen(); //Sensor API
         updateStepCount();
+        startListen(); //Sensor API
         Log.d(TAG, "End setup");
     }
     public void startListen(){
@@ -142,11 +172,20 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                 setChanged();
                                 notifyObservers(total); // notify HomePage and Running Mode
                                 //currently only notify with total steps daily
-                                activity.setStepCount(total);
-                                activity.showStepCount();
+                                //activity.setStepCount(total);
+                                //activity.showStepCount();
                                 //activity.checkGoal();
 
                                 //activity.updateDebugging();
+                                ((HomePage)getActivity(0)).setStepCount(total);
+                                ((HomePage) getActivity(0)).showStepCount();
+                                RunningMode r = ((RunningMode)getActivity(1));
+                                if(r !=null) {
+                                    r.setStepCount(total);
+                                    r.showStepCount();
+                                    Log.d(TAG, "Running is updated");
+                                }
+
                                 Log.d(TAG, "Total steps: " + total);
                             }
                         })

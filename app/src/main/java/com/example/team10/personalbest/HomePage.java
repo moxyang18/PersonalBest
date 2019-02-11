@@ -42,7 +42,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     private String fitnessServiceKey = "GOOGLE_FIT";
     public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
-    private static final String TAG = "StepCountActivity";
+    private static final String TAG = "HomePageActivity";
     private GoogleFitAdapter fit;
     private FitnessService fitnessService;
 
@@ -180,6 +180,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data); //do something with GoogleSignInAccount TODO delete later?
 
             fit = new GoogleFitAdapter(this);
+            GoogleFitAdapter.setInstance(fit);
             //fit.setup();
             fit.addObserver(this);
 
@@ -310,12 +311,14 @@ public class HomePage extends AppCompatActivity implements Observer {
         Log.d(TAG, "Textview is updated");
         step_text.setText(Long.toString(stepCount));
     }
+    /*
     public void checkGoal() {
         if(currentGoal >= stepCount && !goalMet) {
             goalMet = true;
             openCongratsDialog();
         }
     }
+    */
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
 
