@@ -87,9 +87,6 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
-        //openCongratsDialog();
-
-
         SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
 
         currentGoal = goalPreferences.getInt("goalCount", 5000);
@@ -141,7 +138,6 @@ public class HomePage extends AppCompatActivity implements Observer {
         /**
          * End of Fit Part
          */
-
     }
 
     public void launchRunning() {
@@ -298,7 +294,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
-
+    
     /*Fitness Methods
 
      ***
@@ -361,5 +357,4 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         }
     }
-
 }

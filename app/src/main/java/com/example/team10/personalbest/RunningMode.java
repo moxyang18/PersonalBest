@@ -16,39 +16,38 @@ public class RunningMode extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_running_mode);
 
+        // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
+        Button back_button = findViewById(R.id.back_from_running);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        // if the end walk/run button gets pressed, stop updating vars on this page,
+        // showing the encouragement, but do not go back yet
         end_run_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int i = 1; // steps taken/today's goal
+
                 String message;
-                if (i < 0.5)
-                    message = "Great! Keep up the work! ";
-                else if (i >= 0.5 && i < 1.0)
-                    message = "Congratulations! Just a little bit more towards the goal!";
-                else
+                int increment = -1;  // curSteps - maxSteps
+                if (true)    //curSteps >= goal)
                     message = "Awesome! You have reached today's goal!";
+                else if (increment <= 0)
+                    message = "Great! Keep up the work! ";
+                else
+                    message = "Congratulations! You've increased your " +
+                            "daily steps by " + increment + " steps.";
 
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        // if the back button is pressed, go back to the home page
+        back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 finish();
             }
         });
 
     }
-
-
-
 }
