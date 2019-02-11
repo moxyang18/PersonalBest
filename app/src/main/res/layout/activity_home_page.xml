@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomePage"
+    android:orientation="vertical"
+    android:background="#CFC">
+
+    <TextView
+        android:id="@+id/goalHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/goal_header"
+        android:textColor="@color/colorRed"
+        android:layout_marginTop="20dp"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <TextView
+        android:id="@+id/currentGoal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/colorMaroon"
+        android:layout_marginTop="5dp"
+        android:textSize="25sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/stepsHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/steps_header"
+        android:textColor="@color/colorDarkBlue"
+        android:layout_marginTop="45dp"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/stepsCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/colorTeal"
+        android:layout_marginTop="5dp"
+        android:textSize="25sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_button"
+        android:background="@color/colorDarkGreen"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="45dp"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <ImageButton
+        android:id="@+id/barButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorBlack"
+        android:scaleType="fitCenter"
+        android:src="@drawable/bar_chart" />
+
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@color/colorBlack"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@android:drawable/ic_menu_manage" />
+
+
+</LinearLayout>

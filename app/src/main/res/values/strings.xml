@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">PersonalBest</string>
+    <string name="goal_header">Today\'s Step Goal:</string>
+    <string name="steps_header">Number of Steps Taken:</string>
+    <string name="start_button">Start Run/Walk</string>
+    <string name="title_activity_bar_chart">BarChart</string>
+    <string name="title_activity_running_mode">RunningMode</string>
+    <string name="title_activity_home_page">HomePage</string>
+    <string name="congrats_message">Congratulations! Do you want to set a new step goal?</string>
+    <string name="yes_button">Yes</string>
+    <string name="not_now">Not Now</string>
+    <string name="goal_updated_toast">Step count has been updated</string>
+    <string name="suggested">Use suggested: </string>
+    <string name="custom">Set Custom</string>
+    <string name="set_method">How will you set the new step goal?</string>
+    <string name="cancel">Cancel</string>
+    <string name="custom_prompt">How many steps will your custom goal be?</string>
+    <string name="confirm_custom">Confirm</string>
+    <string name="custom_empty_prompt">Please enter a number.</string>
+    <string name="too_low">Please enter at least 10 steps.</string>
+</resources>
