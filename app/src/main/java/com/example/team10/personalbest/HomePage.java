@@ -33,9 +33,10 @@ import java.util.Observer;
 public class HomePage extends AppCompatActivity implements Observer {
 
     private int currentGoal = 5000;
+    private int updatedGoal;
     private long stepCount = 0;
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
-    //private boolean goalMet = false;
+    private boolean goalMet = false;
 
     protected TextView step_text;
     protected TextView goal_text;
@@ -57,12 +58,23 @@ public class HomePage extends AppCompatActivity implements Observer {
         step_text = findViewById(R.id.stepsCount);
         step_text.setText(Long.toString(stepCount));
 
+        goalMet = false;
+
         Button run_button = findViewById(R.id.startButton);
         run_button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view){
                 launchRunning();
+            }
+        });
+
+        Button set_goal = findViewById(R.id.currentGoal);
+        set_goal.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                openCustomDialog();
             }
         });
 
@@ -80,8 +92,8 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
 
-        int updatedGoal = goalPreferences.getInt("goalCount", 5000);
-        goal_text.setText(Integer.toString(updatedGoal));
+        currentGoal = goalPreferences.getInt("goalCount", 5000);
+        goal_text.setText(Integer.toString(currentGoal));
 
         /** Log into Google Account:
          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
@@ -207,7 +219,7 @@ public class HomePage extends AppCompatActivity implements Observer {
                 editor.putInt("goalCount", Integer.parseInt(goal_text.getText().toString()));
                 editor.apply();
 
-                //goalMet = false;
+                goalMet = false;
 
                 Toast.makeText(HomePage.this, R.string.goal_updated_toast, Toast.LENGTH_LONG).show();
             }
@@ -268,7 +280,9 @@ public class HomePage extends AppCompatActivity implements Observer {
                         if(!customInput.isEmpty() && tooLow >= 10){
                             goal_text.setText(customField.getText());
 
-                            //goalMet = false;
+                            goalMet = false;
+
+                            currentGoal = tooLow;
 
                             editor.putInt("goalCount", Integer.parseInt(goal_text.getText().toString()));
                             editor.apply();
@@ -301,6 +315,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         Log.d(TAG, "Inside update()");
         setStepCount((long)arg);
         showStepCount();
+        checkGoal();
     }
 
     public void setStepCount(long count){
@@ -311,10 +326,14 @@ public class HomePage extends AppCompatActivity implements Observer {
         step_text.setText(Long.toString(stepCount));
     }
     public void checkGoal() {
-        if(currentGoal >= stepCount && !goalMet) {
+        if(stepCount >= currentGoal && !goalMet) {
+            Log.d(TAG, "Inside checkGoal");
             goalMet = true;
             openCongratsDialog();
         }
+        Log.d(TAG, Boolean.toString(goalMet));
+        Log.d(TAG, "Step Count: " + Long.toString(stepCount));
+        Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
     }
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
@@ -325,11 +344,6 @@ public class HomePage extends AppCompatActivity implements Observer {
         protected String doInBackground(String... paras){
             //publishProgress("Counting...");
             //fit.setup();
-
-            if(stepCount == currentGoal) {
-                openCongratsDialog();
-            }
-
             return "";
         }
 
