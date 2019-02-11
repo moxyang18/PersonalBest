@@ -41,6 +41,15 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        Button set_goal = findViewById(R.id.currentGoal);
+        set_goal.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                openCustomDialog();
+            }
+        });
+
         ImageButton bar_chart_button = findViewById(R.id.barButton);
         bar_chart_button.setOnClickListener(new View.OnClickListener() {
 
@@ -89,7 +98,7 @@ public class HomePage extends AppCompatActivity {
         AlertDialog congratsDialog = congratsBuilder.create();
         congratsDialog.setCanceledOnTouchOutside(false);
         //if(currentGoal == stepCount) {
-            congratsDialog.show();
+        congratsDialog.show();
         //}
     }
 
