@@ -294,7 +294,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
-    
+
     /*Fitness Methods
 
      ***

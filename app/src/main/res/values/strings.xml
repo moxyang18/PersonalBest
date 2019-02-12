@@ -18,4 +18,12 @@
     <string name="confirm_custom">Confirm</string>
     <string name="custom_empty_prompt">Please enter a number.</string>
     <string name="too_low">Please enter at least 10 steps.</string>
+    <string name="daily_goal">Daily Goal:</string>
+    <string name="steps_accomplished">Steps Accomplished:</string>
+    <string name="velocity">Velocity:</string>
+    <string name="mph">miles/hr</string>
+    <string name="time_elapsed">Time Elapsed:"</string>
+    <string name="miles">Miles:</string>
+    <string name="end_run_button">End Run/Walk</string>
+    <string name="run_back_button">Back</string>
 </resources>

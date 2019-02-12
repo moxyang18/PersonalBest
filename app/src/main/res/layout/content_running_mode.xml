@@ -14,15 +14,15 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:background="#188bc2"
-        android:text="Daily Goal: "
+        android:text="@string/daily_goal"
         android:textColor="#FFFFFF"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintHorizontal_bias="0.09"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.063" />
+        app:layout_constraintVertical_bias="0.033" />
 
     <TextView
         android:id="@+id/goal"
@@ -34,26 +34,26 @@
         android:textColorHint="#ffffffff"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.643"
+        app:layout_constraintHorizontal_bias="0.848"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.063" />
+        app:layout_constraintVertical_bias="0.033" />
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="41dp"
         android:background="#188bc2"
-        android:text="Steps Accomplished: "
+        android:text="@string/steps_accomplished"
         android:textColor="#FFFFFF"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.151"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.169" />
+        app:layout_constraintVertical_bias="0.17" />
 
     <TextView
         android:id="@+id/running_steps"
@@ -75,15 +75,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#188bc2"
-        android:text="Velocity: "
+        android:text="@string/velocity"
         android:textColor="#FFFFFF"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintHorizontal_bias="0.079"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.311" />
+        app:layout_constraintVertical_bias="0.31" />
 
     <TextView
         android:id="@+id/cur_velocity"
@@ -106,7 +106,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#e7743d"
-        android:text="miles/hr"
+        android:text="@string/mph"
         android:textColor="#ffffffff"
         android:textColorHint="#ffffffff"
         android:textSize="30dp"
@@ -122,15 +122,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#188bc2"
-        android:text="Time Elapse: "
+        android:text="@string/time_elapsed"
         android:textColor="#FFFFFF"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.42" />
+        app:layout_constraintVertical_bias="0.433" />
 
     <TextView
         android:id="@+id/time"
@@ -147,19 +147,20 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.425" />
+
     <TextView
         android:layout_width="73dp"
         android:layout_height="wrap_content"
         android:background="#188bc2"
-        android:text="Miles: "
+        android:text="@string/miles"
         android:textColor="#FFFFFF"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.16"
+        app:layout_constraintHorizontal_bias="0.073"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.568" />
+        app:layout_constraintVertical_bias="0.57" />
 
     <TextView
         android:id="@+id/cur_miles"
@@ -171,18 +172,18 @@
         android:textColorHint="#ffffffff"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.776"
+        app:layout_constraintHorizontal_bias="0.822"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.562" />
+        app:layout_constraintVertical_bias="0.563" />
 
     <Button
         android:id="@+id/end_run"
         android:layout_width="162dp"
         android:layout_height="wrap_content"
         android:background="#d0551a"
-        android:text="End Run/Walk"
+        android:text="@string/end_run_button"
         android:textColor="#ffffff"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -197,14 +198,14 @@
         android:layout_width="87dp"
         android:layout_height="wrap_content"
         android:background="#000000"
-        android:text="Back"
+        android:text="@string/run_back_button"
         android:textColor="#ffffff"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.969" />
+        app:layout_constraintVertical_bias="0.946" />
 
 </android.support.constraint.ConstraintLayout>

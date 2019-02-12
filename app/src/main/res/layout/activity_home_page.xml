@@ -9,6 +9,7 @@
     android:orientation="vertical"
     android:background="#CFC">
 
+
     <TextView
         android:id="@+id/goalHeader"
         android:layout_width="wrap_content"

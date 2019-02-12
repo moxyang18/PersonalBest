@@ -17,6 +17,10 @@ android {
         }
     }
 
+    lintOptions{
+        abortOnError false
+    }
+
     // suppress the error
     packagingOptions {
         exclude 'META-INF/proguard/androidx-annotations.pro'
