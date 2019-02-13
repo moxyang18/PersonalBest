@@ -33,7 +33,6 @@ import java.util.Observer;
 public class HomePage extends AppCompatActivity implements Observer {
 
     private int currentGoal = 5000;
-    private int updatedGoal;
     private long stepCount = 0;
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
     private boolean goalMet = false;
@@ -41,11 +40,8 @@ public class HomePage extends AppCompatActivity implements Observer {
     protected TextView step_text;
     protected TextView goal_text;
 
-    private String fitnessServiceKey = "GOOGLE_FIT";
-    public static final String FITNESS_SERVICE_KEY = "FITNESS_SERVICE_KEY";
-    private static final String TAG = "StepCountActivity";
+    private static final String TAG = "HomePage";
     private GoogleFitAdapter fit;
-    private FitnessService fitnessService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,34 +106,6 @@ public class HomePage extends AppCompatActivity implements Observer {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult( signInIntent, RC_SIGN_IN );
         Log.d(TAG, "Intent is sent");
-
-        /**
-         * FitAdapter Initialize
-         */
-        /** Not sure how this works, maybe integrate later/ TODO
-         FitnessServiceFactory.put(fitnessServiceKey, new FitnessServiceFactory.BluePrint() {
-        @Override
-        public FitnessService create(HomePage homePage) {
-        return new GoogleFitAdapter(homePage);
-        }
-        });
-         fitnessService = FitnessServiceFactory.create(fitnessServiceKey, this);
-         fit =((GoogleFitAdapter)fitnessService);
-         */
-        /**
-        fit = new GoogleFitAdapter(this);
-        //fit.setup();
-        fit.addObserver(this);
-
-
-        //try to run Async Task since OnCreate
-        AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute();
-         */
-
-        /**
-         * End of Fit Part
-         */
     }
 
     public void launchRunning() {
@@ -168,9 +136,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         AlertDialog congratsDialog = congratsBuilder.create();
         congratsDialog.setCanceledOnTouchOutside(false);
-        //if(currentGoal == stepCount) {
-            congratsDialog.show();
-        //}
+        congratsDialog.show();
     }
 
     //onActivityResult is called after startActivityForResult() (called in onCreate() ) is finished
@@ -188,7 +154,6 @@ public class HomePage extends AppCompatActivity implements Observer {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data); //do something with GoogleSignInAccount TODO delete later?
 
             fit = new GoogleFitAdapter(this);
-            //fit.setup();
             fit.addObserver(this);
 
             Log.d(TAG, "Preparing to run Async Task");
@@ -295,17 +260,6 @@ public class HomePage extends AppCompatActivity implements Observer {
         customDialog.show();
     }
 
-    /*Fitness Methods
-
-     ***
-     *
-     *
-     * /
-     * */
-    public void setFitnessServiceKey(String fitnessServiceKey) {
-        this.fitnessServiceKey = fitnessServiceKey;
-    }
-
     @Override
     public void update(Observable o, Object arg){
         Log.d(TAG, "Inside update()");
@@ -317,10 +271,12 @@ public class HomePage extends AppCompatActivity implements Observer {
     public void setStepCount(long count){
         stepCount = count;
     }
+
     public void showStepCount(){
         Log.d(TAG, "Textview is updated");
         step_text.setText(Long.toString(stepCount));
     }
+
     public void checkGoal() {
         if(stepCount >= currentGoal && !goalMet) {
             Log.d(TAG, "Inside checkGoal");
@@ -333,25 +289,20 @@ public class HomePage extends AppCompatActivity implements Observer {
     }
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
-
-        private String index;
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
         @Override
+        protected void onPreExecute(){
+            fit.setup();
+        }
+        @Override
         protected String doInBackground(String... paras){
-            //publishProgress("Counting...");
-            //fit.setup();
             return "";
         }
 
         @Override
         protected void onPostExecute(String result){
-            //finalResult.setText(getString(R.string.ten));
+        }
 
-        }
-        @Override
-        protected void onPreExecute(){
-            fit.setup();
-        }
         @Override
         protected void onProgressUpdate(String... text){
 

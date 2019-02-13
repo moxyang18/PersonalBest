@@ -141,12 +141,6 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
                                 setChanged();
                                 notifyObservers(total); // notify HomePage and Running Mode
-                                //currently only notify with total steps daily
-                                activity.setStepCount(total);
-                                activity.showStepCount();
-                                activity.checkGoal();
-
-                                //activity.updateDebugging();
                                 Log.d(TAG, "Total steps: " + total);
                             }
                         })
