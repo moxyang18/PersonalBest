@@ -15,6 +15,7 @@ import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 public class RunningMode extends AppCompatActivity {
     private GoogleFitAdapter fit;
     private long runCount;
+    private float speed;
     private TextView t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,17 @@ public class RunningMode extends AppCompatActivity {
         //Log.d( "Textview is updated");
         t.setText(Long.toString(runCount));
     }
+    public void setSpeed(float s){
+        speed = s;
+    }
+    public void showSpeed(){
+        //Log.d( "Textview is updated");
+        t.setText(Float.toString(speed));
+    }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fit.setActivity(null,1);
+    }
 }
