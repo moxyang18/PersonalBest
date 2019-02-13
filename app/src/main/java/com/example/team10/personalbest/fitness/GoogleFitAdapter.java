@@ -266,8 +266,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
         DataReadRequest readRequest = new DataReadRequest.Builder()
                 .setTimeRange( startTime, endTime, TimeUnit.MILLISECONDS)
-                .read(DataType.TYPE_SPEED)
-                .setLimit(100)
+                .read(DataType.AGGREGATE_SPEED_SUMMARY)
+                .setLimit(20)
                 .build();
 
         Task<DataReadResponse> response = Fitness.getHistoryClient(activity, GoogleSignIn.getLastSignedInAccount(activity)).readData(readRequest).addOnSuccessListener(new OnSuccessListener<DataReadResponse>()  {
@@ -277,7 +277,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 float s =
                         dataSets.isEmpty()|| dataSets.get(0).isEmpty()
                                 ? (float)0
-                                : dataSets.get(0).getDataPoints().get(dataSets.get(0).getDataPoints().size()-1).getValue(Field.FIELD_SPEED).asFloat();
+                                : dataSets.get(0).getDataPoints().get(dataSets.get(0).getDataPoints().size()-1).getValue(Field.FIELD_AVERAGE).asFloat();
                 RunningMode r = ((RunningMode)getActivity(1));
                 //if(r !=null) {
                     r.setSpeed(s);
