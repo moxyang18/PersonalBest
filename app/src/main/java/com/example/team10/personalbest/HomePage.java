@@ -19,13 +19,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.team10.personalbest.fitness.FitnessService;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.Task;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -149,10 +146,6 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data); //do something with GoogleSignInAccount TODO delete later?
-
             fit = new GoogleFitAdapter(this);
             fit.addObserver(this);
 
@@ -273,7 +266,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     }
 
     public void showStepCount(){
-        Log.d(TAG, "Textview is updated");
+        Log.d(TAG, "TextView is updated");
         step_text.setText(Long.toString(stepCount));
     }
 
