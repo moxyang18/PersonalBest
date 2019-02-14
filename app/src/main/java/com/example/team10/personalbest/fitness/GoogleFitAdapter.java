@@ -18,16 +18,12 @@ import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
-import com.google.android.gms.fitness.request.DataSourcesRequest;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
-import com.google.android.gms.fitness.request.SessionReadRequest;
 import com.google.android.gms.fitness.result.DataReadResponse;
-import com.google.android.gms.fitness.result.DataSourcesResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,16 +39,17 @@ import static java.text.DateFormat.getDateInstance;
 
 
 public class GoogleFitAdapter extends Observable implements FitnessService{
+
+    //fields
     private final int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = System.identityHashCode(this) & 0xFFFF;
     private final String TAG = "GoogleFitAdapter";
-
     private HomePage activity;
     private RunningMode activity_2;
     private static GoogleFitAdapter INSTANCE;
     private GoogleApiClient mClient;
     private long startTime;
 
-
+    //constructor
     public GoogleFitAdapter() {
     }
 
@@ -60,7 +57,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         this.activity = activity;
     }
 
-
+    //methods
     public static  void setInstance(GoogleFitAdapter f){
         INSTANCE = f;
     }
@@ -79,6 +76,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         else if (i ==1) activity_2 =(RunningMode)a;
 
     }
+
     public Activity getActivity(int i){
         if(i ==0) return (Activity)activity;
         else return (Activity)activity_2;
@@ -125,6 +123,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         };
         //mUpdateView.run();
     }
+
     public void startListen(){
 
         OnDataPointListener mListener =
@@ -190,6 +189,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                     */
 
     }
+
     private void startRecording() {
         GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (lastSignedInAccount == null) {
@@ -202,13 +202,13 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Successfully subscribed!");
+                        Log.i(TAG, "Successfully subscribed step!");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "There was a problem subscribing.");
+                        Log.i(TAG, "There was a problem subscribing step.");
                     }
                 });
 
@@ -217,7 +217,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Successfully subscribed speed!");
+                        Log.i(TAG, "Successfully subscribed speed Agg!");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -245,8 +245,6 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
     }
 
-
-
     public void updateSpeed(){
         GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (lastSignedInAccount == null) {
@@ -265,9 +263,9 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         Log.i(TAG, "Range End: " + dateFormat.format(endTime));
 
         DataReadRequest readRequest = new DataReadRequest.Builder()
-                .setTimeRange( startTime, endTime, TimeUnit.MILLISECONDS)
-                .read(DataType.AGGREGATE_SPEED_SUMMARY)
-                .setLimit(20)
+                .setTimeRange( 1, endTime, TimeUnit.MILLISECONDS)
+                .read(DataType.TYPE_SPEED)
+                .setLimit(10)
                 .build();
 
         Task<DataReadResponse> response = Fitness.getHistoryClient(activity, GoogleSignIn.getLastSignedInAccount(activity)).readData(readRequest).addOnSuccessListener(new OnSuccessListener<DataReadResponse>()  {
@@ -277,7 +275,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 float s =
                         dataSets.isEmpty()|| dataSets.get(0).isEmpty()
                                 ? (float)0
-                                : dataSets.get(0).getDataPoints().get(dataSets.get(0).getDataPoints().size()-1).getValue(Field.FIELD_AVERAGE).asFloat();
+                                : dataSets.get(0).getDataPoints().get(dataSets.get(0).getDataPoints().size()-1).getValue(Field.FIELD_SPEED).asFloat();
                 RunningMode r = ((RunningMode)getActivity(1));
                 if(r !=null) {
                     r.setSpeed(s);
@@ -371,10 +369,9 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                         */
     }
 
-
     @Override
     public int getRequestCode() {
         return GOOGLE_FIT_PERMISSIONS_REQUEST_CODE;
     }
 
-}
+}//end of GoogleFitAdapter Class
