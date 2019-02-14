@@ -5,24 +5,36 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
+import com.example.team10.personalbest.fitness.FitnessService;
+import com.example.team10.personalbest.fitness.FitnessServiceFactory;
+
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
+import com.google.android.gms.tasks.Task;
+
 
 import java.util.Observable;
 import java.util.Observer;
@@ -32,13 +44,15 @@ public class HomePage extends AppCompatActivity implements Observer {
     private int currentGoal = 5000;
     private long stepCount = 0;
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
-    private boolean goalMet = false;
 
+    private boolean goalMet = false;
     protected TextView step_text;
     protected TextView goal_text;
 
+
     private static final String TAG = "HomePage";
     private GoogleFitAdapter fit;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +119,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         Log.d(TAG, "Intent is sent");
     }
 
+
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
         startActivity(intent);
@@ -112,6 +127,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     public void launchBarChart() {
         Intent intent = new Intent(this, BarChartActivity.class);
+
         startActivity(intent);
     }
 
@@ -147,6 +163,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             fit = new GoogleFitAdapter(this);
+            GoogleFitAdapter.setInstance(fit);
             fit.addObserver(this);
 
             Log.d(TAG, "Preparing to run Async Task");
@@ -154,6 +171,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             runner.execute();
             Log.d(TAG, "Async Task is run");
         }
+
     }
 
     public void openNewGoalDialog() {
@@ -174,6 +192,7 @@ public class HomePage extends AppCompatActivity implements Observer {
                 editor.apply();
 
                 goalMet = false;
+
 
                 Toast.makeText(HomePage.this, R.string.goal_updated_toast, Toast.LENGTH_LONG).show();
             }
@@ -197,16 +216,19 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         final EditText customField = new EditText(this);
         customField.setInputType(InputType.TYPE_CLASS_NUMBER);
+
         customField.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
 
 
         customBuilder.setView(customField);
         customBuilder.setPositiveButton(R.string.confirm_custom, null);
 
+
         customBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {}
         });
+
         final AlertDialog customDialog = customBuilder.create();
         customDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -249,6 +271,7 @@ public class HomePage extends AppCompatActivity implements Observer {
                 });
             }
         });
+
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
@@ -289,11 +312,13 @@ public class HomePage extends AppCompatActivity implements Observer {
         }
         @Override
         protected String doInBackground(String... paras){
+
             return "";
         }
 
         @Override
         protected void onPostExecute(String result){
+
         }
 
         @Override
@@ -301,4 +326,5 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         }
     }
+
 }

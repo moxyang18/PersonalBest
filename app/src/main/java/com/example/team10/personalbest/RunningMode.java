@@ -1,16 +1,29 @@
 package com.example.team10.personalbest;
 
 import android.os.Bundle;
+
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class RunningMode extends AppCompatActivity {
+import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+
+import java.util.Observable;
+import java.util.Observer;
+
+public class RunningMode extends AppCompatActivity implements Observer {
+    private GoogleFitAdapter fit;
+    private long runCount;
+    private TextView runText;
+    private String TAG = "Running Mode ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_running_mode);
 
         // get the buttons we need to set the actions after pressed
@@ -46,5 +59,35 @@ public class RunningMode extends AppCompatActivity {
             }
         });
 
+
+
+
+
+        runText = findViewById(R.id.running_steps);
+
+
+        fit = GoogleFitAdapter.getInstance();
+        fit.addObserver(this);
+        fit.setActivity(this,1);
+        fit.updateStepCount();
+
     }
+
+    /*
+    Fit part
+     */
+    @Override
+    public void update(Observable o, Object arg){
+        setStepCount((long)arg);
+        showStepCount();
+    }
+
+    public void setStepCount(long count){
+        runCount = count;
+    }
+    public void showStepCount(){
+        Log.d(TAG, "Textview is updated");
+        runText.setText(Long.toString(runCount));
+    }
+
 }
