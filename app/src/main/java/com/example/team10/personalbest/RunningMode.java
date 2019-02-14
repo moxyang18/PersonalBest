@@ -34,7 +34,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
-
+        speedText =findViewById(R.id.cur_velocity);
 
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
@@ -106,5 +106,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
     protected void onDestroy() {
         super.onDestroy();
         fit.setActivity(null,1);
+        fit.deleteObserver(this);
     }
 }
