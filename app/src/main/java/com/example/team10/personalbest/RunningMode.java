@@ -11,14 +11,19 @@ import android.widget.Toast;
 
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 
+
 import java.util.Observable;
 import java.util.Observer;
 
 public class RunningMode extends AppCompatActivity implements Observer {
     private GoogleFitAdapter fit;
-    private long runCount;
-    private TextView runText;
+    private long stepCount;
+    private TextView stepText;
     private String TAG = "Running Mode ";
+    private float speed;
+    private TextView speedText;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +35,10 @@ public class RunningMode extends AppCompatActivity implements Observer {
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
 
+
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
+
         end_run_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,10 +67,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
         });
 
 
-
-
-
-        runText = findViewById(R.id.running_steps);
+        stepText = findViewById(R.id.running_steps);
 
 
         fit = GoogleFitAdapter.getInstance();
@@ -73,21 +77,34 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
     }
 
-    /*
-    Fit part
-     */
+
     @Override
     public void update(Observable o, Object arg){
         setStepCount((long)arg);
         showStepCount();
     }
 
+
     public void setStepCount(long count){
-        runCount = count;
+        stepCount = count;
     }
     public void showStepCount(){
         Log.d(TAG, "Textview is updated");
-        runText.setText(Long.toString(runCount));
+        stepText.setText(Long.toString(stepCount));
+
+    }
+    public void setSpeed(float s){
+        speed = s;
+    }
+    public void showSpeed(){
+        //Log.d( "Textview is updated");
+        speedText.setText(Float.toString(speed));
+
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fit.setActivity(null,1);
+    }
 }

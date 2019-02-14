@@ -27,12 +27,6 @@ import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
-import com.example.team10.personalbest.fitness.FitnessService;
-import com.example.team10.personalbest.fitness.FitnessServiceFactory;
-
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-
 import com.google.android.gms.tasks.Task;
 
 
@@ -49,8 +43,8 @@ public class HomePage extends AppCompatActivity implements Observer {
     protected TextView step_text;
     protected TextView goal_text;
 
-
     private static final String TAG = "HomePage";
+
     private GoogleFitAdapter fit;
 
 
@@ -303,6 +297,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         Log.d(TAG, "Step Count: " + Long.toString(stepCount));
         Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
     }
+
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)

@@ -25,5 +25,6 @@
             android:label="@string/title_activity_running_mode"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 
 </manifest>
