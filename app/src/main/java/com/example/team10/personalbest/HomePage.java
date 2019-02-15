@@ -36,7 +36,10 @@ import java.util.Observer;
 public class HomePage extends AppCompatActivity implements Observer {
 
     private int currentGoal = 5000;
-    private long stepCount = 0;
+    private int stepCount = 0;
+    private int stepCountUnintentional =0;
+    private int stepCountIntentional = 0;
+
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
 
     private boolean goalMet = false;
@@ -273,14 +276,20 @@ public class HomePage extends AppCompatActivity implements Observer {
     @Override
     public void update(Observable o, Object arg){
         Log.d(TAG, "Inside update()");
-        setStepCount((long)arg);
+        setStepCount((int)arg);
         showStepCount();
         checkGoal();
     }
 
-    public void setStepCount(long count){
+    public void setStepCount(int count){
         stepCount = count;
     }
+
+    public int getStepCount(){ return stepCount;}
+
+    public void setStepCountUnintentional(int count){stepCountUnintentional = count;}
+
+    public int getStepCountUnintentional(){return stepCountIntentional;}
 
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
@@ -294,7 +303,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             openCongratsDialog();
         }
         Log.d(TAG, Boolean.toString(goalMet));
-        Log.d(TAG, "Step Count: " + Long.toString(stepCount));
+        Log.d(TAG, "Step Count: " + Integer.toString(stepCount));
         Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
     }
 

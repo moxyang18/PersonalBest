@@ -277,7 +277,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                 ? (float)0
                                 : dataSets.get(0).getDataPoints().get(dataSets.get(0).getDataPoints().size()-1).getValue(Field.FIELD_SPEED).asFloat();
                 RunningMode r = ((RunningMode)getActivity(1));
-                if(r !=null) {
+0                if(r !=null) {
                     r.setSpeed(s);
                     r.showSpeed();
                     Log.d(TAG, "Running is updated");
