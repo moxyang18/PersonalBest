@@ -17,11 +17,14 @@ import java.util.Observer;
 
 public class RunningMode extends AppCompatActivity implements Observer {
     private GoogleFitAdapter fit;
-    private long stepCount;
+    private long intentionalstepCount;
     private TextView stepText;
     private String TAG = "Running Mode ";
     private float speed;
     private TextView speedText;
+    private TextView distanceText;
+    private TextView intentionalStepText;
+    private TextView timeText;
 
 
 
@@ -80,17 +83,17 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable o, Object arg){
-        setStepCount((long)arg);
+        setIntentionalStepCount((int)arg);
         showStepCount();
     }
 
 
-    public void setStepCount(long count){
-        stepCount = count;
+    public void setIntentionalStepCount(long count){
+        intentionalstepCount = count;
     }
     public void showStepCount(){
         Log.d(TAG, "Textview is updated");
-        stepText.setText(Long.toString(stepCount));
+        stepText.setText(Long.toString(intentionalstepCount));
 
     }
     public void setSpeed(float s){
