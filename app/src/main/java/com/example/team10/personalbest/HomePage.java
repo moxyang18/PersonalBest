@@ -60,7 +60,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         goal_text.setText(Integer.toString(currentGoal));
 
         step_text = findViewById(R.id.stepsCount);
-        step_text.setText(Long.toString(stepCount));
+        step_text.setText(Integer.toString(stepCount));
 
         goalMet = false;
 
@@ -293,7 +293,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
-        step_text.setText(Long.toString(stepCount));
+        step_text.setText(Integer.toString(stepCount));
     }
 
     public void checkGoal() {
