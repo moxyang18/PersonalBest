@@ -17,10 +17,13 @@ import java.util.Observer;
 
 public class RunningMode extends AppCompatActivity implements Observer {
     private GoogleFitAdapter fit;
-    private long intentionalstepCount;
+    private int stepCount;
+    private int stepCountUnintentional;
+    private int stepCountIntentional;
     private TextView stepText;
     private String TAG = "Running Mode ";
     private float speed;
+    private float distance;
     private TextView speedText;
     private TextView distanceText;
     private TextView intentionalStepText;
@@ -83,17 +86,31 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable o, Object arg){
-        setIntentionalStepCount((int)arg);
+        setStepCountIntentional((int)arg);
         showStepCount();
     }
-
-
-    public void setIntentionalStepCount(long count){
-        intentionalstepCount = count;
+    public void setStepCount(int count){
+        stepCountIntentional = count;
     }
+    public int getStepCount(){return stepCountIntentional;}
     public void showStepCount(){
         Log.d(TAG, "Textview is updated");
-        stepText.setText(Long.toString(intentionalstepCount));
+        stepText.setText(Integer.toString(stepCount));
+
+    }
+
+    public void setStepCountUnitentional(int count){
+        stepCountUnintentional = count;
+    }
+    public int getStepCountUnintentional (){return stepCountUnintentional;}
+
+    public void setStepCountIntentional(int count){
+        stepCountIntentional = count;
+    }
+    public int getStepCountIntentional (){return stepCountIntentional;}
+    public void showIntentionalStepCount(){
+        Log.d(TAG, "Textview is updated");
+        stepText.setText(Integer.toString(stepCount));
 
     }
     public void setSpeed(float s){
@@ -101,7 +118,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
     }
     public void showSpeed(){
         //Log.d( "Textview is updated");
-        speedText.setText(Float.toString(speed));
+        speedText.setText(String.format("%.2f",speed));
 
     }
 
