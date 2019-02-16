@@ -1,10 +1,11 @@
 package com.example.team10.personalbest;
 
 // Android dev packages
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 
 // File related
-import com.example.team10.personalbest.fitness.WalkDay;
+import com.example.team10.personalbest.WalkDay;
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
 import java.lang.reflect.Type;
@@ -21,9 +22,21 @@ import java.time.LocalDate;
  * This hashtable, whenever modified, is submitted to SharedPreferences as a json string.
  * Upon instantiation, this dataprocessor will load in the hashtable from
  * SharedPreferences.
+ *
+ * Notes:
+ *  -Instantiate the DP and setInstance at the start of the HomePage activity. This is
+ *      necessary to ensure that we retrieve the data from SharedPrefs.
+ *  -Insert a new day for today in HomePage when the app opens. This is needed to
+ *      access it from the table later for modification and retrieval.
  */
 public class DataProcessor extends AppCompatActivity {
-    private HomePage hp;
+
+    // These activities employ DP.
+    private HomePage hp;                // NOTE: equivalent of activity in GFA.java
+    private RunningMode rm;             // NOTE: equivalent of activity_2 in GFA.java
+
+    // The instance of our DataProcessor
+    private static DataProcessor INSTANCE;
 
     // Debug stuff
     String TAG = "DataProcessor - ";
@@ -39,6 +52,8 @@ public class DataProcessor extends AppCompatActivity {
     private static final String TABLE_NAME = "STEP TABLE";
 
     /**
+     * DataProcessor ctor
+     *
      * Constructs a Data Processor for the given home activity.
      *
      * @param hp The HomePage activity.
@@ -66,80 +81,134 @@ public class DataProcessor extends AppCompatActivity {
 
         // Use sharedprefs + the type token to retrieve our map if necessary
         table = gson.fromJson(prefs.getString(TABLE_NAME, gson.toJson(table)), type);
+
+        // FIXME Might need to be changed
+        loadIntoHomePage();
     }
 
     /**
-     * retrieveDaySteps
+     * loadIntoHomePage
      *
-     * Retrieves the steps for the day based on a date.
-     *
-     * @param date The date.
-     * @return int The steps read in for the time interval.
+     * Loads relevant data from the instance into the HomePage. Will be called on
+     * instantiation of a DataProcessor.
      */
-    public int retrieveDaySteps(LocalDate date) {
-        WalkDay walkDay = table.get(date.toString());
+    public void loadIntoHomePage() {
+        WalkDay walkDay = table.get(LocalDate.now().toString());
 
-        // Handle if no step data exists for that date
         if (walkDay != null) {
-            return walkDay.getSteps();
+            hp.setStepCount(walkDay.getStepCount());
+            hp.setStepCountUnintentional(walkDay.getStepCountUnintentional());
         } else {
-            return 0;
+            hp.setStepCount(0);
+            hp.setStepCountUnintentional(0);
         }
     }
 
     /**
-     * retrieveDaySteps
+     * setInstance
      *
-     * Retrieves the steps for the day based on a day, month and year.
+     * Sets the instance of the class to be the passed in object.
      *
-     * @param day The day of month as int.
-     * @param month The month of year as int.
-     * @param year The year as int.
-     * @return The steps walked during this day.
+     * @param dp The DataProcessor instance
      */
-    public int retrieveDaySteps(int day, int month, int year) {
-        LocalDate date = LocalDate.of(year, month, day);
-        WalkDay walkDay = table.get(date.toString());
-
-        // Handle if no step data exists for that date
-        if (walkDay != null) {
-            return walkDay.getSteps();
-        } else {
-            return 0;
-        }
+    public static  void setInstance(DataProcessor dp){
+        INSTANCE = dp;
     }
 
     /**
-     * insertDaySteps
+     * getInstance
      *
-     * Inserts the steps for a day based on a date.
+     * Returns the static instance of the DP. Allows the DP to
+     * be accessed by multiple activities without having to pass it
+     * to those activities.
+     *
+     * @return DataProcessor The DP.
+     */
+    public static DataProcessor getInstance(){
+        return INSTANCE;
+    }
+
+    /**
+     * setActivity
+     *
+     * Set the activities of the dp.
+     * 0 -> HomePage
+     * 1 -> RunningMode
+     *
+     * @param a An activity passed in.
+     * @param i Which activity will we set?
+     */
+    public void setActivity(Activity a, int i){
+        if(i == 0) hp = (HomePage) a;
+        else if (i == 1) rm =(RunningMode) a;
+    }
+
+    /**
+     * getActivity
+     *
+     * Get the activities of the dp.
+     * 0 -> HomePage
+     * 1 -> RunningMode
+     *
+     * @param i Which activity will we get?
+     * @return Activity The activity we'll return.
+     */
+    public Activity getActivity(int i){
+        if(i == 0) return (Activity) hp;
+        else return (Activity) rm;
+    }
+
+    /**
+     * retrieveDay
+     *
+     * Retrieve a WalkDay object from the table and return it.
+     * !!!May return null!!!
+     *
+     * @param date The date we'll get the info for.
+     * @return WalkDay The day associated with the date. May be null!
+     */
+    public WalkDay retrieveDay(LocalDate date) {
+        return table.get(date.toString());
+    }
+
+    /**
+     * insertDay
+     *
+     * Inserts a new day in the table. Writes to sharedPrefs.
      *
      * @param date The date.
-     * @param steps Steps taken on this day.
      */
-    public void insertDaySteps(LocalDate date, int steps) {
+    public void insertDay(LocalDate date) {
 
-        // Store the data
-        table.put(date.toString(), new WalkDay(steps, date));
+        // Create a new day in the table.
+        table.put(date.toString(), new WalkDay(date));
         writeToSharedPref();
     }
 
-    /**
-     * insertDaySteps
-     *
-     * Inserts the steps for a day based on a day, month, and year.
-     *
-     * @param day The day of the month as int.
-     * @param month The day of the month as int.
-     * @param year The day of the year as int.
-     * @param steps Steps taken on this day.
-     */
-    public void insertDaySteps(int day, int month, int year, int steps) {
-        LocalDate date = LocalDate.of(year, month, day);
 
-        // Store the data
-        table.put(date.toString(), new WalkDay(steps, date));
-        writeToSharedPref();
+    /**
+     * modifyDay
+     *
+     * Modify the day today based on the activity source.
+     * 0 -> HomePage is modifying.
+     * 1 -> RunningMode is modifying.
+     *
+     * @param act Which activity is changing the data?
+     */
+    public void modifyDay(int act) {
+        WalkDay walkDay = retrieveDay(LocalDate.now());
+
+        // Updating the day based on the relevant values from homepage
+        if (act == 0) {
+            walkDay.setStepCountUnntentional(hp.getStepCountUnintentional());
+            walkDay.setStepCount(hp.getStepCount());
+
+        // Update based on relevant values from running mode
+        } else if (act == 1) {
+            walkDay.setDist(rm.getDistance());
+            walkDay.setSpeed(rm.getSpeed());
+            walkDay.setStepCountIntentional(rm.getStepCountIntentional());
+        }
     }
 
     /**

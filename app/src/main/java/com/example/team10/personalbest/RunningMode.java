@@ -103,6 +103,8 @@ public class RunningMode extends AppCompatActivity implements Observer {
         stepCountUnintentional = count;
     }
     public int getStepCountUnintentional (){return stepCountUnintentional;}
+    public float getSpeed() { return speed; }
+    public float getDistance() { return distance; }
 
     public void setStepCountIntentional(int count){
         stepCountIntentional = count;
