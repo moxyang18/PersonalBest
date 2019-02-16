@@ -293,7 +293,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
-        step_text.setText(String.format("%",stepCount));
+        step_text.setText(Integer.toString(stepCount));
     }
 
     public void checkGoal() {
