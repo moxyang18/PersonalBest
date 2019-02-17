@@ -12,18 +12,22 @@ import android.widget.Toast;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 
 
+import java.sql.Array;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 public class RunningMode extends AppCompatActivity implements Observer {
     private GoogleFitAdapter fit;
-    private int stepCount;
-    private int stepCountUnintentional;
-    private int stepCountIntentional;
+    private  DataProcessor dp;
+    private int stepCount =0;
+    private int stepCountUnintentional =0;
+    private int stepCountIntentional =0;
     private TextView stepText;
     private String TAG = "Running Mode ";
-    private float speed;
-    private float distance;
+    private float speed = 0.f;
+    private float distance = 0.f;
+    private float dailyDistance = 0.f;
     private TextView speedText;
     private TextView distanceText;
     private TextView intentionalStepText;
@@ -41,7 +45,9 @@ public class RunningMode extends AppCompatActivity implements Observer {
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
         speedText =findViewById(R.id.cur_velocity);
-
+        stepText = findViewById(R.id.total_steps_rm);
+        distanceText = findViewById(R.id.cur_miles);
+        intentionalStepText = findViewById(R.id.running_steps);
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
 
@@ -71,28 +77,47 @@ public class RunningMode extends AppCompatActivity implements Observer {
                 finish();
             }
         });
+        dp = DataProcessor.getInstance();
 
 
-        stepText = findViewById(R.id.running_steps);
 
 
         fit = GoogleFitAdapter.getInstance();
         fit.addObserver(this);
         fit.setActivity(this,1);
-        fit.updateStepCount();
+        setStepCountUnitentional(fit.getTodayStepTotal());
+
+
 
     }
 
 
     @Override
     public void update(Observable o, Object arg){
+
         setStepCountIntentional((int)arg);
+        showStepCountIntentional();
+        /*
+        Object[] arr = (Object[])arg;
+
+        setStepCount((int)arr[0]);
+        setStepCountIntentional(stepCount-stepCountUnintentional);
+
         showStepCount();
+        showStepCountIntentional();
+
+        setDistance((float)arr[1]);
+        showDistance();
+
+        setSpeed((float)arr[3]);
+        showSpeed();
+        */
+
     }
     public void setStepCount(int count){
-        stepCountIntentional = count;
+        stepCount = count;
     }
-    public int getStepCount(){return stepCountIntentional;}
+    public int getStepCount(){return stepCount;}
     public void showStepCount(){
         Log.d(TAG, "Textview is updated");
         stepText.setText(Integer.toString(stepCount));
@@ -103,18 +128,26 @@ public class RunningMode extends AppCompatActivity implements Observer {
         stepCountUnintentional = count;
     }
     public int getStepCountUnintentional (){return stepCountUnintentional;}
-    public float getSpeed() { return speed; }
+
+
+
+
+
     public float getDistance() { return distance; }
+    public void setDistance(float d){distance =d;}
+    public  void showDistance(){distanceText.setText(String.format("%.2f",distance));}
 
     public void setStepCountIntentional(int count){
         stepCountIntentional = count;
     }
     public int getStepCountIntentional (){return stepCountIntentional;}
-    public void showIntentionalStepCount(){
+    public void showStepCountIntentional(){
         Log.d(TAG, "Textview is updated");
-        stepText.setText(Integer.toString(stepCount));
+        intentionalStepText.setText(Integer.toString(stepCount));
 
     }
+
+    public float getSpeed() { return speed; }
     public void setSpeed(float s){
         speed = s;
     }

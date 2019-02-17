@@ -26,4 +26,5 @@
     <string name="miles">Miles:</string>
     <string name="end_run_button">End Run/Walk</string>
     <string name="run_back_button">Back</string>
+    <string name="today_s_steps">Today\'s steps:</string>
 </resources>

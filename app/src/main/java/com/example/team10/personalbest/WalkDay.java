@@ -10,9 +10,12 @@ public class WalkDay {
     private int stepCountIntentional;
     private int stepCountUnintentional;
     private int stepCount;
+    private int goal;
+    private boolean goal_is_met;
     private float dist;
     private float speed;
     private LocalDate date;
+
 
     /**
      * WalkDay ctor
@@ -89,6 +92,7 @@ public class WalkDay {
      */
     public void setDist(float dist) { this.dist = dist; }
 
+
     /**
      * setSpeed
      *
@@ -97,6 +101,15 @@ public class WalkDay {
      * @param speed The average speed for the day.
      */
     public void setSpeed(float speed) {this.speed = speed; }
+
+    /**
+     * setGoal
+     *
+     * Set the goal of the day.
+     *
+     * @param goal The goal of the day.
+     */
+    public void setGoal(int goal) { this.goal = goal; }
 
     // GETTERS
 
@@ -159,4 +172,13 @@ public class WalkDay {
      * @return The average speed.
      */
     public float getSpeed() { return this.speed; }
+
+    /**
+     * getGoal
+     *
+     * Returns the goal of the day.
+     *
+     * @return goal The goal of the day.
+     */
+    public int getGoal() { return this.goal; }
 }

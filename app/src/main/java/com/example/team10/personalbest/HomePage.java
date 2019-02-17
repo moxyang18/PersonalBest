@@ -39,6 +39,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private int stepCount = 0;
     private int stepCountUnintentional =0;
     private int stepCountIntentional = 0;
+    private float dailyDistanceCover = 0.f;
 
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
 
@@ -49,6 +50,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private static final String TAG = "HomePage";
 
     private GoogleFitAdapter fit;
+    private  DataProcessor dp;
 
 
     @Override
@@ -276,9 +278,28 @@ public class HomePage extends AppCompatActivity implements Observer {
     @Override
     public void update(Observable o, Object arg){
         Log.d(TAG, "Inside update()");
+
         setStepCount((int)arg);
         showStepCount();
+        /*
+        Object[] arr = (Object[])arg;
+
+        setStepCount((int)arr[0]);
+        setStepCountIntentional(stepCount-stepCountUnintentional);
+        showStepCount();
+        setDistance((float)arr[1]);
+
+        if(arr[0] == true){
+            dp.modifyDay(0);
+            dp.writeToSharedPref();
+        }
+
+        dp.modifyDay(0);
+        dp.writeToSharedPref();
+
+        */
         checkGoal();
+
     }
 
     public void setStepCount(int count){
@@ -288,8 +309,15 @@ public class HomePage extends AppCompatActivity implements Observer {
     public int getStepCount(){ return stepCount;}
 
     public void setStepCountUnintentional(int count){stepCountUnintentional = count;}
-
     public int getStepCountUnintentional(){return stepCountIntentional;}
+
+    public int getStepCountIntentional(){return stepCountIntentional;}
+    public void setStepCountIntentional(int s){stepCountIntentional = s;}
+
+    public void setDistance(float d){dailyDistanceCover = d;}
+    public float getDistance(){return dailyDistanceCover;}
+
+    public int getGoal(){return  currentGoal;}
 
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
