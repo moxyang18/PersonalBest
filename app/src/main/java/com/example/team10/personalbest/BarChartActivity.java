@@ -19,6 +19,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 public class BarChartActivity extends AppCompatActivity {
 
@@ -53,16 +54,51 @@ public class BarChartActivity extends AppCompatActivity {
             entries.add(new BarEntry(xInd++, new float[]{day[0], day[1]}));
         */
 
+        // Determine the day of the week so we can start on Sunday
+        String dayOfWeek = LocalDate.now().getDayOfWeek().toString();
+
+        // How many days must we subtract to get to sunday?
+        int minDays = 0;
+        switch (dayOfWeek) {
+            case "SUNDAY": minDays = 0; break;
+            case "MONDAY": minDays = 1; break;
+            case "TUESDAY": minDays = 2; break;
+            case "WEDNESDAY": minDays = 3; break;
+            case "THURSDAY": minDays = 4; break;
+            case "FRIDAY": minDays = 5; break;
+            case "SATURDAY": minDays = 6; break;
+        }
+
+        // Obtain sunday
+        LocalDate sundayDate = LocalDate.now().minusDays(minDays);
+
         // create entries of each day's steps of the week
         ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0, new float[]{1000, 200}));
-        entries.add(new BarEntry(1, new float[]{2060, 1000}));
-        entries.add(new BarEntry(2, new float[]{1000, 200}));
-        entries.add(new BarEntry(3, new float[]{2000, 1000}));
-        entries.add(new BarEntry(4, new float[]{2000, 1000}));
-        entries.add(new BarEntry(5, new float[]{500, 5000}));
-        entries.add(new BarEntry(6, new float[]{700, 1400}));
 
+        // Used to get info for each day
+        LocalDate dayDate;
+        WalkDay day;
+        boolean[] goalMet = new boolean[7];
+
+        // Loop over all 7 days of the week
+        for (int i = 0; i < 7; i++) {
+
+            // Get the day we're processing
+            dayDate = sundayDate.plusDays(i);
+            day = dp.retrieveDay(dayDate);
+
+            // Add data for that data to the graph
+            if (day != null) {
+                entries.add(new BarEntry(i, new float[]
+                        {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
+                goalMet[i] = day.getStepCount() >= day.getGoal();
+            } else {
+                entries.add(new BarEntry(i, new float[]{0, 0}));
+                goalMet[i] = false;
+            }
+        }
+
+        // Gather up the bars into a set
         BarDataSet entrySet = new BarDataSet(entries, "DailySteps"); //"DailySteps");
 
         // set the different colors for the vertical bars
@@ -73,6 +109,7 @@ public class BarChartActivity extends AppCompatActivity {
         entrySet.setDrawValues(true);
         entrySet.setStackLabels(new String[]{"UnplannedSteps", "PlannedSteps"});
 
+        // Add bars to data set
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
         dataSets.add(entrySet);
 
@@ -83,14 +120,15 @@ public class BarChartActivity extends AppCompatActivity {
         // create labels representing the x-axis days
         ArrayList<String> labels = new ArrayList<>();
         //String curDay;
-        //(planned steps != 0) as condition
-        labels.add("Sun");
-        labels.add("Mon");
-        labels.add("Tue");
-        labels.add("Wed");
-        labels.add("Thu");
-        labels.add("Fri");
-        labels.add("Sat");
+
+        // Determine if check mark should be present
+        labels.add((goalMet[0])? "Sun(✓)":"Sun");
+        labels.add((goalMet[1])? "Mon(✓)":"Mon");
+        labels.add((goalMet[2])? "Tue(✓)":"Tue");
+        labels.add((goalMet[3])? "Wed(✓)":"Wed");
+        labels.add((goalMet[4])? "Thu(✓)":"Thu");
+        labels.add((goalMet[5])? "Fri(✓)":"Fri");
+        labels.add((goalMet[6])? "Sat(✓)":"Sat");
 
         XAxis x = barChart10.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
