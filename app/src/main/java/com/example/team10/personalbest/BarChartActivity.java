@@ -7,12 +7,16 @@ import android.view.View;
 import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 
@@ -59,7 +63,7 @@ public class BarChartActivity extends AppCompatActivity {
         entries.add(new BarEntry(5, new float[]{500, 5000}));
         entries.add(new BarEntry(6, new float[]{700, 1400}));
 
-        BarDataSet entrySet = new BarDataSet(entries, ""); //"DailySteps");
+        BarDataSet entrySet = new BarDataSet(entries, "DailySteps"); //"DailySteps");
 
         // set the different colors for the vertical bars
         entrySet.setColors(this.getColors());
@@ -80,13 +84,13 @@ public class BarChartActivity extends AppCompatActivity {
         ArrayList<String> labels = new ArrayList<>();
         //String curDay;
         //(planned steps != 0) as condition
-        labels.add((true)? "Sun(✓)":"Sun");
-        labels.add((true)? "Mon(✓)":"Mon");
-        labels.add((false)? "Tue(✓)":"Tue");
-        labels.add((true)? "Wed(✓)":"Wed");
-        labels.add((true)? "Thu(✓)":"Thu");
-        labels.add((false)? "Fri(✓)":"Fri");
-        labels.add((true)? "Sat(✓)":"Sat");
+        labels.add("Sun");
+        labels.add("Mon");
+        labels.add("Tue");
+        labels.add("Wed");
+        labels.add("Thu");
+        labels.add("Fri");
+        labels.add("Sat");
 
         XAxis x = barChart10.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
@@ -104,6 +108,27 @@ public class BarChartActivity extends AppCompatActivity {
         barChart10.setData(data); //stepData);
         //barChart10.setFitBars(true);
         barChart10.animateY(1000);
+
+        // display the daily goal limit lines based on which bar of the day gets clicked
+        barChart10.setHighlightPerDragEnabled(false);
+        barChart10.setHighlightPerTapEnabled(true);
+        barChart10.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                barChart10.getAxisLeft().removeAllLimitLines();
+                int day_ind = (int)e.getX();
+                int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
+
+                int day_goal = days_goal[day_ind];
+                barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
+
         barChart10.invalidate();
     }
 
