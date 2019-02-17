@@ -58,6 +58,10 @@ public class HomePage extends AppCompatActivity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        dp = new DataProcessor(this);
+        DataProcessor.setInstance(dp);
+        dp.loadIntoHomePage();
+
         goal_text = findViewById(R.id.currentGoal);
         goal_text.setText(Integer.toString(currentGoal));
 
@@ -95,7 +99,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
 
-        currentGoal = goalPreferences.getInt("goalCount", 5000);
+        //currentGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(currentGoal));
 
         /** Log into Google Account:
@@ -318,6 +322,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     public float getDistance(){return dailyDistanceCover;}
 
     public int getGoal(){return  currentGoal;}
+    public void setGoal(int g){currentGoal = g;}
 
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
