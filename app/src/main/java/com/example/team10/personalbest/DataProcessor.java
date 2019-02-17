@@ -102,6 +102,7 @@ public class DataProcessor extends AppCompatActivity {
             hp.setGoal(walkDay.getGoal());
             hp.showStepCount();
         } else {
+            insertDay(LocalDate.now());
             hp.setStepCount(0);
             hp.setStepCountUnintentional(0);
         }

@@ -140,10 +140,11 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     }
 
     public void updateResult(){
-        result[0] = false;
+        result[0] = true;
         result[1] = step;
         result[2] = distance;
         result[3] = speed;
+        setChanged();
         notifyObservers(result); // notify HomePage and Running Mode
     }
 
