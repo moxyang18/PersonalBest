@@ -52,6 +52,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private GoogleFitAdapter fit;
     private  DataProcessor dp;
 
+    private AlertDialog newGoalDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,9 +207,13 @@ public class HomePage extends AppCompatActivity implements Observer {
                 openCustomDialog();
             }
         });
-        AlertDialog newGoalDialog = newGoalBuilder.create();
+        newGoalDialog = newGoalBuilder.create();
         newGoalDialog.setCanceledOnTouchOutside(false);
         newGoalDialog.show();
+    }
+
+    public AlertDialog getNewGoalDialog() {
+        return newGoalDialog;
     }
 
     public void openCustomDialog() {
