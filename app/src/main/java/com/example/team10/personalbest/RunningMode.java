@@ -78,6 +78,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
             }
         });
         dp = DataProcessor.getInstance();
+        dp.setActivity(this,1);
 
 
 
@@ -86,8 +87,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
         fit.addObserver(this);
         fit.setActivity(this,1);
         setStepCountUnitentional(fit.getTodayStepTotal());
-
-
 
     }
 
