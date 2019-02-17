@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.team10.personalbest.WalkDay;
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
+import android.util.Log;
+
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
@@ -100,11 +102,12 @@ public class DataProcessor extends AppCompatActivity {
             hp.setStepCountUnintentional(walkDay.getStepCountUnintentional());
             hp.setDistance(walkDay.getDist());
             hp.setGoal(walkDay.getGoal());
-            hp.showStepCount();
+            Log.d(TAG,"loaded today's data from shRef into HomePage");
         } else {
             insertDay(LocalDate.now());
             hp.setStepCount(0);
             hp.setStepCountUnintentional(0);
+            Log.d(TAG,"start with a new WalkDay ");
         }
     }
 

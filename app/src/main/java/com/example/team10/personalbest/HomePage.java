@@ -359,4 +359,10 @@ public class HomePage extends AppCompatActivity implements Observer {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dp.modifyDay(0);
+        dp.writeToSharedPref();
+    }
 }

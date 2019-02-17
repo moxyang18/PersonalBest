@@ -52,6 +52,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private float distance =0.f;
     private long time_elapsed =0;
     private float speed =0.f;
+    private int write_counter = 0;
 
     private Object[] result =new Object[]{1,1,1,1};
 
@@ -127,20 +128,27 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         Runnable mUpdateView = new Runnable() {
             @Override
             public void run() {
-                updateResult();
+                if(write_counter <= 9){
+                    write_counter =0;
+                    updateResult(true);
+                    Log.d(TAG, "data should be written");
+
+                }
+                else updateResult(false);
                 /*
                 if(activity_2 != null) {
                     updateSpeed();
                 }
                 */
                 mUpdater.postDelayed(this, 1000);
+                Log.d(TAG, "passed data into activities");
             }
         };
         mUpdateView.run();
     }
 
-    public void updateResult(){
-        result[0] = true;
+    public void updateResult(boolean write){
+        result[0] = write;
         result[1] = step;
         result[2] = distance;
         result[3] = speed;
