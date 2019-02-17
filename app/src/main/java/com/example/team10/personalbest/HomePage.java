@@ -292,7 +292,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         showStepCount();
         setDistance((float)arr[2]);
 
-        if(arr[0] == true){
+        if((boolean)arr[0] == true){
             dp.modifyDay(0);
             dp.writeToSharedPref();
         }

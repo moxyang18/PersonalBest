@@ -53,7 +53,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private long time_elapsed =0;
     private float speed =0.f;
 
-    private Object[] result;
+    private Object[] result ={};
 
 
     //constructor
