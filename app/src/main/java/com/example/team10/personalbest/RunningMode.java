@@ -94,23 +94,22 @@ public class RunningMode extends AppCompatActivity implements Observer {
     @Override
     public void update(Observable o, Object arg){
 
-        setStepCountIntentional((int)arg);
-        showStepCountIntentional();
-        /*
+        //setStepCountIntentional((int)arg);
+        //showStepCountIntentional();
+
         Object[] arr = (Object[])arg;
 
-        setStepCount((int)arr[0]);
+        setStepCount((int)arr[1]);
         setStepCountIntentional(stepCount-stepCountUnintentional);
 
         showStepCount();
         showStepCountIntentional();
 
-        setDistance((float)arr[1]);
+        setDistance((float)arr[2]);
         showDistance();
 
         setSpeed((float)arr[3]);
         showSpeed();
-        */
 
     }
     public void setStepCount(int count){
