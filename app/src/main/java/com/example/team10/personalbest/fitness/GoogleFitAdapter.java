@@ -48,6 +48,13 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private static GoogleFitAdapter INSTANCE;
     private GoogleApiClient mClient;
     private long startTime;
+    private int step =0;
+    private float distance =0.f;
+    private long time_elapsed =0;
+    private float speed =0.f;
+
+    private Object[] result;
+
 
     //constructor
     public GoogleFitAdapter() {
@@ -109,20 +116,31 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         startTime = cal.getTimeInMillis();
         startRecording(); //Record API
         startListen(); //Sensor API
-        updateStepCount();
+        //updateStepCount();
 
         Log.d(TAG, "End setup");
         final Handler mUpdater = new Handler();
         Runnable mUpdateView = new Runnable() {
             @Override
             public void run() {
+                updateResult();
+                /*
                 if(activity_2 != null) {
                     updateSpeed();
                 }
-                mUpdater.postDelayed(this, 1200);
+                */
+                mUpdater.postDelayed(this, 1000);
             }
         };
-        //mUpdateView.run();
+        mUpdateView.run();
+    }
+
+    public void updateResult(){
+        result[0] = false;
+        result[1] = step;
+        result[2] = distance;
+        result[3] = speed;
+        notifyObservers(result); // notify HomePage and Running Mode
     }
 
     public void startListen(){
@@ -306,9 +324,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
-                                setChanged();
-
-                                notifyObservers(total); // notify HomePage and Running Mode
+                                step = total;
 
                                 Log.d(TAG, "Total steps: " + total);
                             }
@@ -320,6 +336,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                 Log.d(TAG, "There was a problem getting the step count.", e);
                             }
                         });
+        return step;
     }
 
     /**
@@ -345,11 +362,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                         dataSet.isEmpty()
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
-
+                                step =total;
                                 setChanged();
-
-                                notifyObservers(total); // notify HomePage and Running Mode
-
                                 Log.d(TAG, "Total steps: " + total);
                             }
                         })

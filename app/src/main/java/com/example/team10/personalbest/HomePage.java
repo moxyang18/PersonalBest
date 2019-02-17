@@ -58,9 +58,8 @@ public class HomePage extends AppCompatActivity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
-        dp = new DataProcessor(this);
+        dp = new DataProcessor(this);//dp.loadIntoHomePage() implicitly called inside constructor.
         DataProcessor.setInstance(dp);
-        dp.loadIntoHomePage();
 
         goal_text = findViewById(R.id.currentGoal);
         goal_text.setText(Integer.toString(currentGoal));
@@ -97,11 +96,10 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
-        SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
+        //SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
 
         //currentGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(currentGoal));
-
         /** Log into Google Account:
          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
          * https://developers.google.com/identity/sign-in/android/sign-in
@@ -283,25 +281,22 @@ public class HomePage extends AppCompatActivity implements Observer {
     public void update(Observable o, Object arg){
         Log.d(TAG, "Inside update()");
 
-        setStepCount((int)arg);
-        showStepCount();
-        /*
+        //setStepCount((int)arg);
+        //showStepCount();
+
         Object[] arr = (Object[])arg;
 
-        setStepCount((int)arr[0]);
+        setStepCount((int)arr[1]);
         setStepCountIntentional(stepCount-stepCountUnintentional);
+        setStepCountUnintentional(stepCount-stepCountIntentional);
         showStepCount();
-        setDistance((float)arr[1]);
+        setDistance((float)arr[2]);
 
         if(arr[0] == true){
             dp.modifyDay(0);
             dp.writeToSharedPref();
         }
 
-        dp.modifyDay(0);
-        dp.writeToSharedPref();
-
-        */
         checkGoal();
 
     }

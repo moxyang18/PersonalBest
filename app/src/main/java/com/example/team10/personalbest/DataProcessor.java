@@ -98,6 +98,9 @@ public class DataProcessor extends AppCompatActivity {
         if (walkDay != null) {
             hp.setStepCount(walkDay.getStepCount());
             hp.setStepCountUnintentional(walkDay.getStepCountUnintentional());
+            hp.setDistance(walkDay.getDist());
+            hp.setGoal(walkDay.getGoal());
+            hp.showStepCount();
         } else {
             hp.setStepCount(0);
             hp.setStepCountUnintentional(0);
