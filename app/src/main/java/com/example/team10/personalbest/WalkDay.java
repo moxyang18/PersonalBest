@@ -11,7 +11,7 @@ public class WalkDay {
     private int stepCountUnintentional;
     private int stepCount;
     private int goal;
-    private boolean goal_is_met;
+    private boolean goalMet;
     private float dist;
     private float speed;
     private LocalDate date;
@@ -34,6 +34,7 @@ public class WalkDay {
         this.stepCount = 0;
         this.dist = 0;
         this.speed = 0;
+        goalMet = false;
     }
 
     // SETTERS
@@ -48,7 +49,7 @@ public class WalkDay {
      */
     public void setStepCountIntentional(int steps) {
         this.stepCountIntentional = steps;
-        this.stepCount = getStepCountIntentional() + getStepCountUnintentional();
+        this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
     }
 
     /**
@@ -58,19 +59,24 @@ public class WalkDay {
      *
      * @param steps The steps walked on this day
      */
-    public void setStepCountUnntentional(int steps) {
+    public void setStepCountUnintentional(int steps) {
         this.stepCountUnintentional = steps;
-        this.stepCount = getStepCountIntentional() + getStepCountUnintentional();
+        this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
     }
 
     /**
      * setStepCount
      *
-     * Sets the total step count for the day.
+     * Sets the total step count for the day. Updates if goal is met.
      *
      * @param steps The total step count for the day.
      */
-    public void setStepCount(int steps) { this.stepCount = steps; }
+    public void setStepCount(int steps) {
+        this.stepCount = steps;
+        if (stepCount >= goal) {
+            goalMet = true;
+        }
+    }
 
     /**
      * setDate
@@ -160,7 +166,7 @@ public class WalkDay {
      *
      * Returns the distance walked during the day.
      *
-     * @return The distance walked.
+     * @return float The distance walked.
      */
     public float getDist() { return this.dist; }
 
@@ -169,7 +175,7 @@ public class WalkDay {
      *
      * Returns the speed during the day.
      *
-     * @return The average speed.
+     * @return float The average speed.
      */
     public float getSpeed() { return this.speed; }
 
@@ -178,7 +184,7 @@ public class WalkDay {
      *
      * Returns the goal of the day.
      *
-     * @return goal The goal of the day.
+     * @return int The goal of the day.
      */
     public int getGoal() { return this.goal; }
 }

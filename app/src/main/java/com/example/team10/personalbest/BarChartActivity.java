@@ -20,6 +20,8 @@ public class BarChartActivity extends AppCompatActivity {
 
     private BarChart barChart10;
     private ArrayList<ArrayList> stepList;
+    private DataProcessor dp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +32,12 @@ public class BarChartActivity extends AppCompatActivity {
         /* first load the steps in stepList, which will store an array of lists each containing the
            planned steps and unplanned steps
         stepList = xxx;*/
-        displayChart();
 
+        // Get data for chart
+        dp = DataProcessor.getInstance();
+
+        // Display chart
+        displayChart();
     }
 
     private void displayChart() {
