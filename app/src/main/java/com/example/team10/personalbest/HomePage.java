@@ -124,6 +124,8 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
+        intent.putExtra("Goal_today",Integer.toString(currentGoal));
+        intent.putExtra("Step_unintentional",Integer.toString(stepCount));
         startActivity(intent);
     }
 
@@ -167,6 +169,8 @@ public class HomePage extends AppCompatActivity implements Observer {
             fit = new GoogleFitAdapter(this);
             GoogleFitAdapter.setInstance(fit);
             fit.addObserver(this);
+            setStepCount(fit.getTodayStepTotal());
+            showStepCount();
 
             Log.d(TAG, "Preparing to run Async Task");
             AsyncTaskRunner runner = new AsyncTaskRunner();

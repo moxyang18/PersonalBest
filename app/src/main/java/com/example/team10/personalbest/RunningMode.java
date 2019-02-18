@@ -1,5 +1,6 @@
 package com.example.team10.personalbest;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
@@ -18,13 +19,18 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class RunningMode extends AppCompatActivity implements Observer {
+    private String TAG = "Running Mode ";
+
     private GoogleFitAdapter fit;
     private  DataProcessor dp;
+    private int goal = 0;
     private int stepCount =0;
     private int stepCountUnintentional =0;
     private int stepCountIntentional =0;
+
+
     private TextView stepText;
-    private String TAG = "Running Mode ";
+    private TextView goalText;
     private float speed = 0.f;
     private float distance = 0.f;
     private float dailyDistance = 0.f;
@@ -41,9 +47,15 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
         setContentView(R.layout.activity_running_mode);
 
+        Intent intent = getIntent();
+        goal =Integer.valueOf(intent.getStringExtra("Goal_today"));
+        setStepCountUnintentional(Integer.valueOf(intent.getStringExtra("Step_unintentional")));;
+        setStepCount(stepCountUnintentional);
+
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
+        timeText = findViewById(R.id.time);
         speedText =findViewById(R.id.cur_velocity);
         stepText = findViewById(R.id.total_steps_rm);
         distanceText = findViewById(R.id.cur_miles);
@@ -80,13 +92,14 @@ public class RunningMode extends AppCompatActivity implements Observer {
         dp = DataProcessor.getInstance();
         dp.setActivity(this,1);
 
-
-
+        showStepCount();
 
         fit = GoogleFitAdapter.getInstance();
+        fit.setStartTime();
         fit.addObserver(this);
         fit.setActivity(this,1);
-        setStepCountUnitentional(fit.getTodayStepTotal());
+
+
 
     }
 
@@ -111,6 +124,8 @@ public class RunningMode extends AppCompatActivity implements Observer {
         setSpeed((float)arr[3]);
         showSpeed();
 
+        showTime((String)arr[4]);
+
     }
     public void setStepCount(int count){
         stepCount = count;
@@ -122,7 +137,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
     }
 
-    public void setStepCountUnitentional(int count){
+    public void setStepCountUnintentional(int count){
         stepCountUnintentional = count;
     }
     public int getStepCountUnintentional (){return stepCountUnintentional;}
@@ -160,5 +175,9 @@ public class RunningMode extends AppCompatActivity implements Observer {
         super.onDestroy();
         fit.setActivity(null,1);
         fit.deleteObserver(this);
+    }
+
+    public void showTime(String s){
+        timeText.setText(s);
     }
 }

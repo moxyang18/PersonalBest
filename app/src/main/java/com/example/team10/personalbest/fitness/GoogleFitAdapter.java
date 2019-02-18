@@ -54,7 +54,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private float speed =0.f;
     private int write_counter = 0;
 
-    private Object[] result =new Object[]{1,1,1,1};
+    private Object[] result =new Object[]{1,1,1,1,1};
 
 
     //constructor
@@ -67,6 +67,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         result [1] = step;
         result [2] = distance;
         result [3] = speed;
+        result [4] = "";
     }
 
     //methods
@@ -94,6 +95,26 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         else return (Activity)activity_2;
     }
 
+    public void setStartTime(){
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        startTime = cal.getTimeInMillis();
+    }
+
+    public String computeTimeElapsed(){
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        time_elapsed = cal.getTimeInMillis() -startTime;
+        //long millis = time_elapsed % 1000;
+        long second = (time_elapsed / 1000) % 60;
+        long minute = (time_elapsed / (1000 * 60)) % 60;
+        long hour = (time_elapsed / (1000 * 60 * 60)) % 24;
+
+        String time = String.format("%02d:%02d:%02d", hour, minute, second);
+        return time;
+    }
     public void setup() {
         //Handles what we want from Fitness data later
         FitnessOptions fitnessOptions = FitnessOptions.builder()
@@ -128,19 +149,22 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         Runnable mUpdateView = new Runnable() {
             @Override
             public void run() {
-                if(write_counter <= 9){
+                if(write_counter >= 5){
                     write_counter =0;
                     updateResult(true);
                     Log.d(TAG, "data should be written");
 
                 }
-                else updateResult(false);
+                else{
+                    write_counter ++;
+                    updateResult(false);
+                }
                 /*
                 if(activity_2 != null) {
                     updateSpeed();
                 }
                 */
-                mUpdater.postDelayed(this, 1000);
+                mUpdater.postDelayed(this, 500);
                 Log.d(TAG, "passed data into activities");
             }
         };
@@ -152,6 +176,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         result[1] = step;
         result[2] = distance;
         result[3] = speed;
+        result[4] = computeTimeElapsed();
         setChanged();
         notifyObservers(result); // notify HomePage and Running Mode
     }
