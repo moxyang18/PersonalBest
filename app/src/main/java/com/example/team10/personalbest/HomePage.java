@@ -30,7 +30,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -64,6 +66,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+        date = LocalDate.now();
 
         dp = new DataProcessor(this);//dp.loadIntoHomePage() implicitly called inside constructor.
         DataProcessor.setInstance(dp);
@@ -91,8 +94,11 @@ public class HomePage extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
                 try {
-                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    long time_in_milli = Long.valueOf(set_time_text.getText().toString());
                     // store this var in new time.......
+                    date =
+                            Instant.ofEpochMilli(time_in_milli).atZone(ZoneId.systemDefault()).toLocalDate();
+                    passDate();
                     // ..........................
 
                 } catch (Exception e) {
@@ -340,6 +346,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         setDistance((float)arr[2]);
 
         if((boolean)arr[0] == true){
+            passDate();
             dp.modifyDay(0);
             dp.writeToSharedPref();
         }
@@ -410,7 +417,12 @@ public class HomePage extends AppCompatActivity implements Observer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        passDate();
         dp.modifyDay(0);
         dp.writeToSharedPref();
+    }
+
+    public void passDate(){
+        dp.date = date;
     }
 }

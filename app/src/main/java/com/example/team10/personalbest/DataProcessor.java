@@ -98,7 +98,7 @@ public class DataProcessor extends AppCompatActivity {
      * instantiation of a DataProcessor.
      */
     public void loadIntoHomePage() {
-        WalkDay walkDay = table.get(LocalDate.now().toString());
+        WalkDay walkDay = table.get(date.toString());
 
         if (walkDay != null) {
             hp.setStepCount(walkDay.getStepCount());
@@ -107,7 +107,7 @@ public class DataProcessor extends AppCompatActivity {
             hp.setGoal(walkDay.getGoal());
             Log.d(TAG,"loaded today's data from shRef into HomePage");
         } else {
-            insertDay(LocalDate.now());
+            insertDay(date);
             hp.setStepCount(0);
             hp.setStepCountUnintentional(0);
             Log.d(TAG,"start with a new WalkDay ");
@@ -206,7 +206,7 @@ public class DataProcessor extends AppCompatActivity {
      * @param act Which activity is changing the data?
      */
     public void modifyDay(int act) {
-        WalkDay walkDay = retrieveDay(LocalDate.now());
+        WalkDay walkDay = retrieveDay(date);
 
         // Updating the day based on the relevant values from homepage
         if (act == 0) {

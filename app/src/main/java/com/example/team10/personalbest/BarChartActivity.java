@@ -28,6 +28,7 @@ public class BarChartActivity extends AppCompatActivity {
     private ArrayList<ArrayList> stepList;
     private DataProcessor dp;
     private int[] goal_list = {0,0,0,0,0,0,0};
+    public LocalDate date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,10 @@ public class BarChartActivity extends AppCompatActivity {
         */
 
         // Determine the day of the week so we can start on Sunday
-        String dayOfWeek = LocalDate.now().getDayOfWeek().toString();
+        LocalDate today;
+        if (date != null)  today= date;
+        else today = LocalDate.now();
+        String dayOfWeek = today.getDayOfWeek().toString();
 
         // How many days must we subtract to get to sunday?
         int minDays = 0;
@@ -72,7 +76,7 @@ public class BarChartActivity extends AppCompatActivity {
         }
 
         // Obtain sunday
-        LocalDate sundayDate = LocalDate.now().minusDays(minDays);
+        LocalDate sundayDate = today.minusDays(minDays);
 
         // create entries of each day's steps of the week
         ArrayList<BarEntry> entries = new ArrayList<>();
