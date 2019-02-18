@@ -53,7 +53,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     private static final String TAG = "HomePage";
 
-    private GoogleFitAdapter fit;
+    public GoogleFitAdapter fit;
     private  DataProcessor dp;
 
     private AlertDialog newGoalDialog;
@@ -159,6 +159,9 @@ public class HomePage extends AppCompatActivity implements Observer {
         Log.d(TAG, "Intent is sent");
     }
 
+    public void setFitAdapter() {
+
+    }
 
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
@@ -209,8 +212,6 @@ public class HomePage extends AppCompatActivity implements Observer {
             fit = new GoogleFitAdapter(this);
             GoogleFitAdapter.setInstance(fit);
             fit.addObserver(this);
-            //setStepCount(fit.getTodayStepTotal());
-            //showStepCount();
 
             Log.d(TAG, "Preparing to run Async Task");
             AsyncTaskRunner runner = new AsyncTaskRunner();
@@ -330,9 +331,6 @@ public class HomePage extends AppCompatActivity implements Observer {
     public void update(Observable o, Object arg){
         Log.d(TAG, "Inside update()");
 
-        //setStepCount((int)arg);
-        //showStepCount();
-
         Object[] arr = (Object[])arg;
 
         setStepCount((int)arr[1]);
@@ -345,9 +343,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             dp.modifyDay(0);
             dp.writeToSharedPref();
         }
-
         checkGoal();
-
     }
 
     public void setMock_steps_unintentional(int c){mock_steps_unintentional =c;}

@@ -136,6 +136,9 @@ public class RunningMode extends AppCompatActivity implements Observer {
         fit.setActivity(this,1);
     }
 
+    public void setFitAdaptor() {
+
+    }
 
     @Override
     public void update(Observable o, Object arg){
