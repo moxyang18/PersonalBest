@@ -67,7 +67,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         result[0] = false;
         result [1] = step;
         result [2] = distance;
-        result [3] = speed;
+        result [3] = 0.f;
         result [4] = "";
     }
 
@@ -125,6 +125,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 .addDataType(DataType.AGGREGATE_SPEED_SUMMARY,FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.TYPE_LOCATION_TRACK, FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.TYPE_LOCATION_SAMPLE,FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_DISTANCE_DELTA,FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.AGGREGATE_DISTANCE_DELTA,FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.TYPE_DISTANCE_CUMULATIVE,FitnessOptions.ACCESS_READ)
                 .build();
 
@@ -144,12 +146,17 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         startRecording(); //Record API
         startListen(); //Sensor API
         updateStepCount();
+        updateDistance();
 
         Log.d(TAG, "End setup");
         final Handler mUpdater = new Handler();
         Runnable mUpdateView = new Runnable() {
             @Override
             public void run() {
+                updateDistance();
+                result[4] = computeTimeElapsed();
+                result[3] = (float)time_elapsed /1000;
+                //updateSpeedByComp();
                 if(write_counter >= 5){
                     write_counter =0;
                     updateResult(true);
@@ -176,8 +183,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         result[0] = write;
         result[1] = step;
         result[2] = distance;
-        result[3] = speed;
-        result[4] = computeTimeElapsed();
+        //result[3] = speed;
         setChanged();
         notifyObservers(result); // notify HomePage and Running Mode
     }
@@ -193,16 +199,17 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                             if(val != 0){
                                 updateStepCount();
                             }
-                            updateSpeed();
                     }
                 };
 
+        /*
         OnDataPointListener mListener2 = new OnDataPointListener() {
             @Override
             public void onDataPoint(DataPoint dataPoint) {
                 //updateSpeed();
             }
         };
+        */
 
         //Register Listener
         Fitness.getSensorsClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
@@ -271,6 +278,21 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 });
 
         Fitness.getRecordingClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
+                .subscribe(DataType.TYPE_DISTANCE_CUMULATIVE)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "Successfully subscribed speed Agg!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "There was a problem subscribing speed Agg.");
+                    }
+                });
+
+        Fitness.getRecordingClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
                 .subscribe(DataType.AGGREGATE_SPEED_SUMMARY)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -303,6 +325,41 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
     }
 
+    public void updateDistance(){
+        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        if (lastSignedInAccount == null) {
+            return;
+        }
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        long endTime = cal.getTimeInMillis();
+
+        Fitness.getHistoryClient(activity, lastSignedInAccount)
+                .readDailyTotal(DataType.TYPE_DISTANCE_DELTA)
+                .addOnSuccessListener(
+                        new OnSuccessListener<DataSet>() {
+                            @Override
+                            public void onSuccess(DataSet dataSet) {
+                                Log.d(TAG, dataSet.toString());
+                                float total =
+                                        dataSet.isEmpty()
+                                                ? 0
+                                                : dataSet.getDataPoints().get(0).getValue(Field.FIELD_DISTANCE).asFloat();
+                                distance =total;
+                                setChanged();
+                                Log.d(TAG, "Total distance: " + total);
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "There was a problem getting the step count.", e);
+                            }
+                        });
+    }
+    /*
     public void updateSpeed(){
         GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (lastSignedInAccount == null) {
@@ -344,6 +401,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
             }
         });
     }
+    */
     /* Called onetime only by runningmode
     */
     public int getTodayStepTotal(){
@@ -352,7 +410,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
             return -1;
         }
         Fitness.getHistoryClient(activity, lastSignedInAccount)
-                .readDailyTotal(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
                         new OnSuccessListener<DataSet>() {
                             @Override

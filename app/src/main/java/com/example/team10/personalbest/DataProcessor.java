@@ -208,9 +208,9 @@ public class DataProcessor extends AppCompatActivity {
         // Updating the day based on the relevant values from homepage
         if (act == 0) {
             walkDay.setStepCountUnintentional(hp.getStepCountUnintentional());
+            walkDay.setStepCountIntentional(hp.getStepCountIntentional());
             walkDay.setStepCount(hp.getStepCount());
             walkDay.setDist(hp.getDistance());
-            walkDay.setStepCountIntentional(hp.getStepCountIntentional());
             walkDay.setGoal(hp.getGoal());
 
         // Update based on relevant values from running mode

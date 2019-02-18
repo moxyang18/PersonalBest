@@ -55,7 +55,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
         setStepCountUnintentional(Integer.valueOf(intent.getStringExtra("Step_unintentional")));;
         setStepCount(stepCountUnintentional);
         setStepCountIntentional(stepCount-stepCountUnintentional);
-
+        dailyDistance = Float.valueOf(intent.getStringExtra("Daily_distance"));
 
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
@@ -132,14 +132,20 @@ public class RunningMode extends AppCompatActivity implements Observer {
         showStepCount();
         showStepCountIntentional();
 
-        setDistance((float)arr[2] -dailyDistance);
+        setDistance((float)arr[2] - dailyDistance);
         showDistance();
 
-        setSpeed((float)arr[3]);
+        updateSpeedByComp((float)arr[3]);
+        //setSpeed((float)arr[3]);
         showSpeed();
 
         showTime((String)arr[4]);
     }
+
+    public void updateSpeedByComp(float time_elapsed){
+        if(time_elapsed != 0.f) speed = distance*2.236f/time_elapsed;//converted to miles per hour
+    }
+
 
     public void setStepCount(int count){
         if(count !=0) stepCount = count;
@@ -169,7 +175,9 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
     public float getDistance() { return distance; }
     public void setDistance(float d){distance =d;}
-    public  void showDistance(){distanceText.setText(String.format("%.2f",distance));}
+    public  void showDistance(){
+        distanceText.setText(String.format("%.3f",distance*0.000621371));//converted to miles
+    }
 
 
 

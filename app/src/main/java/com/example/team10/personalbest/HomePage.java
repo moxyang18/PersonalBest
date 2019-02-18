@@ -126,6 +126,7 @@ public class HomePage extends AppCompatActivity implements Observer {
         Intent intent = new Intent(this, RunningMode.class);
         intent.putExtra("Goal_today",Integer.toString(currentGoal));
         intent.putExtra("Step_unintentional",Integer.toString(stepCount));
+        intent.putExtra("Daily_distance",Float.toString(dailyDistanceCover));
         fit.setGoal(currentGoal);
         startActivity(intent);
     }
@@ -318,7 +319,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     public int getStepCount(){ return stepCount;}
 
     public void setStepCountUnintentional(int count){stepCountUnintentional = count;}
-    public int getStepCountUnintentional(){return stepCountIntentional;}
+    public int getStepCountUnintentional(){return stepCountUnintentional;}
 
     public int getStepCountIntentional(){return stepCountIntentional;}
     public void setStepCountIntentional(int s){stepCountIntentional = s;}

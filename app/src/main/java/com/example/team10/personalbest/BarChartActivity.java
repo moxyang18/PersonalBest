@@ -9,6 +9,7 @@ import android.widget.Button;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -26,6 +27,7 @@ public class BarChartActivity extends AppCompatActivity {
     private BarChart barChart10;
     private ArrayList<ArrayList> stepList;
     private DataProcessor dp;
+    private int[] goal_list = {0,0,0,0,0,0,0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,8 @@ public class BarChartActivity extends AppCompatActivity {
         LocalDate dayDate;
         WalkDay day;
         boolean[] goalMet = new boolean[7];
-
+        int goal_max = 0;
+        int step_max=0;
         // Loop over all 7 days of the week
         for (int i = 0; i < 7; i++) {
 
@@ -91,6 +94,11 @@ public class BarChartActivity extends AppCompatActivity {
             if (day != null) {
                 entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
+                goal_list[i] =day.getGoal();
+                if(goal_max<day.getGoal())
+                    goal_max = day.getGoal();
+                if(step_max<day.getStepCount())
+                    step_max = day.getStepCount();
                 goalMet[i] = day.getStepCount() >= day.getGoal();
             } else {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
@@ -137,6 +145,14 @@ public class BarChartActivity extends AppCompatActivity {
         x.setGranularity(1);
         x.setGranularityEnabled(true);
 
+        YAxis leftAxis = barChart10.getAxisLeft();
+
+        if(step_max > goal_max)
+        leftAxis.setAxisMaximum(step_max * 1.2f);
+        else leftAxis.setAxisMaximum(goal_max * 1.2f);
+        //if(step_at_goal_max!=0 && goal_max !=0)
+        //leftAxis.setSpaceTop((1-(float)step_at_goal_max/ (float)goal_max *100f*0.9f));
+
         //barChart10.setDragEnabled(true);
 
         // initialize the BarData with the entries and the labels
@@ -155,10 +171,11 @@ public class BarChartActivity extends AppCompatActivity {
             public void onValueSelected(Entry e, Highlight h) {
                 barChart10.getAxisLeft().removeAllLimitLines();
                 int day_ind = (int)e.getX();
-                int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
+                //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
 
-                int day_goal = days_goal[day_ind];
-                barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+                int day_goal = goal_list[day_ind];
+                if(day_goal !=0)
+                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
             }
 
             @Override

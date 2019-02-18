@@ -49,7 +49,7 @@ public class WalkDay {
      */
     public void setStepCountIntentional(int steps) {
         this.stepCountIntentional = steps;
-        this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
+        //this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
     }
 
     /**
@@ -61,7 +61,7 @@ public class WalkDay {
      */
     public void setStepCountUnintentional(int steps) {
         this.stepCountUnintentional = steps;
-        this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
+        //this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
     }
 
     /**
