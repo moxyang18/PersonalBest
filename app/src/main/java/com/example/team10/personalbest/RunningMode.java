@@ -1,12 +1,16 @@
 package com.example.team10.personalbest;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,12 +62,40 @@ public class RunningMode extends AppCompatActivity implements Observer {
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
+        Button add_step_button = findViewById(R.id.add_steps_in_running);
+        Button set_time_button = findViewById(R.id.set_time_in_running);
+        final EditText set_time_text = findViewById(R.id.set_time_text);
         goalText= findViewById(R.id.goal_running_mode);
         timeText = findViewById(R.id.time);
         speedText =findViewById(R.id.cur_velocity);
         stepText = findViewById(R.id.total_steps_rm);
         distanceText = findViewById(R.id.cur_miles);
         intentionalStepText = findViewById(R.id.running_steps);
+
+        // if pressed, increase the current steps by 500
+        add_step_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // .................
+
+            }
+        });
+
+        // when pressed, set a new time in milliseconds
+        set_time_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(RunningMode.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
