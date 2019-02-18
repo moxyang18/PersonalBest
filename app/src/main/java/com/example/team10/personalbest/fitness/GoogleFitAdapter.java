@@ -163,7 +163,6 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                 }
                 result[4] = computeTimeElapsed();
                 result[3] = (float)time_elapsed /1000;
-                //updateSpeedByComp();
                 if(write_counter >= 15){
 
                     write_counter =0;
@@ -190,6 +189,12 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         //result[3] = speed;
         setChanged();
         notifyObservers(result); // notify HomePage and Running Mode
+    }
+
+    //For testing purposes
+    public void updateCustomResult( Object[] result ) {
+        setChanged();
+        notifyObservers(result);
     }
 
     public void startListen(){
@@ -334,49 +339,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                             }
                         });
     }
-    /*
-    public void updateSpeed(){
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
-        if (lastSignedInAccount == null) {
-            return;
-        }
 
-        Calendar cal = Calendar.getInstance();
-        Date now = new Date();
-        cal.setTime(now);
-        long endTime = cal.getTimeInMillis();
-        //cal.add(Calendar.WEEK_OF_YEAR, -1);
-        //startTime = endTime - 4000;
-
-        java.text.DateFormat dateFormat = getDateInstance();
-        Log.i(TAG, "Range Start: " + dateFormat.format(startTime));
-        Log.i(TAG, "Range End: " + dateFormat.format(endTime));
-
-        DataReadRequest readRequest = new DataReadRequest.Builder()
-                .setTimeRange( 1, endTime, TimeUnit.MILLISECONDS)
-                .read(DataType.TYPE_SPEED)
-                .setLimit(10)
-                .build();
-
-        Task<DataReadResponse> response = Fitness.getHistoryClient(activity, GoogleSignIn.getLastSignedInAccount(activity)).readData(readRequest).addOnSuccessListener(new OnSuccessListener<DataReadResponse>()  {
-            @Override
-            public void onSuccess(DataReadResponse dataReadResponse) {
-                List<DataSet> dataSets = dataReadResponse.getDataSets();
-                float s =
-                        dataSets.isEmpty()|| dataSets.get(0).isEmpty()
-                                ? (float)0
-                                : dataSets.get(0).getDataPoints().get(dataSets.get(0).getDataPoints().size()-1).getValue(Field.FIELD_SPEED).asFloat();
-                RunningMode r = ((RunningMode)getActivity(1));
-                if(r !=null) {
-                    r.setSpeed(s);
-                    r.showSpeed();
-                    Log.d(TAG, "Running is updated");
-                    Log.d(TAG, "Speed real: " + s);
-                }
-            }
-        });
-    }
-    */
     /* Called onetime only by runningmode
     */
     public int getTodayStepTotal(){
@@ -446,48 +409,6 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                 Log.d(TAG, "There was a problem getting the step count.", e);
                             }
                         });
-
-
-        /*
-        Fitness.getHistoryClient(activity, lastSignedInAccount)
-                .readDailyTotal(DataType.AGGREGATE_SPEED_SUMMARY)
-                .addOnSuccessListener(
-                        new OnSuccessListener<DataSet>() {
-                            @Override
-                            public void onSuccess(DataSet dataSet) {
-                                Log.d(TAG, dataSet.toString());
-                                float t =
-                                        dataSet.isEmpty()
-                                                ? 0
-                                                : dataSet.getDataPoints().get(0).getValue(Field.FIELD_SPEED).asFloat();
-
-                                setChanged();
-                                //notifyObservers(t); // notify HomePage and Running Mode
-                                //currently only notify with total steps daily
-                                //activity.setStepCount(total);
-                                //activity.showStepCount();
-                                //activity.checkGoal();
-
-                                //activity.updateDebugging();
-
-                                RunningMode r = ((RunningMode)getActivity(1));
-                                if(r !=null) {
-                                    r.setSpeed(t);
-                                    r.showSpeed();
-                                    Log.d(TAG, "Running is updated");
-                                }
-
-                                Log.d(TAG, "Speed Agg: " + t);
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "There was a problem getting the speed Agg.", e);
-                            }
-                        });
-                        */
     }
 
     @Override
