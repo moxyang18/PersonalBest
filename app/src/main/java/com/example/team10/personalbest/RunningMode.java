@@ -28,8 +28,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
     private int stepCountUnintentional =0;
     private int stepCountIntentional =0;
 
-
-
     private float speed = 0.f;
     private float distance = 0.f;
     private float dailyDistance = 0.f;
@@ -41,7 +39,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
     private TextView intentionalStepText;
     private TextView timeText;
 
-
+    private boolean hasStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +70,17 @@ public class RunningMode extends AppCompatActivity implements Observer {
         end_run_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // set the boolean value to false to stop updating
+                hasStopped = true;
                 String message;
-                int increment = -1;  // curSteps - maxSteps
-                if (true)    //curSteps >= goal)
+                int increment = 0;            //stepCount - yesterdayStepCount
+                if (stepCount >= goal)
                     message = "Awesome! You have reached today's goal!";
                 else if (increment <= 0)
                     message = "Great! Keep up the work! ";
                 else
                     message = "Congratulations! You've increased your " +
                             "daily steps by " + increment + " steps.";
-
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
             }
@@ -123,23 +121,24 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
         //setStepCountIntentional((int)arg);
         //showStepCountIntentional();
+        if(hasStopped == false) {
+            Object[] arr = (Object[]) arg;
 
-        Object[] arr = (Object[])arg;
+            setStepCount((int) arr[1]);
+            setStepCountIntentional(stepCount - stepCountUnintentional);
 
-        setStepCount((int)arr[1]);
-        setStepCountIntentional(stepCount-stepCountUnintentional);
+            showStepCount();
+            showStepCountIntentional();
 
-        showStepCount();
-        showStepCountIntentional();
+            setDistance((float) arr[2] - dailyDistance);
+            showDistance();
 
-        setDistance((float)arr[2] - dailyDistance);
-        showDistance();
+            updateSpeedByComp((float) arr[3]);
+            //setSpeed((float)arr[3]);
+            showSpeed();
 
-        updateSpeedByComp((float)arr[3]);
-        //setSpeed((float)arr[3]);
-        showSpeed();
-
-        showTime((String)arr[4]);
+            showTime((String) arr[4]);
+        }
     }
 
     public void updateSpeedByComp(float time_elapsed){
