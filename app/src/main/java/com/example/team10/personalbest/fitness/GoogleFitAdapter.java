@@ -53,6 +53,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private long time_elapsed =0;
     private float speed =0.f;
     private int write_counter = 0;
+    private int distance_counter =0;
     private int goal;
 
     private Object[] result =new Object[]{1,1,1,1,1};
@@ -153,11 +154,18 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         Runnable mUpdateView = new Runnable() {
             @Override
             public void run() {
-                updateDistance();
+                if(distance_counter>=2){
+                    distance_counter =0;
+                    updateDistance();
+                }
+                else{
+                    distance_counter ++;
+                }
                 result[4] = computeTimeElapsed();
                 result[3] = (float)time_elapsed /1000;
                 //updateSpeedByComp();
-                if(write_counter >= 5){
+                if(write_counter >= 15){
+
                     write_counter =0;
                     updateResult(true);
                     Log.d(TAG, "data should be written");
@@ -167,12 +175,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                     write_counter ++;
                     updateResult(false);
                 }
-                /*
-                if(activity_2 != null) {
-                    updateSpeed();
-                }
-                */
-                mUpdater.postDelayed(this, 500);
+
+                mUpdater.postDelayed(this, 200);
                 Log.d(TAG, "passed data into activities");
             }
         };
@@ -202,14 +206,6 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                     }
                 };
 
-        /*
-        OnDataPointListener mListener2 = new OnDataPointListener() {
-            @Override
-            public void onDataPoint(DataPoint dataPoint) {
-                //updateSpeed();
-            }
-        };
-        */
 
         //Register Listener
         Fitness.getSensorsClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
@@ -231,27 +227,6 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                 }
                             }
                         });
-        /*
-        Fitness.getSensorsClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
-                .add(
-                        new SensorRequest.Builder()
-                                //.setDataSource(dataSource) // Optional but recommended for custom data sets.
-                                .setDataType(DataType.AGGREGATE_SPEED_SUMMARY) // Can't be omitted.
-                                .setSamplingRate(200, TimeUnit.MILLISECONDS)
-                                .build(),
-                        mListener2)
-                .addOnCompleteListener(
-                        new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Log.i(TAG, "Listener2 registered!");
-                                } else {
-                                    Log.e(TAG, "Listener2 not registered.", task.getException());
-                                }
-                            }
-                        });
-                    */
 
     }
 
