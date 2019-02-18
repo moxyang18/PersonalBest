@@ -56,6 +56,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private int distance_counter =0;
     private int goal;
 
+
     private Object[] result =new Object[]{1,1,1,1,1};
 
 
@@ -500,5 +501,19 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     }
 
     public  void setGoal(int g){ goal =g;}
+
+    public void passMockIntoRun(){
+        if(activity_2 !=null){
+            activity_2.mock_steps_unintentional =activity.mock_steps_unintentional;
+            activity_2.setStepCount(activity_2.getStepCount());
+        }
+    }
+    public void passMockIntoHome(){
+        activity.mock_steps_intentional = activity_2.mock_steps_intentional;
+        activity.setStepCount(activity.getStepCount());
+    }
+
+
+
 
 }//end of GoogleFitAdapter Class

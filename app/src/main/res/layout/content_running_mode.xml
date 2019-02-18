@@ -222,7 +222,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.772" />
+        app:layout_constraintVertical_bias="0.728" />
 
 
     <Button
@@ -239,5 +239,16 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.946" />
+
+    <Button
+        android:id="@+id/addStepButton_run"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Increment Steps by 500"
+        android:textColor="@color/colorTeal"
+        android:textSize="22sp"
+        tools:layout_editor_absoluteX="45dp"
+        tools:layout_editor_absoluteY="433dp" />
 
 </android.support.constraint.ConstraintLayout>

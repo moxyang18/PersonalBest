@@ -53,6 +53,8 @@ public class DataProcessor extends AppCompatActivity {
     private static final String FILE_NAME = "STEP DATA";
     private static final String TABLE_NAME = "STEP TABLE";
 
+    LocalDate date;
+
     /**
      * DataProcessor ctor
      *
@@ -84,6 +86,7 @@ public class DataProcessor extends AppCompatActivity {
         // Use sharedprefs + the type token to retrieve our map if necessary
         table = gson.fromJson(prefs.getString(TABLE_NAME, gson.toJson(table)), type);
 
+        date = hp.date; // DO SOME THING
         // FIXME Might need to be changed
         loadIntoHomePage();
     }

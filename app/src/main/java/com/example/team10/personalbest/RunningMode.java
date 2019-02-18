@@ -41,6 +41,9 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
     private boolean hasStopped = false;
 
+    public int mock_steps_unintentional =0;
+    public int mock_steps_intentional = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,20 @@ public class RunningMode extends AppCompatActivity implements Observer {
                             "daily steps by " + increment + " steps.";
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
+            }
+        });
+
+        // after pressing this button, increment current steps by 500
+        Button add_step_button = findViewById(R.id.addStepButton_run);
+        add_step_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mock_steps_intentional =500+mock_steps_intentional;
+                setStepCountIntentional(stepCountIntentional);
+                setStepCount(stepCount);
+                showStepCount();
+                showStepCountIntentional();
+                fit.passMockIntoHome();
             }
         });
 
@@ -142,7 +159,7 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
 
     public void setStepCount(int count){
-        if(count !=0) stepCount = count;
+        if(count !=0) stepCount = count+mock_steps_unintentional+mock_steps_intentional;
     }
     public int getStepCount(){return stepCount;}
     public void showStepCount(){
@@ -152,12 +169,12 @@ public class RunningMode extends AppCompatActivity implements Observer {
     }
 
     public void setStepCountUnintentional(int count){
-        stepCountUnintentional = count;
+        stepCountUnintentional = count+mock_steps_unintentional;
     }
     public int getStepCountUnintentional (){return stepCountUnintentional;}
 
     public void setStepCountIntentional(int count){
-        stepCountIntentional = count;
+        stepCountIntentional = count+mock_steps_intentional;
     }
     public int getStepCountIntentional (){return stepCountIntentional;}
     public void showStepCountIntentional(){

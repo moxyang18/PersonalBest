@@ -30,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 
 
+import java.time.LocalDate;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -40,6 +41,8 @@ public class HomePage extends AppCompatActivity implements Observer {
     private int stepCountUnintentional =0;
     private int stepCountIntentional = 0;
     private float dailyDistanceCover = 0.f;
+    public int mock_steps_unintentional =0;
+    public int mock_steps_intentional = 0;
 
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
 
@@ -53,6 +56,8 @@ public class HomePage extends AppCompatActivity implements Observer {
     private  DataProcessor dp;
 
     private AlertDialog newGoalDialog;
+
+    public LocalDate date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,8 +110,11 @@ public class HomePage extends AppCompatActivity implements Observer {
         add_step_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stepCount += 500;
+                setMock_steps_unintentional(500+mock_steps_unintentional);
+                setStepCountUnintentional(stepCountUnintentional);
+                setStepCount(stepCount);
                 showStepCount();
+                fit.passMockIntoRun();
             }
         });
 
@@ -325,17 +333,20 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     }
 
+    public void setMock_steps_unintentional(int c){mock_steps_unintentional =c;}
+    public void setMock_steps_intentional (int c){mock_steps_intentional =c;}
+
     public void setStepCount(int count){
-        stepCount = count;
+        stepCount = count+mock_steps_unintentional+mock_steps_intentional;
     }
 
     public int getStepCount(){ return stepCount;}
 
-    public void setStepCountUnintentional(int count){stepCountUnintentional = count;}
+    public void setStepCountUnintentional(int count){stepCountUnintentional = count+mock_steps_unintentional;}
     public int getStepCountUnintentional(){return stepCountUnintentional;}
 
     public int getStepCountIntentional(){return stepCountIntentional;}
-    public void setStepCountIntentional(int s){stepCountIntentional = s;}
+    public void setStepCountIntentional(int s){stepCountIntentional = s+mock_steps_intentional;}
 
     public void setDistance(float d){dailyDistanceCover = d;}
     public float getDistance(){return dailyDistanceCover;}
