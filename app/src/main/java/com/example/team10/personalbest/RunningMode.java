@@ -29,11 +29,13 @@ public class RunningMode extends AppCompatActivity implements Observer {
     private int stepCountIntentional =0;
 
 
-    private TextView stepText;
-    private TextView goalText;
+
     private float speed = 0.f;
     private float distance = 0.f;
     private float dailyDistance = 0.f;
+
+    private TextView stepText;
+    private TextView goalText;
     private TextView speedText;
     private TextView distanceText;
     private TextView intentionalStepText;
@@ -47,14 +49,18 @@ public class RunningMode extends AppCompatActivity implements Observer {
 
         setContentView(R.layout.activity_running_mode);
 
+
         Intent intent = getIntent();
         goal =Integer.valueOf(intent.getStringExtra("Goal_today"));
         setStepCountUnintentional(Integer.valueOf(intent.getStringExtra("Step_unintentional")));;
         setStepCount(stepCountUnintentional);
+        setStepCountIntentional(stepCount-stepCountUnintentional);
+
 
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
+        goalText= findViewById(R.id.goal_running_mode);
         timeText = findViewById(R.id.time);
         speedText =findViewById(R.id.cur_velocity);
         stepText = findViewById(R.id.total_steps_rm);
@@ -92,10 +98,18 @@ public class RunningMode extends AppCompatActivity implements Observer {
         dp = DataProcessor.getInstance();
         dp.setActivity(this,1);
 
-        showStepCount();
+
 
         fit = GoogleFitAdapter.getInstance();
         fit.setStartTime();
+        //setStepCountUnintentional(fit.getTodayStepTotal());
+        //setStepCount(fit.getTodayStepTotal());
+        //showStepCount();
+        //goal = fit.getGoal();
+        goalText.setText(Integer.toString(goal));
+
+        showStepCount();
+        showStepCountIntentional();
         fit.addObserver(this);
         fit.setActivity(this,1);
 
@@ -118,17 +132,17 @@ public class RunningMode extends AppCompatActivity implements Observer {
         showStepCount();
         showStepCountIntentional();
 
-        setDistance((float)arr[2]);
+        setDistance((float)arr[2] -dailyDistance);
         showDistance();
 
         setSpeed((float)arr[3]);
         showSpeed();
 
         showTime((String)arr[4]);
-
     }
+
     public void setStepCount(int count){
-        stepCount = count;
+        if(count !=0) stepCount = count;
     }
     public int getStepCount(){return stepCount;}
     public void showStepCount(){
@@ -142,23 +156,22 @@ public class RunningMode extends AppCompatActivity implements Observer {
     }
     public int getStepCountUnintentional (){return stepCountUnintentional;}
 
-
-
-
-
-    public float getDistance() { return distance; }
-    public void setDistance(float d){distance =d;}
-    public  void showDistance(){distanceText.setText(String.format("%.2f",distance));}
-
     public void setStepCountIntentional(int count){
         stepCountIntentional = count;
     }
     public int getStepCountIntentional (){return stepCountIntentional;}
     public void showStepCountIntentional(){
         Log.d(TAG, "Textview is updated");
-        intentionalStepText.setText(Integer.toString(stepCount));
+        intentionalStepText.setText(Integer.toString(stepCountIntentional));
 
     }
+
+
+    public float getDistance() { return distance; }
+    public void setDistance(float d){distance =d;}
+    public  void showDistance(){distanceText.setText(String.format("%.2f",distance));}
+
+
 
     public float getSpeed() { return speed; }
     public void setSpeed(float s){

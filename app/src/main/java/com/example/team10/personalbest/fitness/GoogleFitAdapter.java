@@ -53,6 +53,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private long time_elapsed =0;
     private float speed =0.f;
     private int write_counter = 0;
+    private int goal;
 
     private Object[] result =new Object[]{1,1,1,1,1};
 
@@ -142,7 +143,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         startTime = cal.getTimeInMillis();
         startRecording(); //Record API
         startListen(); //Sensor API
-        //updateStepCount();
+        updateStepCount();
 
         Log.d(TAG, "End setup");
         final Handler mUpdater = new Handler();
@@ -351,7 +352,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
             return -1;
         }
         Fitness.getHistoryClient(activity, lastSignedInAccount)
-                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                .readDailyTotal(DataType.TYPE_STEP_COUNT_CUMULATIVE)
                 .addOnSuccessListener(
                         new OnSuccessListener<DataSet>() {
                             @Override
@@ -460,5 +461,11 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     public int getRequestCode() {
         return GOOGLE_FIT_PERMISSIONS_REQUEST_CODE;
     }
+
+    public int getGoal(){
+        return  goal;
+    }
+
+    public  void setGoal(int g){ goal =g;}
 
 }//end of GoogleFitAdapter Class
