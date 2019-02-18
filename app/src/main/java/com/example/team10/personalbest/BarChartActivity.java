@@ -99,7 +99,7 @@ public class BarChartActivity extends AppCompatActivity {
         }
 
         // Gather up the bars into a set
-        BarDataSet entrySet = new BarDataSet(entries, "DailySteps"); //"DailySteps");
+        BarDataSet entrySet = new BarDataSet(entries, "");
 
         // set the different colors for the vertical bars
         entrySet.setColors(this.getColors());
