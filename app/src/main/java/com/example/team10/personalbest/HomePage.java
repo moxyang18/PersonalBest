@@ -372,16 +372,31 @@ public class HomePage extends AppCompatActivity implements Observer {
         step_text.setText(Integer.toString(stepCount));
     }
 
-    public void checkGoal() {
+    //Returns true if goal is met and a dialog will pop up, otherwise false
+    public boolean checkGoal() {
         if(stepCount >= currentGoal && !goalMet) {
             Log.d(TAG, "Inside checkGoal");
             goalMet = true;
             openCongratsDialog();
+            return true;
         }
         Log.d(TAG, Boolean.toString(goalMet));
         Log.d(TAG, "Step Count: " + Integer.toString(stepCount));
         Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
+        return false;
     }
+
+    //testing
+    public boolean getGoalMet() {
+        return goalMet;
+    }
+    public void setGoalMet(boolean b) {
+        goalMet = b;
+    }
+    public void setGoalText(int goal) {
+        goal_text.setText(String.format(Integer.toString(goal)));
+    }
+
 
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
