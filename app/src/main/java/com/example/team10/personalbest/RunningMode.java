@@ -75,14 +75,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
         distanceText = findViewById(R.id.cur_miles);
         intentionalStepText = findViewById(R.id.running_steps);
 
-        // if pressed, increase the current steps by 500
-        add_step_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // .................
-
-            }
-        });
 
         // when pressed, set a new time in milliseconds
         set_time_button.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +114,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
         });
 
         // after pressing this button, increment current steps by 500
-        Button add_step_button = findViewById(R.id.addStepButton_run);
         add_step_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
