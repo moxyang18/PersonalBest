@@ -49,6 +49,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private boolean goalMet = false;
     protected TextView step_text;
     protected TextView goal_text;
+    protected EditText set_time_text ;
 
     private static final String TAG = "HomePage";
 
@@ -82,6 +83,22 @@ public class HomePage extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View view){
                 launchRunning();
+            }
+        });
+        set_time_text = findViewById(R.id.set_time_text);
+        Button set_time_button = findViewById(R.id.set_time_in_hp);
+        set_time_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
             }
         });
 
