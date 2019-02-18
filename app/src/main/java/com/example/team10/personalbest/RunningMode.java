@@ -64,9 +64,9 @@ public class RunningMode extends AppCompatActivity implements Observer {
         stepText = findViewById(R.id.total_steps_rm);
         distanceText = findViewById(R.id.cur_miles);
         intentionalStepText = findViewById(R.id.running_steps);
+
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
-
         end_run_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,8 +96,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
         dp = DataProcessor.getInstance();
         dp.setActivity(this,1);
 
-
-
         fit = GoogleFitAdapter.getInstance();
         fit.setStartTime();
         //setStepCountUnintentional(fit.getTodayStepTotal());
@@ -110,9 +108,6 @@ public class RunningMode extends AppCompatActivity implements Observer {
         showStepCountIntentional();
         fit.addObserver(this);
         fit.setActivity(this,1);
-
-
-
     }
 
 

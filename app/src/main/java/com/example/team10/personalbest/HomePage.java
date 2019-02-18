@@ -70,6 +70,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         goalMet = false;
 
+        // after pressing this button, switch to running mode
         Button run_button = findViewById(R.id.startButton);
         run_button.setOnClickListener(new View.OnClickListener() {
 
@@ -79,6 +80,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
+        // after pressing this button, dialog prompts for setting custom steps
         Button set_goal = findViewById(R.id.currentGoal);
         set_goal.setOnClickListener(new View.OnClickListener() {
 
@@ -88,12 +90,23 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
+        // after pressing this button, switch to bar chart interface
         ImageButton bar_chart_button = findViewById(R.id.barButton);
         bar_chart_button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 launchBarChart();
+            }
+        });
+
+        // after pressing this button, increment current steps by 500
+        Button add_step_button = findViewById(R.id.addStepButton);
+        add_step_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stepCount += 500;
+                showStepCount();
             }
         });
 

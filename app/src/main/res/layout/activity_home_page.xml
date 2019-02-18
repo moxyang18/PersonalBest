@@ -32,15 +32,16 @@
         android:textSize="25sp"
         android:layout_gravity="center_horizontal"/>
 
+
     <TextView
         android:id="@+id/stepsHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="45dp"
         android:text="@string/steps_header"
         android:textColor="@color/colorDarkBlue"
-        android:layout_marginTop="45dp"
-        android:textSize="30sp"
-        android:layout_gravity="center_horizontal"/>
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+id/stepsCount"
@@ -50,6 +51,16 @@
         android:textColor="@color/colorTeal"
         android:layout_marginTop="5dp"
         android:textSize="25sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/addStepButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Increment Steps by 500"
+        android:textColor="@color/colorTeal"
+        android:layout_marginTop="5dp"
+        android:textSize="22sp"
         android:layout_gravity="center_horizontal"/>
 
     <Button
