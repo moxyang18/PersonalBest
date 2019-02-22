@@ -1,29 +1,56 @@
 package com.example.team10.personalbest;
 
-import android.app.Activity;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
-import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.junit.Test;
 import java.time.LocalDate;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class DataProcessorTest {
 
     DataProcessor dp;
     HomePage hp;
 
-    @Test
-    public void loadIntoHomePage() {
+    @Before
+    public void init() {
+        hp = Robolectric.setupActivity(HomePage.class);
+        dp = DataProcessor.getInstance();
     }
 
     /**
-     * Makes sure we get an instance back after setting
+     *  Tests for when no day exists and when a day does exist.
+     */
+    @Test
+    public void loadIntoHomePage() {
+        // Before data exists for today, only 0-initialized data should be loaded in.
+        dp.loadIntoHomePage();
+        assertEquals(0, hp.getStepCountUnintentional());
+        assertEquals(0, hp.getStepCount());
+
+        // Modify the step data for today.
+        WalkDay day = dp.retrieveDay(LocalDate.now());
+        day.setStepCount(90);
+        day.setStepCountUnintentional(90);
+        dp.loadIntoHomePage();
+
+        // See if the changes are reflected in HP after we load again.
+        assertEquals(90, hp.getStepCountUnintentional());
+        assertEquals(90, hp.getStepCount());
+    }
+
+    /**
+     * Makes sure that the dp is set
      */
     @Test
     public void setInstance() {
-        DataProcessor.setInstance(new DataProcessor(null));
-        assertNotNull(DataProcessor.getInstance());
+        assertTrue(DataProcessor.setInstance(dp));
     }
 
     /**
@@ -31,7 +58,6 @@ public class DataProcessorTest {
      */
     @Test
     public void getInstance() {
-        DataProcessor.setInstance(new DataProcessor(null));
         assertNotNull(DataProcessor.getInstance());
     }
 
@@ -40,16 +66,15 @@ public class DataProcessorTest {
      */
     @Test
     public void setActivity() {
-        dp.setActivity(new Activity(), 1);
-        assertNotNull(dp.getActivity(1));
+        dp.setActivity(hp, 0);
+        assertNotNull(dp.getActivity(0));
     }
 
     /**
-     * Makes sure we get some activity back for HP after setting
+     * Makes sure we get some activity back for RM after setting
      */
     @Test
     public void getActivity() {
-        dp.setActivity(new Activity(), 0);
         assertNotNull(dp.getActivity(0));
     }
 
@@ -72,7 +97,6 @@ public class DataProcessorTest {
         assertEquals(5000, day.getGoal());
         assertEquals(40, day.getStepCountUnintentional());
         assertEquals(40, day.getStepCountIntentional());
-        assertEquals(80, day.getStepCount());
     }
 
     /**

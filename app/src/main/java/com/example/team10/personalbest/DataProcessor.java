@@ -120,9 +120,13 @@ public class DataProcessor extends AppCompatActivity {
      * Sets the instance of the class to be the passed in object.
      *
      * @param dp The DataProcessor instance
+     * @return boolean True if instance is non-null, else false
      */
-    public static  void setInstance(DataProcessor dp){
-        INSTANCE = dp;
+    public static boolean setInstance(DataProcessor dp){
+        if (dp != null) {
+            INSTANCE = dp;
+            return true;
+        } else return false;
     }
 
     /**
@@ -235,7 +239,7 @@ public class DataProcessor extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
 
         // Store the data
-        editor.putString(TABLE_NAME,gson.toJson(table));
+        editor.putString(TABLE_NAME ,gson.toJson(table));
         editor.apply();
     }
 }

@@ -54,7 +54,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private static final String TAG = "HomePage";
 
     public GoogleFitAdapter fit;
-    private  DataProcessor dp;
+    private DataProcessor dp;
 
     private AlertDialog newGoalDialog;
 
