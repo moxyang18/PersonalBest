@@ -23,7 +23,8 @@ public class WalkDayTest {
         assertEquals(5, day.getStepCountIntentional());
     }
 
-    @Test void setStepCountUnintentional() {
+    @Test
+    public void setStepCountUnintentional() {
         day.setStepCountUnintentional(5);
         assertEquals(5, day.getStepCountUnintentional());
     }
