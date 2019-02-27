@@ -39,6 +39,7 @@ public class FakingStepsTest {
     public void cleanup() {
         homepage.fit.deleteObserver(homepage);
     }
+
     /**
      * Tests that the update() in HomePage properly updates stepCount
      */

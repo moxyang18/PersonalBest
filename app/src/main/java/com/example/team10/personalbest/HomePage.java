@@ -54,7 +54,7 @@ public class HomePage extends AppCompatActivity implements Observer {
     private static final String TAG = "HomePage";
 
     public GoogleFitAdapter fit;
-    private  DataProcessor dp;
+    private DataProcessor dp;
 
     private AlertDialog newGoalDialog;
 
@@ -367,12 +367,21 @@ public class HomePage extends AppCompatActivity implements Observer {
     public int getGoal(){return  currentGoal;}
     public void setGoal(int g){currentGoal = g;}
 
+    public void setGoal_text(int goal) {
+        goal_text.setText(Integer.toString(goal));
+    }
+
+    public boolean getGoalMet() {
+        return goalMet;
+    }
+    public void setGoalMet(boolean isGoalMet) {
+        goalMet = isGoalMet;
+    }
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
         step_text.setText(Integer.toString(stepCount));
     }
 
-    //Returns true if goal is met and a dialog will pop up, otherwise false
     public boolean checkGoal() {
         if(stepCount >= currentGoal && !goalMet) {
             Log.d(TAG, "Inside checkGoal");
@@ -385,18 +394,6 @@ public class HomePage extends AppCompatActivity implements Observer {
         Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
         return false;
     }
-
-    //testing
-    public boolean getGoalMet() {
-        return goalMet;
-    }
-    public void setGoalMet(boolean b) {
-        goalMet = b;
-    }
-    public void setGoalText(int goal) {
-        goal_text.setText(String.format(Integer.toString(goal)));
-    }
-
 
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {

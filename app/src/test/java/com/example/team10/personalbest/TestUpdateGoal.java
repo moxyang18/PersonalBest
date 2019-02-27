@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
         homepage.setGoalMet(false);
         homepage.setStepCount(1000);
         homepage.showStepCount();
-        homepage.setGoalText(5000);
+        homepage.setGoal_text(5000);
 
     }
 
