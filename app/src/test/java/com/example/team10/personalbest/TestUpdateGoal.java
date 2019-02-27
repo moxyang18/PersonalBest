@@ -9,15 +9,15 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.*;
 
-@RunWith(RobolectricTestRunner.class)
-public class TestUpdateGoal {
-    /**
-     * Testing Update Goals:
-     * -Tests checkGoals() method
-     */
+    @RunWith(RobolectricTestRunner.class)
+    public class TestUpdateGoal {
+        /**
+         * Testing Update Goals:
+         * -Tests checkGoals() method
+         */
 
-    HomePage homepage;
-    Button goalButton;
+        HomePage homepage;
+        Button goalButton;
     TextView dailyStep;
 
     @Before
