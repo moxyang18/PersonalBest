@@ -355,11 +355,11 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     public int getStepCount(){ return stepCount;}
 
-    public void setStepCountUnintentional(int count){stepCountUnintentional = count+ mock_steps_unintentional;}
+    public void setStepCountUnintentional(int count){stepCountUnintentional = count+mock_steps_unintentional;}
     public int getStepCountUnintentional(){return stepCountUnintentional;}
 
     public int getStepCountIntentional(){return stepCountIntentional;}
-    public void setStepCountIntentional(int s){stepCountIntentional = s+ mock_steps_intentional;}
+    public void setStepCountIntentional(int s){stepCountIntentional = s+mock_steps_intentional;}
 
     public void setDistance(float d){dailyDistanceCover = d;}
     public float getDistance(){return dailyDistanceCover;}
