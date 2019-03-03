@@ -1,6 +1,5 @@
 package com.example.team10.personalbest;
 
-import org.apache.tools.ant.taskdefs.Local;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,8 +30,8 @@ public class WalkDayTest {
 
     @Test
     public void setStepCount() {
-        day.setStepCount(10);
-        assertEquals(10, day.getStepCount());
+        day.setStepCountDailyReal(10);
+        assertEquals(10, day.getStepCountDailyReal());
     }
 
     @Test

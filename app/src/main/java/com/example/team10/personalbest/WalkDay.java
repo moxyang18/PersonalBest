@@ -7,15 +7,26 @@ import java.time.LocalDate;
  * A simple class to store a steps associated with a date.
  */
 public class WalkDay {
-    private int stepCountIntentional;
-    private int stepCountUnintentional;
-    private int stepCount;
-    private int goal;
-    private boolean goalMet;
-    private float dist;
-    private float speed;
-    private LocalDate date;
+    private int stepCountIntentional =0;
+    private int stepCountUnintentional =0;
+    private int stepCountUnintentionalReal =0;
+    private int stepCountIntentionalReal =0;
+    private int mock_steps_unintentional =0;
+    private int mock_steps_intentional =0;
+    private int stepCountDailyReal =0;
+    private int stepCountDailyTotal = 0;
+    private int goal =5000;
+    private boolean goalMet =false;
+    private float distanceDaily;
+    private float distanceRunTotal;
+    private long time_run_sec_daily = 0;
+    private float speed_average;
+    private LocalDate date =LocalDate.now();
 
+
+    public WalkDay(){
+
+    }
 
     /**
      * WalkDay ctor
@@ -25,16 +36,9 @@ public class WalkDay {
      *
      * @param date The date
      */
+
     public WalkDay(LocalDate date) {
         this.date = date;
-
-        // 0-initialize
-        this.stepCountIntentional = 0;
-        this.stepCountUnintentional = 0;
-        this.stepCount = 0;
-        this.dist = 0;
-        this.speed = 0;
-        goalMet = false;
     }
 
     // SETTERS
@@ -49,7 +53,7 @@ public class WalkDay {
      */
     public void setStepCountIntentional(int steps) {
         this.stepCountIntentional = steps;
-        //this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
+        //this.setStepCountDailyReal(getStepCountIntentional() + getStepCountUnintentional());
     }
 
     /**
@@ -61,19 +65,19 @@ public class WalkDay {
      */
     public void setStepCountUnintentional(int steps) {
         this.stepCountUnintentional = steps;
-        //this.setStepCount(getStepCountIntentional() + getStepCountUnintentional());
+        //this.setStepCountDailyReal(getStepCountIntentional() + getStepCountUnintentional());
     }
 
     /**
-     * setStepCount
+     * setStepCountDailyReal
      *
      * Sets the total step count for the day. Updates if goal is met.
      *
      * @param steps The total step count for the day.
      */
-    public void setStepCount(int steps) {
-        this.stepCount = steps;
-        if (stepCount >= goal) {
+    public void setStepCountDailyReal(int steps) {
+        this.stepCountDailyReal = steps;
+        if (stepCountDailyReal >= goal) {
             goalMet = true;
         }
     }
@@ -90,23 +94,23 @@ public class WalkDay {
     }
 
     /**
-     * setDist
+     * setDistanceDaily
      *
      * Set the distance walked for the day.
      *
-     * @param dist The distance walked.
+     * @param distanceDaily The distance walked.
      */
-    public void setDist(float dist) { this.dist = dist; }
+    public void setDistanceDaily(float distanceDaily) { this.distanceDaily = distanceDaily; }
 
 
     /**
-     * setSpeed
+     * setSpeed_average
      *
-     * Set the speed for the day. Should be average.
+     * Set the speed_average for the day. Should be average.
      *
-     * @param speed The average speed for the day.
+     * @param speed_average The average speed_average for the day.
      */
-    public void setSpeed(float speed) {this.speed = speed; }
+    public void setSpeed_average(float speed_average) {this.speed_average = speed_average; }
 
     /**
      * setGoal
@@ -142,13 +146,13 @@ public class WalkDay {
     }
 
     /**
-     * getStepCount
+     * getStepCountDailyReal
      *
      * Gets the total steps taken during the day
      *
      * @return int The total steps taken during the day
      */
-    public int getStepCount() { return this.stepCount; }
+    public int getStepCountDailyReal() { return this.stepCountDailyReal; }
 
     /**
      * getDate
@@ -162,22 +166,22 @@ public class WalkDay {
     }
 
     /**
-     * getDist
+     * getDistanceDaily
      *
      * Returns the distance walked during the day.
      *
      * @return float The distance walked.
      */
-    public float getDist() { return this.dist; }
+    public float getDistanceDaily() { return this.distanceDaily; }
 
     /**
-     * getSpeed
+     * getSpeed_average
      *
-     * Returns the speed during the day.
+     * Returns the speed_average during the day.
      *
-     * @return float The average speed.
+     * @return float The average speed_average.
      */
-    public float getSpeed() { return this.speed; }
+    public float getSpeed_average() { return this.speed_average; }
 
     /**
      * getGoal
@@ -187,4 +191,68 @@ public class WalkDay {
      * @return int The goal of the day.
      */
     public int getGoal() { return this.goal; }
+
+    public int getMock_steps_unintentional() {
+        return mock_steps_unintentional;
+    }
+
+    public void setMock_steps_unintentional(int mock_steps_unintentional) {
+        this.mock_steps_unintentional = mock_steps_unintentional;
+    }
+
+    public int getMock_steps_intentional() {
+        return mock_steps_intentional;
+    }
+
+    public void setMock_steps_intentional(int mock_steps_intentional) {
+        this.mock_steps_intentional = mock_steps_intentional;
+    }
+
+    public float getDistanceRunTotal() {
+        return distanceRunTotal;
+    }
+
+    public void setDistanceRunTotal(float distanceRunTotal) {
+        this.distanceRunTotal = distanceRunTotal;
+    }
+
+    public boolean getGoalMet() {
+        return goalMet;
+    }
+
+    public void setGoalMet(boolean goalMet) {
+        this.goalMet = goalMet;
+    }
+
+    public long getTime_run_sec_daily() {
+        return time_run_sec_daily;
+    }
+
+    public void setTime_run_sec_daily(long time_run_sec_daily) {
+        this.time_run_sec_daily = time_run_sec_daily;
+    }
+
+    public int getStepCountDailyTotal() {
+        return stepCountDailyTotal;
+    }
+
+    public void setStepCountDailyTotal(int stepCountDailyTotal) {
+        this.stepCountDailyTotal = stepCountDailyTotal;
+    }
+
+    public int getStepCountUnintentionalReal() {
+        return stepCountUnintentionalReal;
+    }
+
+    public void setStepCountUnintentionalReal(int stepCountUnintentionalReal) {
+        this.stepCountUnintentionalReal = stepCountUnintentionalReal;
+    }
+
+    public int getStepCountIntentionalReal() {
+        return stepCountIntentionalReal;
+    }
+
+    public void setStepCountIntentionalReal(int stepCountIntentionalReal) {
+        this.stepCountIntentionalReal = stepCountIntentionalReal;
+    }
 }
