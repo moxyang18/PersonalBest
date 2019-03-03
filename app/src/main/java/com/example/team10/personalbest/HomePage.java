@@ -131,10 +131,10 @@ public class HomePage extends AppCompatActivity{
 
         //launches an activity that prompts sign in
         //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.d(TAG, "About to send intent");
+        Log.i(TAG, "About to send intent");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult( signInIntent, RC_SIGN_IN );
-        Log.d(TAG, "Intent is sent");
+        Log.i(TAG, "Intent is sent");
     }
 
 
@@ -176,16 +176,16 @@ public class HomePage extends AppCompatActivity{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d( TAG, "Intent is done/closed");
+        Log.i( TAG, "Intent is done/closed");
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             activityMediator.build();
 
-            Log.d(TAG, "Preparing to run Async Task");
+            Log.i(TAG, "Preparing to run Async Task");
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute();
-            Log.d(TAG, "Async Task is run");
+            Log.i(TAG, "Async Task is run");
         }
 
     }
@@ -291,19 +291,19 @@ public class HomePage extends AppCompatActivity{
     }
 
     public void showStepCount(int count){
-        Log.d(TAG, "TextView is updated");
+        Log.i(TAG, "TextView is updated");
         step_text.setText(Integer.toString(count));
     }
 
     public void checkGoal() {
         if(activityMediator.checkReachGoal()&& !activityMediator.getGoalMet()) {
-            Log.d(TAG, "Inside checkGoal");
+            Log.i(TAG, "Inside checkGoal");
             activityMediator.setGoalMet(true);
             openCongratsDialog();
         }
-        Log.d(TAG, Boolean.toString(activityMediator.getGoalMet()));
-        Log.d(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
-        Log.d(TAG, "Current GOal: " + Integer.toString(activityMediator.getGoal_today()));
+        Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
+        Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
+        Log.i(TAG, "Current GOal: " + Integer.toString(activityMediator.getGoal_today()));
     }
 
 

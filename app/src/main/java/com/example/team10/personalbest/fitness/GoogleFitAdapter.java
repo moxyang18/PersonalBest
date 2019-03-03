@@ -48,10 +48,11 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private float speed =0.f;
     private int write_counter = 0;
     private int distance_counter =0;
+    private int time_counter = 0;
     private int goal;
 
 
-    private Object[] result =new Object[]{1,1,1};
+    private Object[] result =new Object[]{1,1,1,1};
 
 
     //constructor
@@ -63,6 +64,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         result[0] = false;
         result [1] = step;
         result [2] = distance;
+        result [3] = false;
+
     }
 
     //methods
@@ -132,16 +135,25 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
                     write_counter =0;
                     updateResult(true);
-                    Log.d(TAG, "data should be written");
+                    Log.i(TAG, "data should be written");
 
                 }
                 else{
                     write_counter ++;
                     updateResult(false);
                 }
+                if(time_counter >=5){
+                    result[3]=true;
+                    time_counter =0;
+                }
+                else{
+                    time_counter++;
+                    result[3] = false;
+                }
+
 
                 mUpdater.postDelayed(this, 200);
-                Log.d(TAG, "passed data into activities");
+                Log.i(TAG, "passed data into activities");
             }
         };
         mUpdateView.run();
@@ -250,14 +262,14 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                         new OnSuccessListener<DataSet>() {
                             @Override
                             public void onSuccess(DataSet dataSet) {
-                                Log.d(TAG, dataSet.toString());
+                                Log.i(TAG, dataSet.toString());
                                 float total =
                                         dataSet.isEmpty()
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_DISTANCE).asFloat();
                                 distance =total;
                                 setChanged();
-                                Log.d(TAG, "Total distance: " + total);
+                                Log.i(TAG, "Total distance: " + total);
                             }
                         })
                 .addOnFailureListener(
@@ -282,7 +294,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                         new OnSuccessListener<DataSet>() {
                             @Override
                             public void onSuccess(DataSet dataSet) {
-                                Log.d(TAG, dataSet.toString());
+                                Log.i(TAG, dataSet.toString());
                                 int total =
                                         dataSet.isEmpty()
                                                 ? 0
@@ -290,7 +302,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
                                 step = total;
 
-                                Log.d(TAG, "Total steps: " + total);
+                                Log.i(TAG, "Total steps: " + total);
                             }
                         })
                 .addOnFailureListener(
@@ -321,21 +333,21 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                         new OnSuccessListener<DataSet>() {
                             @Override
                             public void onSuccess(DataSet dataSet) {
-                                Log.d(TAG, dataSet.toString());
+                                Log.i(TAG, dataSet.toString());
                                 int total =
                                         dataSet.isEmpty()
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
                                 step =total;
                                 setChanged();
-                                Log.d(TAG, "Total steps: " + total);
+                                Log.i(TAG, "Total steps: " + total);
                             }
                         })
                 .addOnFailureListener(
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "There was a problem getting the step count.", e);
+                                Log.i(TAG, "There was a problem getting the step count.", e);
                             }
                         });
     }

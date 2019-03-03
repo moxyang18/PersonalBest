@@ -66,11 +66,11 @@ public class ActivityMediator implements Observer, Mediator {
     private LocalDate today = LocalDate.now();// not widely used
 
     private long time_Now = 0;
-    private long timeRun = 0;
+    private long timeRunMilli = 0;
     private long timeRunStart = 0;
-    private long time_elapsed = 0;
+    //private long time_elapsed = 0;
     private long time_elapsed_sec_run = 0;
-    private long time_elpased_sec_daily = 0;
+    private long time_elapsed_sec_daily = 0;
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
 
@@ -92,7 +92,7 @@ public class ActivityMediator implements Observer, Mediator {
         if (walkDay ==null){
             walkDay = new WalkDay();
             dataProcessor.insertDay(LocalDate.now(),walkDay);//writeToSharef implicitly called
-            Log.d(TAG,"start with a new WalkDay ");
+            Log.i(TAG,"start with a new WalkDay ");
         }
 
 
@@ -106,7 +106,7 @@ public class ActivityMediator implements Observer, Mediator {
 
         distanceDailyTotal =walkDay.getDistanceDaily();
         distanceRunTotal = walkDay.getDistanceRunTotal();
-        time_elpased_sec_daily = walkDay.getTime_run_sec_daily();
+        time_elapsed_sec_daily = walkDay.getTime_run_sec_daily();
 
         //not using direct read
         //stepCountIntentionalTotal =walkDay.getStepCountIntentional();
@@ -121,11 +121,11 @@ public class ActivityMediator implements Observer, Mediator {
         stepCountUnintentionalTotal = stepCountUnintentionalReal +mock_steps_unintentional;
 
         if(stepCountDailyTotal-stepCountDailyReal-mock_steps_unintentional-mock_steps_intentional >4 )
-            Log.d(TAG,"Incorrect data computed for init");
+            Log.i(TAG,"Incorrect data computed for init");
         if(walkDay.getStepCountIntentional()-stepCountIntentionalTotal <-2 ||walkDay.getStepCountIntentional()-stepCountIntentionalTotal >2 )
-            Log.d(TAG,"Incorrect data computed for init");
+            Log.i(TAG,"Incorrect data computed for init");
         updateHomePage();
-        Log.d(TAG,"loaded today's data from shRef into HomePage");
+        Log.i(TAG,"loaded today's data from shRef into HomePage");
 
 
     }
@@ -146,16 +146,27 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void computeStats(){
-        timeElapsedStr =computeTimeElapsed();
-        distanceRunTotal+=distance_delta;
-        distanceRun += distance_delta;
-        speed = distanceRun/time_elapsed_sec_run;
+        timeElapsedStr =computeTimeElapsed(); //computeTimeElapsed() was precise but have bug
+        //time_elapsed_sec_run = timeRunMilli;
+        Log.d(TAG,"timeElapsedStr "+timeElapsedStr);
+        distanceRunTotal+=distance_delta+7;
+        distanceRun += distance_delta+7;
+        speed = (time_elapsed_sec_run) <= 1.f
+                ?0.f
+                :distanceRun*1000/time_elapsed_sec_run;
         average_speed =
-                (time_elpased_sec_daily == 0.f)
+                (time_elapsed_sec_daily == 0.f)
                         ? 0
-                        : (distanceRunTotal / time_elpased_sec_daily);
+                        : (distanceRunTotal *1000/ time_elapsed_sec_daily);
     }
 
+    public String computeTime(){
+        long second = (timeRunMilli / 1000) % 60;
+        long minute = (timeRunMilli / (1000 * 60)) % 60;
+        long hour = (timeRunMilli / (1000 * 60 * 60)) % 24;
+
+        return String.format("%02d:%02d:%02d", hour, minute, second);
+    }
 
 
 
@@ -164,11 +175,14 @@ public class ActivityMediator implements Observer, Mediator {
         Calendar cal = Calendar.getInstance();
         Date now = new Date();
         cal.setTime(now);
-        time_elapsed = cal.getTimeInMillis() - timeRunStart;
+        time_elapsed_sec_run = cal.getTimeInMillis() - timeRunStart;
+
+        Log.d(TAG,"time passed "+time_elapsed_sec_run);
+        Log.d(TAG,"start time was "+timeRunStart);
         //long millis = time_elapsed % 1000;
-        long second = (time_elapsed / 1000) % 60;
-        long minute = (time_elapsed / (1000 * 60)) % 60;
-        long hour = (time_elapsed / (1000 * 60 * 60)) % 24;
+        long second = (time_elapsed_sec_run / 1000) % 60;
+        long minute = (time_elapsed_sec_run / (1000 * 60)) % 60;
+        long hour = (time_elapsed_sec_run / (1000 * 60 * 60)) % 24;
 
         return String.format("%02d:%02d:%02d", hour, minute, second);
     }//timeRunStart only initialized to non null if linkRun
@@ -177,11 +191,13 @@ public class ActivityMediator implements Observer, Mediator {
     public void update(Observable observable, Object object){
 
         //handles date changes
-        if (LocalDate.now()!=date &&!timeTraveled){
+        /*
+        if (!LocalDate.now().equals(date) &&!timeTraveled){
             if(isRunning) runningMode.finish();
             date = LocalDate.now();
             init();
         }
+        */
 
         Object[] arr = (Object[]) object;
         step_delta = (int)arr[1] - stepCountDailyReal; //needs to handle when past midnight
@@ -191,11 +207,16 @@ public class ActivityMediator implements Observer, Mediator {
         if(!isRunning){
             un_delta = step_delta;
             computeStep();
-            computeStats();
+
+
         }
         else{
             in_delta = step_delta;
             computeStep();
+            if ((boolean)arr[3] == true){
+                //timeRunMilli += 1000;
+                computeStats();
+            }
         }
         //System.out.println("un_delta is now: "+ un_delta);
         un_delta = 0;
@@ -239,17 +260,17 @@ public class ActivityMediator implements Observer, Mediator {
 
         stepCountDailyTotal = stepCountUnintentionalTotal+stepCountIntentionalTotal;
         if(stepCountDailyTotal-stepCountDailyReal-mock_steps_unintentional-mock_steps_intentional >4 )
-            Log.d(TAG,"Incorrect data computed for cleanUpAfterRun");
+            Log.i(TAG,"Incorrect data computed for cleanUpAfterRun");
 
         updateHomePage();
-        time_elpased_sec_daily += time_elapsed_sec_run;///needs modification
+        time_elapsed_sec_daily += time_elapsed_sec_run;///needs modification
         time_elapsed_sec_run = 0;
         distanceRunTotal +=distanceRun;
         distanceRun =0;
         average_speed =
-                (time_elpased_sec_daily == 0.f)
+                (time_elapsed_sec_daily == 0.f)
                 ? 0
-                : (distanceRunTotal / time_elpased_sec_daily);
+                : (distanceRunTotal*1000 / time_elapsed_sec_daily);
 
         saveLocal();
     }
@@ -258,11 +279,12 @@ public class ActivityMediator implements Observer, Mediator {
         runningMode = null;
         isRunning = false;
         cleanUpAfterRun();
+        timeRunStart =0;
     }
 
 
     //called onDestroy
-    protected void linkRunning(RunningMode rm){
+    public void linkRunning(RunningMode rm){
         runningMode = rm;
         stepCountIntentionalBeforeRun =stepCountIntentionalReal;
         Calendar cal = Calendar.getInstance();
@@ -270,6 +292,8 @@ public class ActivityMediator implements Observer, Mediator {
         cal.setTime(now);
         timeRunStart = cal.getTimeInMillis();
         isRunning =true;
+        computeStep();
+        computeStats();
         updateRunningMode();
     }
 
@@ -283,7 +307,7 @@ public class ActivityMediator implements Observer, Mediator {
             walkDay.setStepCountDailyTotal(stepCountDailyTotal);//save but doesn't read in init
             walkDay.setDistanceDaily(distanceDailyTotal);
             walkDay.setDistanceRunTotal(distanceRunTotal);
-            walkDay.setTime_run_sec_daily(time_elpased_sec_daily);
+            walkDay.setTime_run_sec_daily(time_elapsed_sec_daily);
             walkDay.setSpeed_average(average_speed);//save but doesn't read in init
             walkDay.setMock_steps_intentional(mock_steps_intentional+mock_steps_run);
             walkDay.setMock_steps_unintentional(mock_steps_unintentional);
@@ -314,12 +338,14 @@ public class ActivityMediator implements Observer, Mediator {
         mock_steps_unintentional += 500;
         computeStep();
         updateHomePage();
+        saveLocal();
     }
 
     public void mockStepInRM(){
         mock_steps_run += 500;
         computeStep();
         updateRunningMode();
+        saveLocal();
     }
 
     public int getGoal_today(){

@@ -26,7 +26,7 @@ public class RunningMode extends AppCompatActivity{
     private String TAG = "Running Mode ";
 
     //private GoogleFitAdapter fit;
-    private ActivityMediator activityMediator;
+    private Mediator activityMediator;
     //private  DataProcessor dp;
     private int goal = 0;
     /*
@@ -84,7 +84,7 @@ public class RunningMode extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 // set the boolean value to false to stop updating
-                hasStopped = true;
+                activityMediator.unlinkRunning();
                 String message;
                 int increment = 0;            //stepCount - yesterdayStepCount
                 if (reachGoal())
@@ -125,7 +125,7 @@ public class RunningMode extends AppCompatActivity{
 
 
     public void showStepCount(int stepCount){
-        Log.d(TAG, "Textview is updated");
+        Log.i(TAG, "Textview is updated");
         stepText.setText(Integer.toString(stepCount));
 
     }
@@ -133,12 +133,12 @@ public class RunningMode extends AppCompatActivity{
 
 
     public void showStepCountIntentional(int stepCountIntentional){
-        Log.d(TAG, "Textview is updated");
+        Log.i(TAG, "Textview is updated");
         intentionalStepText.setText(Integer.toString(stepCountIntentional));
     }
 
     public  void showDistance(float distance){
-        distanceText.setText(String.format("%.3f",distance));//distance*0.000621371));//converted to miles
+        distanceText.setText(String.format("%.3f",distance*0.000621371));//distance*0.000621371));//converted to miles
     }
 
 
@@ -146,7 +146,7 @@ public class RunningMode extends AppCompatActivity{
 
     public void showSpeed(float speed){
         //Log.d( "Textview is updated");
-        speedText.setText(String.format("%.2f",speed));
+        speedText.setText(String.format("%.2f",speed*2.236f));
 
     }
 

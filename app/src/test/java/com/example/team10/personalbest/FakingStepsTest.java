@@ -90,8 +90,9 @@ public class FakingStepsTest {
         float distance = 0;
         long timeElapsed = 0;
         String timeString = "";
+        boolean onesecpassed = false;
 
-        private Object result[]= {false, steps, distance, timeElapsed, timeString };
+        private Object result[]= {false, steps, distance, timeElapsed, timeString,onesecpassed};
 
 
 

@@ -7,6 +7,9 @@ public interface Mediator {
     void setup();
     void stop();
 
+    void linkRunning(RunningMode r);
+    void unlinkRunning();
+
     boolean checkReachGoal();
     void saveLocal();
     void build();
