@@ -73,7 +73,7 @@ public class DataProcessorTest {
         assertEquals(0, day.getStepCountDailyReal());
         assertEquals(0, day.getStepCountIntentional());
         assertEquals(0, day.getStepCountUnintentional());
-        assertEquals(0, day.getGoal());
+        assertEquals(5000, day.getGoal());
         assertEquals(LocalDate.now(), day.getDate());
     }
 

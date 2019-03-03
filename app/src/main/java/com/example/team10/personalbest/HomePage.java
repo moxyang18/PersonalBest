@@ -42,7 +42,7 @@ public class HomePage extends AppCompatActivity{
     protected EditText set_time_text ;
 
     private static final String TAG = "HomePage";
-    private ActivityMediator activityMediator;
+    private Mediator activityMediator;
     private AlertDialog newGoalDialog;
     //public LocalDate date;
 
@@ -302,7 +302,7 @@ public class HomePage extends AppCompatActivity{
             openCongratsDialog();
         }
         Log.d(TAG, Boolean.toString(activityMediator.getGoalMet()));
-        Log.d(TAG, "Step Count: " + Integer.toString(activityMediator.stepCountDailyTotal));
+        Log.d(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
         Log.d(TAG, "Current GOal: " + Integer.toString(activityMediator.getGoal_today()));
     }
 
@@ -335,5 +335,13 @@ public class HomePage extends AppCompatActivity{
         super.onDestroy();
         activityMediator.saveLocal();
         activityMediator.stop();
+    }
+
+    protected Mediator getTestMediator(){
+        return activityMediator;
+    }
+
+    protected void setTestMediator(Mediator m){
+        activityMediator = m;
     }
 }

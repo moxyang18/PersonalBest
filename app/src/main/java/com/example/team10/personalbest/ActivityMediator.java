@@ -10,15 +10,12 @@ import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
-public class ActivityMediator implements Observer {
+public class ActivityMediator implements Observer, Mediator {
 
     protected static ActivityMediator instance;
 
-    public ActivityMediator(HomePage hp){
-        homePage = hp;
-        instance = this;
-        dataProcessor = new DataProcessor(homePage);
-    }
+
+
     static private String TAG = "Activity Mediator";
 
     protected LocalDate date = LocalDate.now();
@@ -78,13 +75,14 @@ public class ActivityMediator implements Observer {
     protected boolean timeTraveled = false;
 
 
-    protected static ActivityMediator getInstance(){
-        return instance;
+    public ActivityMediator(HomePage hp){
+        homePage = hp;
+        instance = this;
+        dataProcessor = new DataProcessor(homePage);
     }
 
-    public void compute(){
-
-
+    protected static ActivityMediator getInstance(){
+        return instance;
     }
 
 
@@ -92,6 +90,7 @@ public class ActivityMediator implements Observer {
     public void init(){
         walkDay = dataProcessor.retrieveDay(date);
         if (walkDay ==null){
+            walkDay = new WalkDay();
             dataProcessor.insertDay(LocalDate.now(),walkDay);//writeToSharef implicitly called
             Log.d(TAG,"start with a new WalkDay ");
         }
@@ -142,6 +141,7 @@ public class ActivityMediator implements Observer {
         stepCountIntentionalTotal = stepCountIntentionalReal +mock_steps_run+mock_steps_intentional;
         stepCountDailyTotal = stepCountIntentionalTotal+stepCountUnintentionalTotal;
 
+        //System.out.println("Step Unin is now: "+stepCountUnintentionalTotal);
 
     }
 
@@ -178,7 +178,7 @@ public class ActivityMediator implements Observer {
 
         //handles date changes
         if (LocalDate.now()!=date &&!timeTraveled){
-            runningMode.finish();
+            if(isRunning) runningMode.finish();
             date = LocalDate.now();
             init();
         }
@@ -188,7 +188,7 @@ public class ActivityMediator implements Observer {
         stepCountDailyReal = (int)arr[1];
         distance_delta = (float)arr[2] - distanceDailyTotal;
         distanceDailyTotal = (float)arr[2];
-        if(isRunning){
+        if(!isRunning){
             un_delta = step_delta;
             computeStep();
             computeStats();
@@ -197,6 +197,7 @@ public class ActivityMediator implements Observer {
             in_delta = step_delta;
             computeStep();
         }
+        //System.out.println("un_delta is now: "+ un_delta);
         un_delta = 0;
         in_delta = 0;
         step_delta =0;
@@ -205,7 +206,7 @@ public class ActivityMediator implements Observer {
         if(isRunning) updateRunningMode();
 
         if((boolean)arr[0] == true){
-
+            saveLocal();
         }
     }
 
@@ -293,49 +294,58 @@ public class ActivityMediator implements Observer {
 
     }
 
-    protected void build(){
+    public void build(){
         fit = new GoogleFitAdapter(homePage);
         GoogleFitAdapter.setInstance(fit);
         fit.addObserver(this);
     }
 
-    protected void stop(){
+    public void stop(){
         fit.deleteObserver(this);
     }
 
-    protected void setup(){
+    public void setup(){
         fit.setup();
     }
 
 
 
-    protected void mockStepInHP(){
+    public void mockStepInHP(){
         mock_steps_unintentional += 500;
         computeStep();
         updateHomePage();
     }
 
-    protected void mockStepInRM(){
+    public void mockStepInRM(){
         mock_steps_run += 500;
         computeStep();
         updateRunningMode();
     }
 
-    protected int getGoal_today(){
+    public int getGoal_today(){
         return goal_today;
     }
 
-    protected void setGoal_today(int g){
+    public void setGoal_today(int g){
         goal_today = g;
     }
 
-    protected void setGoalMet(boolean m){
+    public void setGoalMet(boolean m){
         goalMet =m;
     }
 
-    protected boolean getGoalMet(){
+    public boolean getGoalMet(){
         return goalMet;
     }
 
+    public int getStepCountDailyTotal(){
+        return stepCountDailyTotal;
+    }
+
+    public void resetDay(){
+        walkDay = new WalkDay();
+        dataProcessor.insertDay(LocalDate.now(),walkDay);//writeToSharef implicitly called
+        init();
+    }
 
 }
