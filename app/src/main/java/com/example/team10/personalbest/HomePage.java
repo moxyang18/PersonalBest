@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,9 +27,17 @@ import android.widget.Toast;
 
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 
 import java.time.LocalDate;
@@ -36,6 +46,7 @@ import java.util.Observer;
 
 public class HomePage extends AppCompatActivity implements Observer {
 
+    // Step data
     private int currentGoal = 5000;
     private int stepCount = 0;
     private int stepCountUnintentional =0;
@@ -46,6 +57,7 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
 
+    // Step + goal related
     private boolean goalMet = false;
     protected TextView step_text;
     protected TextView goal_text;
@@ -53,27 +65,41 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     private static final String TAG = "HomePage";
 
+    // Instances used to communicate with other APIs
     public GoogleFitAdapter fit;
     private DataProcessor dp;
 
+    // Dialog
     private AlertDialog newGoalDialog;
 
+    // Timekeeping
     public LocalDate date;
+
+    // Used to authorize account with Firebase
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Init
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        // Setting up data management
         dp = new DataProcessor(this);//dp.loadIntoHomePage() implicitly called inside constructor.
         DataProcessor.setInstance(dp);
 
+        // Get the shared instance for firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        // Creating and setting home page text
         goal_text = findViewById(R.id.currentGoal);
         goal_text.setText(Integer.toString(currentGoal));
-
         step_text = findViewById(R.id.stepsCount);
         step_text.setText(Integer.toString(stepCount));
 
+        // We assume the goal has not been met yet.
         goalMet = false;
 
         // after pressing this button, switch to running mode
@@ -85,6 +111,8 @@ public class HomePage extends AppCompatActivity implements Observer {
                 launchRunning();
             }
         });
+
+        // Time mocking button
         set_time_text = findViewById(R.id.set_time_text);
         Button set_time_button = findViewById(R.id.set_time_in_hp);
         set_time_button.setOnClickListener(new View.OnClickListener() {
@@ -92,8 +120,7 @@ public class HomePage extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 try {
                     int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
-                    // store this var in new time.......
-                    // ..........................
+                    // Store this variable accordingly FIXME
 
                 } catch (Exception e) {
                     Toast.makeText(HomePage.this, "Please enter a valid number",
@@ -134,35 +161,69 @@ public class HomePage extends AppCompatActivity implements Observer {
                 fit.passMockIntoRun();
             }
         });
-
-        //SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
-
-        //currentGoal = goalPreferences.getInt("goalCount", 5000);
         goal_text.setText(Integer.toString(currentGoal));
-        /** Log into Google Account:
+
+        /*
+         * Log into Google Account:
          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
          * https://developers.google.com/identity/sign-in/android/sign-in
          */
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
+        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        //https://developers.google.com/identity/sign-in/android/sign-in
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            // Build a GoogleSignInClient with the options specified by gso.
+            //https://developers.google.com/identity/sign-in/android/sign-in
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //launches an activity that prompts sign in
-        //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.d(TAG, "About to send intent");
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult( signInIntent, RC_SIGN_IN );
-        Log.d(TAG, "Intent is sent");
+            //launches an activity that prompts sign in
+            //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
+            Log.d(TAG, "About to send intent");
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+            Log.d(TAG, "Intent is sent");
+        }
+    }
+
+    /**
+     * firebaseAuthWithGoogle
+     *
+     * Authenticate an account using firebase with google. Gets a credential
+     * and signs in using it. If it is successful, we have a listener
+     *
+     * @param acct The account to authenticate with firebase
+     */
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success - may have to update UI. FIXME
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                        } else {
+                            // If sign in fails, report in log.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        }
+                    }
+                });
     }
 
     public void setFitAdapter() {
 
     }
 
+    /**
+     * launchRunning
+     *
+     * Launches the running mode activity
+     */
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
         intent.putExtra("Goal_today",Integer.toString(currentGoal));
@@ -199,9 +260,18 @@ public class HomePage extends AppCompatActivity implements Observer {
         congratsDialog.show();
     }
 
-    //onActivityResult is called after startActivityForResult() (called in onCreate() ) is finished
-    //Code from: https://developers.google.com/identity/sign-in/android/sign-in
-    //After the user signs in, GoogleSignInAccount can be reached here.
+    /**
+     * onActivityResult
+     *
+     * Called after startActivityForResult() (called in onCreate()) is finished
+     * Code from: https://developers.google.com/identity/sign-in/android/sign-in
+     * After the user signs in, GoogleSignInAccount can be reached here.
+     * Firebase authenticated on a successful login.
+     *
+     * @param requestCode   Request code used with the activity
+     * @param resultCode    The code from the activity
+     * @param data          Data associated with activity
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -209,14 +279,29 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+
+            // Setup the fit adapter
             fit = new GoogleFitAdapter(this);
             GoogleFitAdapter.setInstance(fit);
             fit.addObserver(this);
 
+            // Set up running for asynchronous tasks
             Log.d(TAG, "Preparing to run Async Task");
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute();
             Log.d(TAG, "Async Task is run");
+
+            // Obtain the account used to sign in and authenticate firebase
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+                currentUser = firebaseAuth.getCurrentUser();
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+            }
         }
 
     }

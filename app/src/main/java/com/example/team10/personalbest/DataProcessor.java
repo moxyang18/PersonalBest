@@ -87,15 +87,15 @@ public class DataProcessor extends AppCompatActivity {
         table = gson.fromJson(prefs.getString(TABLE_NAME, gson.toJson(table)), type);
 
         date = hp.date; // DO SOME THING
-        // FIXME Might need to be changed
+
         loadIntoHomePage();
     }
 
     /**
      * loadIntoHomePage
      *
-     * Loads relevant data from the instance into the HomePage. Will be called on
-     * instantiation of a DataProcessor.
+     * Loads relevant data for today from the instance into the HomePage.
+     * Will be called on instantiation of a DataProcessor.
      */
     public void loadIntoHomePage() {
         WalkDay walkDay = table.get(LocalDate.now().toString());
@@ -241,5 +241,13 @@ public class DataProcessor extends AppCompatActivity {
         // Store the data
         editor.putString(TABLE_NAME ,gson.toJson(table));
         editor.apply();
+    }
+
+    public void retrieveFromCloud() {
+
+    }
+
+    public void updateCloud() {
+
     }
 }
