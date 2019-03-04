@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 
 // File related
-import com.example.team10.personalbest.WalkDay;
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -44,7 +43,7 @@ public class DataProcessor extends AppCompatActivity {
     String TAG = "DataProcessor - ";
 
     // Store dates mapping to days of walks
-    Hashtable<String, WalkDay> table;
+    protected Hashtable<String, WalkDay> table;
 
     // Allows for dates to be formatted as strings
     Gson gson;
@@ -53,7 +52,7 @@ public class DataProcessor extends AppCompatActivity {
     private static final String FILE_NAME = "STEP DATA";
     private static final String TABLE_NAME = "STEP TABLE";
 
-    LocalDate date;
+    LocalDate date =LocalDate.now();
 
     /**
      * DataProcessor ctor
@@ -65,7 +64,7 @@ public class DataProcessor extends AppCompatActivity {
     public DataProcessor(HomePage hp) {
         // Access homepage
         this.hp = hp;
-
+        setInstance(this);
         // Access gson to convert map to json string
         gson = new Gson();
 
@@ -85,33 +84,7 @@ public class DataProcessor extends AppCompatActivity {
 
         // Use sharedprefs + the type token to retrieve our map if necessary
         table = gson.fromJson(prefs.getString(TABLE_NAME, gson.toJson(table)), type);
-
-        date = hp.date; // DO SOME THING
-
-        loadIntoHomePage();
-    }
-
-    /**
-     * loadIntoHomePage
-     *
-     * Loads relevant data for today from the instance into the HomePage.
-     * Will be called on instantiation of a DataProcessor.
-     */
-    public void loadIntoHomePage() {
-        WalkDay walkDay = table.get(LocalDate.now().toString());
-
-        if (walkDay != null) {
-            hp.setStepCount(walkDay.getStepCount());
-            hp.setStepCountUnintentional(walkDay.getStepCountUnintentional());
-            hp.setDistance(walkDay.getDist());
-            hp.setGoal(walkDay.getGoal());
-            Log.d(TAG,"loaded today's data from shRef into HomePage");
-        } else {
-            insertDay(LocalDate.now());
-            hp.setStepCount(0);
-            hp.setStepCountUnintentional(0);
-            Log.d(TAG,"start with a new WalkDay ");
-        }
+        if(table == null) table = new Hashtable<>();
     }
 
     /**
@@ -143,36 +116,6 @@ public class DataProcessor extends AppCompatActivity {
     }
 
     /**
-     * setActivity
-     *
-     * Set the activities of the dp.
-     * 0 -> HomePage
-     * 1 -> RunningMode
-     *
-     * @param a An activity passed in.
-     * @param i Which activity will we set?
-     */
-    public void setActivity(Activity a, int i){
-        if(i == 0) hp = (HomePage) a;
-        else if (i == 1) rm =(RunningMode) a;
-    }
-
-    /**
-     * getActivity
-     *
-     * Get the activities of the dp.
-     * 0 -> HomePage
-     * 1 -> RunningMode
-     *
-     * @param i Which activity will we get?
-     * @return Activity The activity we'll return.
-     */
-    public Activity getActivity(int i){
-        if(i == 0) return (Activity) hp;
-        else return (Activity) rm;
-    }
-
-    /**
      * retrieveDay
      *
      * Retrieve a WalkDay object from the table and return it.
@@ -192,39 +135,13 @@ public class DataProcessor extends AppCompatActivity {
      *
      * @param date The date.
      */
-    public void insertDay(LocalDate date) {
+    public void insertDay(LocalDate date,WalkDay walkDay) {
 
         // Create a new day in the table.
-        table.put(date.toString(), new WalkDay(date));
+        table.put(date.toString(), walkDay);
         writeToSharedPref();
     }
 
-
-    /**
-     * modifyDay
-     *
-     * Modify the day today based on the activity source.
-     * 0 -> HomePage is modifying.
-     * 1 -> RunningMode is modifying.
-     *
-     * @param act Which activity is changing the data?
-     */
-    public void modifyDay(int act) {
-        WalkDay walkDay = retrieveDay(LocalDate.now());
-
-        // Updating the day based on the relevant values from homepage
-        if (act == 0) {
-            walkDay.setStepCountUnintentional(hp.getStepCountUnintentional());
-            walkDay.setStepCountIntentional(hp.getStepCountIntentional());
-            walkDay.setStepCount(hp.getStepCount());
-            walkDay.setDist(hp.getDistance());
-            walkDay.setGoal(hp.getGoal());
-
-        // Update based on relevant values from running mode
-        } else if (act == 1) {
-            walkDay.setSpeed(rm.getSpeed());
-        }
-    }
 
     /**
      * writeToSharedPref
