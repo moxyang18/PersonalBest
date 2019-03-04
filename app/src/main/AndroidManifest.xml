@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.team10.personalbest">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,9 +26,15 @@
             android:name=".RunningMode"
             android:label="@string/title_activity_running_mode"
             android:theme="@style/AppTheme.NoActionBar" />
-        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
+
+        <activity
+            android:name=".StepSummary"
+            android:label="@string/title_activity_step_summary"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 
 </manifest>
