@@ -1,10 +1,14 @@
 package com.example.team10.personalbest;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -77,7 +81,6 @@ public class RunningMode extends AppCompatActivity{
         activityMediator.linkRunning(this);
         // when pressed, set a new time in milliseconds
 
-
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
         end_run_button.setOnClickListener(new View.OnClickListener() {
@@ -86,19 +89,10 @@ public class RunningMode extends AppCompatActivity{
                 // set the boolean value to false to stop updating
                 activityMediator.unlinkRunning();
                 String message;
-                int increment = 0;            //stepCount - yesterdayStepCount
-                if (reachGoal())
-                    message = "Awesome! You have reached today's goal!";
-                else if (increment <= 0)
-                    message = "Great! Keep up the work! ";
-                else
-                    message = "Congratulations! You've increased your " +
-                            "daily steps by " + increment + " steps.";
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
 
             }
         });
-
 
         // after pressing this button, increment current steps by 500
         add_step_button.setOnClickListener(new View.OnClickListener() {
@@ -113,10 +107,46 @@ public class RunningMode extends AppCompatActivity{
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // Condition: If numOfFriends == 0
+                friendless_notification();
+
                 finish();
             }
         });
 
+    }
+
+    // the legacy function that sends the message from the system automatically
+    public void friendless_notification () {
+
+        String encourage_mes;
+        int increment = 0;            //stepCount - yesterdayStepCount   /// need to implement
+        if (increment <= 0)
+            encourage_mes = "Great! Keep up the work! ";
+        else if (increment <= 100)
+            encourage_mes = "Congratulations! You have reached today's goal!";
+        else
+            encourage_mes = "Awesome! You've increased your " +
+                    "daily steps by " + increment + " steps.";
+
+        // create the notification manager and the channel
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "enc_message_chanel";
+        CharSequence name = "encouragement";
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel encChannel = new NotificationChannel(id, name, importance);
+        encChannel.enableLights(true);
+        notificationManager.createNotificationChannel(encChannel);
+
+        // build the local message sender
+        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, id)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Notification From PersonalBest Team")
+                .setContentText(encourage_mes);
+
+        notificationManager.notify(1, notBuilder.build());
     }
 
     public void setFitAdaptor() {

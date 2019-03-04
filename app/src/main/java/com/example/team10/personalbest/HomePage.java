@@ -1,5 +1,7 @@
 package com.example.team10.personalbest;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -113,7 +116,6 @@ public class HomePage extends AppCompatActivity{
                 //fit.passMockIntoRun();
             }
         });
-
 
         //load data into home page and call text view update methods
         activityMediator.init();
@@ -286,6 +288,7 @@ public class HomePage extends AppCompatActivity{
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
+
     public void showGoal(int Goal){
         goal_text.setText(Integer.toString(Goal));
     }

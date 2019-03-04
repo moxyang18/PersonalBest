@@ -24,6 +24,8 @@
             android:name=".RunningMode"
             android:label="@string/title_activity_running_mode"
             android:theme="@style/AppTheme.NoActionBar" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_name" />
     </application>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 

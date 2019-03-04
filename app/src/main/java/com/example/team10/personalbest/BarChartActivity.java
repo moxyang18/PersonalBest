@@ -83,9 +83,11 @@ public class BarChartActivity extends AppCompatActivity {
         boolean[] goalMet = new boolean[7];
         int goal_max = 0;
         int step_max=0;
-        // Loop over all 7 days of the week
+        // Loop over all past 28 days
         for (int i = 0; i < 7; i++) {
 
+            entries.add(new BarEntry(i, new float[]{2000, 3000}));
+     /*
             // Get the day we're processing
             dayDate = sundayDate.plusDays(i);
             day = dp.retrieveDay(dayDate);
@@ -104,6 +106,9 @@ public class BarChartActivity extends AppCompatActivity {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
+
+      */
+
         }
 
         // Gather up the bars into a set
@@ -129,14 +134,44 @@ public class BarChartActivity extends AppCompatActivity {
         ArrayList<String> labels = new ArrayList<>();
         //String curDay;
 
-        // Determine if check mark should be present
-        labels.add((goalMet[0])? "Sun(✓)":"Sun");
-        labels.add((goalMet[1])? "Mon(✓)":"Mon");
-        labels.add((goalMet[2])? "Tue(✓)":"Tue");
-        labels.add((goalMet[3])? "Wed(✓)":"Wed");
-        labels.add((goalMet[4])? "Thu(✓)":"Thu");
-        labels.add((goalMet[5])? "Fri(✓)":"Fri");
-        labels.add((goalMet[6])? "Sat(✓)":"Sat");
+
+        ///////////////////////// Create labels on the x-axis
+        /*
+        for (String date : Dates) {
+          labels.add(date);
+        }
+
+        */
+
+        // test 28 consecutive days
+        labels.add("02/02");
+        labels.add("02/03");
+        labels.add("02/04");
+        labels.add("02/05");
+        labels.add("02/01");
+        labels.add("02/02");
+        labels.add("02/03");
+        /*labels.add("02/04");
+        labels.add("02/05");
+        labels.add("02/01");
+        labels.add("02/02");
+        labels.add("02/03");
+        labels.add("02/04");
+        labels.add("02/05");
+        labels.add("02/01");
+        labels.add("02/02");
+        labels.add("02/03");
+        labels.add("02/04");
+        labels.add("02/05");
+        labels.add("02/01");
+        labels.add("02/02");
+        labels.add("02/03");
+        labels.add("02/04");
+        labels.add("02/05");
+        labels.add("02/01");
+        labels.add("02/02");
+        labels.add("02/03");*/
+
 
         XAxis x = barChart10.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
@@ -173,9 +208,9 @@ public class BarChartActivity extends AppCompatActivity {
                 int day_ind = (int)e.getX();
                 //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
 
-                int day_goal = goal_list[day_ind];
-                if(day_goal !=0)
-                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+//                int day_goal = goal_list[day_ind];
+ //               if(day_goal !=0)
+//                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
             }
 
             @Override
