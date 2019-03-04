@@ -106,6 +106,17 @@
         android:textSize="30sp"
         android:layout_gravity="center_horizontal"/>
 
+    <Button
+        android:id="@+id/friendsListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/friend_list_button"
+        android:background="@color/colorDarkGreen"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="4dp"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"/>
+
     <ImageButton
         android:id="@+id/barButton"
         android:layout_width="60dp"

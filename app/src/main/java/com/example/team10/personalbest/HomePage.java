@@ -112,6 +112,15 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
+        //Friends List Button
+        Button friends_list_button = findViewById(R.id.friendsListButton);
+        friends_list_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchFriendsList();
+            }
+        });
+
         // after pressing this button, switch to bar chart interface
         ImageButton bar_chart_button = findViewById(R.id.barButton);
         bar_chart_button.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +183,12 @@ public class HomePage extends AppCompatActivity implements Observer {
 
     public void launchBarChart() {
         Intent intent = new Intent(this, BarChartActivity.class);
+
+        startActivity(intent);
+    }
+
+    public void launchFriendsList() {
+        Intent intent = new Intent(this, FriendListPage.class);
 
         startActivity(intent);
     }
