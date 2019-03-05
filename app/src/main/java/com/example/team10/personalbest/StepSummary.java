@@ -22,15 +22,15 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
 public class StepSummary extends AppCompatActivity {
 
     private BarChart barChart10;
-    private ArrayList<ArrayList> stepList;
     private DataProcessor dp;
-    private int[] goal_list = {0,0,0,0,0,0,0};
+    private int[] goal_list = new int[28];//goal_list = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +38,11 @@ public class StepSummary extends AppCompatActivity {
         setContentView(R.layout.activity_step_summary);
         config();
 
+        for (int i = 0; i < 28; i++)
+            goal_list[i]=0;
+
         // from the friends' list, can see the summary char
-        barChart10 = (BarChart) findViewById(R.id.summary_bar_chart);
-        /* first load the steps in stepList, which will store an array of lists each containing the
-           planned steps and unplanned steps
-        stepList = xxx;*/
+        barChart10 = findViewById(R.id.summary_bar_chart);
 
         // Get data for chart
         dp = DataProcessor.getInstance();
@@ -52,31 +52,8 @@ public class StepSummary extends AppCompatActivity {
     }
 
     private void displayChart() {
-         /* first load the steps in stepList, which will store an array of lists each containing the
-           planned steps and unplanned steps
-        stepList = xxx;
-        int xInd = 2;
-        for (ArrayList<int> day: stepList)
-            entries.add(new BarEntry(xInd++, new float[]{day[0], day[1]}));
-        */
-
-        // Determine the day of the week so we can start on Sunday
-        String dayOfWeek = LocalDate.now().getDayOfWeek().toString();
-
-        // How many days must we subtract to get to sunday?
-        int minDays = 0;
-        switch (dayOfWeek) {
-            case "SUNDAY": minDays = 0; break;
-            case "MONDAY": minDays = 1; break;
-            case "TUESDAY": minDays = 2; break;
-            case "WEDNESDAY": minDays = 3; break;
-            case "THURSDAY": minDays = 4; break;
-            case "FRIDAY": minDays = 5; break;
-            case "SATURDAY": minDays = 6; break;
-        }
-
         // Obtain sunday
-        LocalDate sundayDate = LocalDate.now().minusDays(minDays);
+        LocalDate iDate = LocalDate.now();
 
         // create entries of each day's steps of the week
         ArrayList<BarEntry> entries = new ArrayList<>();
@@ -84,16 +61,18 @@ public class StepSummary extends AppCompatActivity {
         // Used to get info for each day
         LocalDate dayDate;
         WalkDay day;
-        boolean[] goalMet = new boolean[7];
+        boolean[] goalMet = new boolean[28];
         int goal_max = 0;
         int step_max=0;
-        // Loop over all past 28 days
-        for (int i = 0; i < 7; i++) {
 
-            //entries.add(new BarEntry(i, new float[]{2000, 3000}));
+        ArrayList<String> labels = new ArrayList<>();
+        // Loop over all past 28 days
+        for (int i = 27; i >= 0; i++) {
 
             // Get the day we're processing
-            dayDate = sundayDate.plusDays(i);
+            dayDate = iDate.minusDays(i);
+
+            labels.add(dayDate.toString());
             day = dp.retrieveDay(dayDate);
 
             // Add data for that data to the graph
@@ -110,7 +89,6 @@ public class StepSummary extends AppCompatActivity {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
-
         }
 
         // Gather up the bars into a set
@@ -132,18 +110,7 @@ public class StepSummary extends AppCompatActivity {
         //data.setValueFormatter(new MyValueFormatter());
         data.setValueTextColor(Color.BLACK);
 
-        // create labels representing the x-axis days
-        ArrayList<String> labels = new ArrayList<>();
-        //String curDay;
 
-
-        ///////////////////////// Create labels on the x-axis
-        /*
-        for (String date : Dates) {
-          labels.add(date);
-        }
-
-        */
 /*
         // test 28 consecutive days
         labels.add("02/02");
@@ -189,6 +156,9 @@ public class StepSummary extends AppCompatActivity {
         else leftAxis.setAxisMaximum(goal_max * 1.2f);
 
         //barChart10.setDragEnabled(true);
+        //barChart10.setVisibleXRangeMaximum(7);
+        //barChart10.moveViewToX();
+        //barChart10.setVisibleXRangeMinimum(4);
 
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
