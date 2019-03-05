@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.team10.personalbest.FriendListPage;
+import com.example.team10.personalbest.MessagePage;
 import com.example.team10.personalbest.R;
 
 import java.util.ArrayList;
@@ -219,7 +220,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
      */
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String itemName = (String) getChild(groupPosition, childPosition);
+        final String email = (String) getChild(groupPosition, childPosition);
 
         //convertView is TODO
         if (convertView == null) {
@@ -232,7 +233,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         TextView friendItemView = (TextView) convertView
                 .findViewById(R.id.friend_name_text);
 
-        friendItemView.setText(itemName);
+        friendItemView.setText(email);
 
         //important to allow group to open
         ImageButton chatButton = (ImageButton)convertView.findViewById(R.id.chat_img_button);
@@ -240,11 +241,9 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         chatButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                Intent intent = new Intent(activity, ChatMessagingPage.class );
-                intent.putExtra("friend", itemName ); //pass in name
+                Intent intent = new Intent(activity, MessagePage.class );
+                intent.putExtra("name", email); //pass in name
                 activity.startActivity(intent);
-                */
             }
         });
         chatButton.setFocusable(false);
