@@ -1,13 +1,16 @@
 package com.example.team10.personalbest;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -108,8 +111,6 @@ public class StepSummary extends AppCompatActivity {
                 goalMet[i] = false;
             }
 
-
-
         }
 
         // Gather up the bars into a set
@@ -207,6 +208,8 @@ public class StepSummary extends AppCompatActivity {
                 int day_goal = goal_list[day_ind];
                 if(day_goal !=0)
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+
+                setDataField();
             }
 
             @Override
@@ -236,5 +239,29 @@ public class StepSummary extends AppCompatActivity {
             }
         });
     }
+
+    private void setDataField() {
+        TextView dataView = findViewById(R.id.summary_data_field);
+        String info = "MPH: " + "100 \n" + "AVR Velocity: " + "4.5 m/h\n" + "Total Time: " + "04:59";
+        dataView.setText(info);
+    }
+
+/*
+    private class CustMarkerView extends MarkerView {
+        private TextView mContentTv;
+
+        public CustMarkerView(Context context, int layoutResource) {
+            super(context, layoutResource);
+            mContentTv = (TextView) findViewById(R.id.tv_marker_view);
+        }
+
+        @Override
+        public void refreshContent(Entry e, Highlight highlight) {
+            mContentTv.setText("" + e.getVal());
+        }
+
+    }
+
+*/
 
 }
