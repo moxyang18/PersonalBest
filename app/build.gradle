@@ -17,12 +17,12 @@ android {
         }
     }
     testOptions { //Delete this if FakingStepsTests still doesnt work :/ TODO
-        unitTests{
+        unitTests {
             includeAndroidResources = true
         }
     }
 
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 
