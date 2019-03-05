@@ -184,9 +184,9 @@ public class HomePage extends AppCompatActivity implements Observer {
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                openNewGoalDialog();
-            }
-        });
+            openNewGoalDialog();
+        }
+    });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override

@@ -50,8 +50,7 @@ public class MessagePage extends AppCompatActivity {
 
         TextView friendName = findViewById(R.id.friend_name);
 
-        /*TODO set textview to friend's name*/
-        friendName.setText("Friend");
+        friendName.setText(getIntent().getExtras().getString("name"));
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
