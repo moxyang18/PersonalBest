@@ -14,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.team10.personalbest.FriendHomePage;
 import com.example.team10.personalbest.FriendListPage;
 import com.example.team10.personalbest.MessagePage;
+
 import com.example.team10.personalbest.R;
 
 import java.util.ArrayList;
@@ -59,6 +62,10 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         lists.add( activity.getString(R.string.incoming_request_header) );
         lists.add( activity.getString(R.string.outgoing_request_header) );
         lists.add( activity.getString(R.string.friend_list_header) );
+
+        //set onclickLIstner for child
+
+
     }
     @Override
     public int getGroupCount() {
@@ -235,7 +242,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
 
         friendItemView.setText(email);
 
-        //important to allow group to open
+        //Set open chat box
         ImageButton chatButton = (ImageButton)convertView.findViewById(R.id.chat_img_button);
         //TODO onclick listener to open messaging activity, finish up.
         chatButton.setOnClickListener( new View.OnClickListener() {
@@ -246,6 +253,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
                 activity.startActivity(intent);
             }
         });
+        //important to allow group to open
         chatButton.setFocusable(false);
 
         return convertView;
@@ -254,15 +262,21 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
+        if( groupPosition == 2 ) {
+            return true;
+        }
         return false;
     }
 
-    /**
-     * Delelte maybe?
-     */
     public void addFriend(String email) {
         friends.add(email);
         notifyDataSetChanged();
         Log.d(TAG, email);
     }
+
+    public FriendListPage getActivity() {
+        return this.activity;
+    }
+
+
 }

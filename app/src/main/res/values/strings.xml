@@ -36,6 +36,7 @@
     <string name="title_activity_friend_list_page">FriendListPage</string>
     <string name="add_friend_dialogue_title">Add Friend</string>
     <string name="add_friend_dialogue_description">Enter Email:</string>
+    <string name="title_activity_friend_home_page">FriendHomePage</string>
 
     <!--Message Strings-->
     <string name="message_location_hint">Message will appear here</string>
