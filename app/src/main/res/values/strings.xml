@@ -39,6 +39,7 @@
     <string name="title_activity_friend_home_page">FriendHomePage</string>
 
     <!--Message Strings-->
+    <string name="title_activity_message_page">MessagePage</string>
     <string name="message_location_hint">Message will appear here</string>
     <string name="username_hint">User name</string>
     <string name="message_hint">Message</string>

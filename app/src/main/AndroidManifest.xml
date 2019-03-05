@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".MessagePage"
+            android:label="@string/title_activity_message_page"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".FriendHomePage"
             android:label="@string/title_activity_friend_home_page"
             android:theme="@style/AppTheme.NoActionBar"></activity>
