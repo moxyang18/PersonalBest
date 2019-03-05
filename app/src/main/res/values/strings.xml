@@ -34,4 +34,7 @@
     <string name="friend_list_header">Friend List:</string>
     <string name="friend_list_button">Go To Friends</string>
     <string name="title_activity_friend_list_page">FriendListPage</string>
+    <string name="add_friend_dialogue_title">Add Friend</string>
+    <string name="add_friend_dialogue_description">Enter Email:</string>
+
 </resources>

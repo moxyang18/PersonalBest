@@ -1,17 +1,23 @@
 package com.example.team10.personalbest.friend;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.media.Image;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.team10.personalbest.FriendListPage;
 import com.example.team10.personalbest.R;
 
 import java.util.ArrayList;
@@ -27,7 +33,8 @@ import java.util.ArrayList;
  */
 
 public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
-    Context activity;
+    private String TAG = "FriendListExpandableListAdapter:";
+    FriendListPage activity;
     ArrayList<String> lists;
     ArrayList<String> incomingRequest;
     ArrayList<String> outgoingRequest;
@@ -44,7 +51,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         incomingRequest = new ArrayList<>();
         outgoingRequest = new ArrayList<>();
         lists = new ArrayList<>();
-        activity = listActivity;
+        activity = (FriendListPage)listActivity;
 
 
         //make the list title
@@ -168,6 +175,33 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 //open new dialogue so we can add friend
+                AlertDialog.Builder addFriendBuilder = new AlertDialog.Builder(activity);
+                addFriendBuilder.setTitle(R.string.add_friend_dialogue_title);
+                addFriendBuilder.setMessage(R.string.add_friend_dialogue_description);
+
+                //EditText for entering emails
+                final EditText userEmail = new EditText(activity);
+                userEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                addFriendBuilder.setView(userEmail);
+
+                //set buttons
+                addFriendBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String email = userEmail.getText().toString();
+                        activity.saveNewFriend(email);
+                    }
+                });
+                addFriendBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                });
+                //Display Dialogue
+                AlertDialog addFriendDialogue = addFriendBuilder.create();
+                addFriendDialogue.setCanceledOnTouchOutside(false);
+                addFriendDialogue.show();
             }
         });
 
@@ -222,5 +256,14 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+    /**
+     * Delelte maybe?
+     */
+    public void addFriend(String email) {
+        friends.add(email);
+        notifyDataSetChanged();
+        Log.d(TAG, email);
     }
 }
