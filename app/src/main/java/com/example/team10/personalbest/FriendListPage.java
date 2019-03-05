@@ -1,5 +1,7 @@
 package com.example.team10.personalbest;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -44,9 +46,25 @@ public class FriendListPage extends AppCompatActivity {
         //Pass in Friend List
         listAdapter = new FriendListExpandableListAdapter(this, emailList);
 
+
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
         friendExpandableList.setAdapter(listAdapter);
         friendExpandableList.expandGroup(2); //TODO magic number get rid
+        friendExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            //Open Friend Home Page while passing in email address
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                if( groupPosition != 2 ) {
+                    return false;
+                }
+                //Grab the ExpandableListAdapter
+                FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
+                Intent intent = new Intent( myAdapter.getActivity(), FriendHomePage.class );
+                intent.putExtra("email", myAdapter.getChild(groupPosition, childPosition).toString());
+                myAdapter.getActivity().startActivity(intent);
+                return true;
+            }
+        });
     }
 
     public boolean saveNewFriend(String email) {
