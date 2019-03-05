@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CEAF">
+
+    <TextView
+        android:id="@+id/friend_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/colorPurple"
+        android:textAlignment="center"
+        android:textSize="22dp"
+        android:text="TextView" />
+
+    <Button
+        android:id="@+id/friend_homepage_button"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/friend_name"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="5dp"
+        android:background="@color/colorAccent"
+        android:text="@string/friend_homepage_button"
+        android:textColor="@color/colorWhite" />
+
+    <Button
+        android:id="@+id/message_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/user_name"
+        android:layout_below="@+id/friend_name"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@+id/friend_homepage_button"
+        android:background="@color/colorDarkBlue"
+        android:text="@string/message_back_button"
+        android:textColor="@color/colorWhite" />
+
+    <EditText
+        android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/friend_homepage_button"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="5dp"
+        android:hint="@string/username_hint" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/text_message"
+        android:layout_below="@+id/user_name"
+        android:background="#ECEFF1"
+        android:fillViewport="true"
+        android:overScrollMode="always">
+
+        <TextView
+            android:id="@+id/chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/message_location_hint"
+            android:padding="10dp"
+            android:scrollbars="vertical" />
+    </ScrollView>
+
+    <EditText
+        android:id="@+id/text_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btn_send"
+        android:layout_margin="5dp"
+        android:hint="@string/message_hint" />
+
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"
+        android:background="@color/colorDarkGreen"
+        android:text="@string/send_message_button"
+        android:textColor="@color/colorWhite"/>
+
+</RelativeLayout>

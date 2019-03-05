@@ -30,6 +30,11 @@
             android:name=".RunningMode"
             android:label="@string/title_activity_running_mode"
             android:theme="@style/AppTheme.NoActionBar" />
+        <service android:name="MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

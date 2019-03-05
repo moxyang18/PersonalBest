@@ -199,9 +199,9 @@ public class HomePage extends AppCompatActivity implements Observer {
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                openNewGoalDialog();
-            }
-        });
+            openNewGoalDialog();
+        }
+    });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override
@@ -382,20 +382,32 @@ public class HomePage extends AppCompatActivity implements Observer {
     public int getGoal(){return  currentGoal;}
     public void setGoal(int g){currentGoal = g;}
 
+    public void setGoal_text(int goal) {
+        goal_text.setText(Integer.toString(goal));
+    }
+
+    public boolean getGoalMet() {
+        return goalMet;
+    }
+    public void setGoalMet(boolean isGoalMet) {
+        goalMet = isGoalMet;
+    }
     public void showStepCount(){
         Log.d(TAG, "TextView is updated");
         step_text.setText(Integer.toString(stepCount));
     }
 
-    public void checkGoal() {
+    public boolean checkGoal() {
         if(stepCount >= currentGoal && !goalMet) {
             Log.d(TAG, "Inside checkGoal");
             goalMet = true;
             openCongratsDialog();
+            return true;
         }
         Log.d(TAG, Boolean.toString(goalMet));
         Log.d(TAG, "Step Count: " + Integer.toString(stepCount));
         Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
+        return false;
     }
 
 

@@ -37,4 +37,11 @@
     <string name="add_friend_dialogue_title">Add Friend</string>
     <string name="add_friend_dialogue_description">Enter Email:</string>
 
+    <!--Message Strings-->
+    <string name="message_location_hint">Message will appear here</string>
+    <string name="username_hint">User name</string>
+    <string name="message_hint">Message</string>
+    <string name="send_message_button">Send</string>
+    <string name="friend_homepage_button">Go To Friend\'s Homepage</string>
+    <string name="message_back_button">Back</string>
 </resources>

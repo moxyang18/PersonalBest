@@ -11,4 +11,6 @@
     <color name="colorDarkBlue">#00F</color>
     <color name="colorPaleGreen">#CFC</color>
     <color name="colorBlack">#000</color>
+    <color name="colorLavender">#CEAF</color>
+    <color name="colorPurple">#800080</color>
 </resources>
