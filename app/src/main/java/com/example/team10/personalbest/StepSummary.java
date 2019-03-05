@@ -87,8 +87,8 @@ public class StepSummary extends AppCompatActivity {
         // Loop over all past 28 days
         for (int i = 0; i < 7; i++) {
 
-            entries.add(new BarEntry(i, new float[]{2000, 3000}));
-     /*
+            //entries.add(new BarEntry(i, new float[]{2000, 3000}));
+
             // Get the day we're processing
             dayDate = sundayDate.plusDays(i);
             day = dp.retrieveDay(dayDate);
@@ -100,15 +100,15 @@ public class StepSummary extends AppCompatActivity {
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
                     goal_max = day.getGoal();
-                if(step_max<day.getStepCountDailyReal())
-                    step_max = day.getStepCountDailyReal();
-                goalMet[i] = day.getStepCountDailyReal() >= day.getGoal();
+                if(step_max<day.getStepCountDailyTotal())
+                    step_max = day.getStepCountDailyTotal();
+                goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
             } else {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
 
-      */
+
 
         }
 
@@ -143,7 +143,7 @@ public class StepSummary extends AppCompatActivity {
         }
 
         */
-
+/*
         // test 28 consecutive days
         labels.add("02/02");
         labels.add("02/03");
@@ -171,7 +171,7 @@ public class StepSummary extends AppCompatActivity {
         labels.add("02/05");
         labels.add("02/01");
         labels.add("02/02");
-        labels.add("02/03");*/
+        labels.add("02/03");  */
 
 
         XAxis x = barChart10.getXAxis();
@@ -186,13 +186,8 @@ public class StepSummary extends AppCompatActivity {
         if(step_max > goal_max)
             leftAxis.setAxisMaximum(step_max * 1.2f);
         else leftAxis.setAxisMaximum(goal_max * 1.2f);
-        //if(step_at_goal_max!=0 && goal_max !=0)
-        //leftAxis.setSpaceTop((1-(float)step_at_goal_max/ (float)goal_max *100f*0.9f));
 
         //barChart10.setDragEnabled(true);
-
-        // initialize the BarData with the entries and the labels
-        //BarData stepData = new BarData(entrySet);
 
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
@@ -209,9 +204,9 @@ public class StepSummary extends AppCompatActivity {
                 int day_ind = (int)e.getX();
                 //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
 
-//                int day_goal = goal_list[day_ind];
-                //               if(day_goal !=0)
-//                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+                int day_goal = goal_list[day_ind];
+                if(day_goal !=0)
+                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
             }
 
             @Override

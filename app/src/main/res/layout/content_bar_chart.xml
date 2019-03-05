@@ -19,7 +19,7 @@
             android:layout_height="30dp"
             android:gravity="center"
             android:layout_gravity="center"
-            android:text="Step Summary Chart"/>
+            android:text="This Week's Workout Bar Chart"/>
 
 
         <com.github.mikephil.charting.charts.BarChart

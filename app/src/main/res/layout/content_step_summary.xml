@@ -23,11 +23,12 @@
 
 
         <com.github.mikephil.charting.charts.BarChart
+
             android:id="@+id/summary_bar_chart"
             android:layout_width="match_parent"
-            android:layout_height="396dp"></com.github.mikephil.charting.charts.BarChart>
-
-
+            android:layout_height="377dp"></com.github.mikephil.charting.charts.BarChart>
+        
+        
     </LinearLayout>
 
 
