@@ -190,11 +190,11 @@ public class ActivityMediator implements Observer, Mediator {
     @Override
     public void update(Observable observable, Object object){
 
-        //handles date changes
+        //handles date__ changes
         /*
-        if (!LocalDate.now().equals(date) &&!timeTraveled){
+        if (!LocalDate.now().equals(date__) &&!timeTraveled){
             if(isRunning) runningMode.finish();
-            date = LocalDate.now();
+            date__ = LocalDate.now();
             init();
         }
         */
@@ -298,7 +298,7 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void saveLocal(){
-        if(!timeTraveled){
+
             walkDay.setStepCountUnintentionalReal(stepCountUnintentionalReal);
             walkDay.setStepCountUnintentional(stepCountUnintentionalTotal);//save but doesn't read in init
             walkDay.setStepCountIntentionalReal(stepCountIntentionalReal);
@@ -314,7 +314,7 @@ public class ActivityMediator implements Observer, Mediator {
             walkDay.setGoal(goal_today);
             walkDay.setGoalMet(goalMet);
             dataProcessor.insertDay(date,walkDay);
-        }
+
 
     }
 
@@ -333,6 +333,32 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
 
+    public void timeTravelForward(){
+        saveLocal();
+        date =date.plusDays(1);
+        walkDay = dataProcessor.retrieveDay(date);
+        if(walkDay == null) walkDay = new WalkDay();
+        dataProcessor.insertDay(date,walkDay);
+        init();
+    }
+
+    public void timeTravelNow(){
+        saveLocal();
+        date =LocalDate.now();
+        walkDay = dataProcessor.retrieveDay(date);
+        if(walkDay == null) walkDay = new WalkDay();
+        dataProcessor.insertDay(date,walkDay);
+        init();
+    }
+
+    public void timeTravelBackward(){
+        saveLocal();
+        date = date.minusDays(1);
+        walkDay = dataProcessor.retrieveDay(date);
+        if(walkDay == null) walkDay = new WalkDay();
+        dataProcessor.insertDay(date,walkDay);
+        init();
+    }
 
     public void mockStepInHP(){
         mock_steps_unintentional += 500;

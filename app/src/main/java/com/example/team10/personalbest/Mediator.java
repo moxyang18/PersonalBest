@@ -16,6 +16,9 @@ public interface Mediator {
 
     void setGoal_today(int i);
     int getGoal_today();
+    void timeTravelBackward();
+    void timeTravelNow();
+    void timeTravelForward();
 
     boolean getGoalMet();
     void setGoalMet(boolean t);
