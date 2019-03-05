@@ -4,7 +4,7 @@ import java.time.LocalDate;
 /**
  * WalkDay
  *
- * A simple class to store a steps associated with a date.
+ * A simple class to store a steps associated with a date__.
  */
 public class WalkDay {
     private int stepCountIntentional =0;
@@ -31,10 +31,10 @@ public class WalkDay {
     /**
      * WalkDay ctor
      *
-     * Creates a new WalkDay with a date. Everything else will
+     * Creates a new WalkDay with a date__. Everything else will
      * be 0-initialized.
      *
-     * @param date The date
+     * @param date The date__
      */
 
     public WalkDay(LocalDate date) {
@@ -83,11 +83,11 @@ public class WalkDay {
     }
 
     /**
-     * setDate
+     * setDate__
      *
-     * Sets the date
+     * Sets the date__
      *
-     * @param date The date
+     * @param date The date__
      */
     public void setDate(LocalDate date) {
         this.date = date;
@@ -157,9 +157,9 @@ public class WalkDay {
     /**
      * getDate
      *
-     * Gets the date of this day (LocalDate)
+     * Gets the date__ of this day (LocalDate)
      *
-     * @return LocalDate The date.
+     * @return LocalDate The date__.
      */
     public LocalDate getDate() {
         return this.date;

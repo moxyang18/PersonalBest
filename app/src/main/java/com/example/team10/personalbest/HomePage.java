@@ -42,12 +42,12 @@ public class HomePage extends AppCompatActivity{
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
     protected TextView step_text;
     protected TextView goal_text;
-    protected EditText set_time_text ;
+    //protected EditText set_time_text ;
 
     private static final String TAG = "HomePage";
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
-    //public LocalDate date;
+    //public LocalDate date__;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +69,13 @@ public class HomePage extends AppCompatActivity{
                 launchRunning();
             }
         });
-        set_time_text = findViewById(R.id.set_time_text);
-        Button set_time_button = findViewById(R.id.set_time_in_hp);
-        set_time_button.setOnClickListener(new View.OnClickListener() {
+        //set_time_text = findViewById(R.id.set_time_text);
+        Button time_forward_button = findViewById(R.id.mock_forward);
+        time_forward_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                activityMediator.timeTravelForward();
+                /*
                 try {
                     int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
                     // store this var in new time.......
@@ -83,6 +85,43 @@ public class HomePage extends AppCompatActivity{
                     Toast.makeText(HomePage.this, "Please enter a valid number",
                             Toast.LENGTH_LONG).show();
                 }
+                */
+            }
+        });
+        Button time_backward_button = findViewById(R.id.mock_back);
+        time_backward_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityMediator.timeTravelBackward();
+                /*
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+                */
+            }
+        });
+        Button time_now_button = findViewById(R.id.mock_now);
+        time_now_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityMediator.timeTravelNow();
+                /*
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+                */
             }
         });
 

@@ -25,7 +25,6 @@ import java.time.LocalDate;
 public class BarChartActivity extends AppCompatActivity {
 
     private BarChart barChart10;
-    private ArrayList<ArrayList> stepList;
     private DataProcessor dp;
     private int[] goal_list = {0,0,0,0,0,0,0};
 
@@ -35,10 +34,8 @@ public class BarChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bar_chart);
         config();
 
-        barChart10 = (BarChart) findViewById(R.id.bar_chart);
-        /* first load the steps in stepList, which will store an array of lists each containing the
-           planned steps and unplanned steps
-        stepList = xxx;*/
+        barChart10 =  findViewById(R.id.bar_chart);
+
 
         // Get data for chart
         dp = DataProcessor.getInstance();
@@ -99,7 +96,9 @@ public class BarChartActivity extends AppCompatActivity {
                     goal_max = day.getGoal();
                 if(step_max<day.getStepCountDailyTotal())
                     step_max = day.getStepCountDailyTotal();
-                goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
+
+                goalMet[i] = day.getGoalMet();
+
             } else {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;

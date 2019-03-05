@@ -68,7 +68,7 @@ public class RunningMode extends AppCompatActivity{
         Button back_button = findViewById(R.id.back_from_running);
 
         Button add_step_button = findViewById(R.id.add_steps_in_running);
-        final EditText set_time_text = findViewById(R.id.set_time_text);
+        //final EditText set_time_text = findViewById(R.id.set_time_text);
 
         goalText= findViewById(R.id.goal_running_mode);
         timeText = findViewById(R.id.time);

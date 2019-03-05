@@ -64,7 +64,7 @@ public class DataProcessorTest {
 
     /**
      * Tests to make sure that inserted days are 0-initialized.
-     * Also ensures that they have the correct date.
+     * Also ensures that they have the correct date__.
      */
     @Test
     public void insertDay() {

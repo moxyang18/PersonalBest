@@ -1,13 +1,11 @@
 package com.example.team10.personalbest;
 
 // Android dev packages
-import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 
 // File related
 import com.google.gson.Gson;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
@@ -52,7 +50,7 @@ public class DataProcessor extends AppCompatActivity {
     private static final String FILE_NAME = "STEP DATA";
     private static final String TABLE_NAME = "STEP TABLE";
 
-    LocalDate date =LocalDate.now();
+    LocalDate date__ =LocalDate.now();
 
     /**
      * DataProcessor ctor
@@ -130,8 +128,8 @@ public class DataProcessor extends AppCompatActivity {
      * Retrieve a WalkDay object from the table and return it.
      * !!!May return null!!!
      *
-     * @param date The date we'll get the info for.
-     * @return WalkDay The day associated with the date. May be null!
+     * @param date The date__ we'll get the info for.
+     * @return WalkDay The day associated with the date__. May be null!
      */
     public WalkDay retrieveDay(LocalDate date) {
         return table.get(date.toString());
@@ -142,7 +140,7 @@ public class DataProcessor extends AppCompatActivity {
      *
      * Inserts a new day in the table. Writes to sharedPrefs.
      *
-     * @param date The date.
+     * @param date The date__.
      */
     public void insertDay(LocalDate date,WalkDay walkDay) {
 
@@ -167,5 +165,8 @@ public class DataProcessor extends AppCompatActivity {
         // Store the data
         editor.putString(TABLE_NAME ,gson.toJson(table));
         editor.apply();
+    }
+    public void setDate__(LocalDate d){
+        date__ = d;
     }
 }
