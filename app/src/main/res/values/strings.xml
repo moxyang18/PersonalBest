@@ -28,4 +28,5 @@
     <string name="run_back_button">Back</string>
     <string name="today_s_steps">Today\'s steps:</string>
     <string name="title_activity_step_summary">StepSummary</string>
+    <string name="title_activity_friend_summary">FriendSummary</string>
 </resources>

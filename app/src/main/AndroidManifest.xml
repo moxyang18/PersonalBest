@@ -34,6 +34,10 @@
         <activity
             android:name=".StepSummary"
             android:label="@string/title_activity_step_summary"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FriendSummary"
+            android:label="@string/title_activity_friend_summary"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

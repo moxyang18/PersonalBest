@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
 
-public class StepSummary extends AppCompatActivity {
+public class FriendSummary extends AppCompatActivity {
 
     private BarChart barChart10;
     private DataProcessor dp;
@@ -33,14 +33,14 @@ public class StepSummary extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_step_summary);
+        setContentView(R.layout.activity_friend_summary);
         config();
 
         for (int i = 0; i < 28; i++)
             goal_list[i]=0;
 
         // from the friends' list, can see the summary char
-        barChart10 = findViewById(R.id.summary_bar_chart);
+        barChart10 = findViewById(R.id.friend_bar_chart);
 
         // Get data for chart
         dp = DataProcessor.getInstance();
@@ -78,9 +78,6 @@ public class StepSummary extends AppCompatActivity {
             if (day != null) {
                 entries.add(new BarEntry(27-i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
-
-                //System.out.println("Day" + (i-27) + " 's steps are :" + day.getStepCountUnintentional() + "\n");
-                //System.out.println("Day" + (i-27) + " 's steps are :" + day.getStepCountIntentional() + "\n");
 
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
@@ -131,11 +128,6 @@ public class StepSummary extends AppCompatActivity {
             leftAxis.setAxisMaximum(step_max * 1.2f);
         else leftAxis.setAxisMaximum(goal_max * 1.2f);
 
-        //barChart10.setDragEnabled(true);
-        //barChart10.setVisibleXRangeMaximum(7);
-        //barChart10.moveViewToX();
-        //barChart10.setVisibleXRangeMinimum(4);
-
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
 
@@ -177,7 +169,7 @@ public class StepSummary extends AppCompatActivity {
     }
 
     private void config() {
-        Button back_button = findViewById(R.id.summary_back_button);
+        Button back_button = findViewById(R.id.friend_summary_back);
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,7 +179,7 @@ public class StepSummary extends AppCompatActivity {
     }
 
     private void setDataField(WalkDay day) {
-        TextView dataView = findViewById(R.id.summary_data_field);
+        TextView dataView = findViewById(R.id.friend_summary_data);
 
         double mpH = Math.round(day.getSpeed_average()*100.0)/100.0;
 

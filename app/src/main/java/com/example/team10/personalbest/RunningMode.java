@@ -22,6 +22,7 @@ import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 
 
 import java.sql.Array;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -31,7 +32,7 @@ public class RunningMode extends AppCompatActivity{
 
     //private GoogleFitAdapter fit;
     private Mediator activityMediator;
-    //private  DataProcessor dp;
+    private  DataProcessor dp;
     private int goal = 0;
     /*
     private int stepCount =0;
@@ -61,7 +62,6 @@ public class RunningMode extends AppCompatActivity{
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_running_mode);
-
 
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
@@ -119,9 +119,19 @@ public class RunningMode extends AppCompatActivity{
 
     // the legacy function that sends the message from the system automatically
     public void friendless_notification () {
+        dp = DataProcessor.getInstance();
 
         String encourage_mes;
-        int increment = 0;            //stepCount - yesterdayStepCount   /// need to implement
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+
+        WalkDay todayData = dp.retrieveDay(today);
+        WalkDay yesterdayData = dp.retrieveDay(yesterday);
+
+        int todayTotals = (todayData==null) ? 0 :todayData.getStepCountDailyTotal();
+        int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
+
+        int increment = todayTotals - yesterdayTotals; //stepCount - yesterdayStepCount
         if (increment <= 0)
             encourage_mes = "Great! Keep up the work! ";
         else if (increment <= 100)
