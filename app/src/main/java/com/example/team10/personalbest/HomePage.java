@@ -34,47 +34,26 @@ import java.time.LocalDate;
 import java.util.Observable;
 import java.util.Observer;
 
-public class HomePage extends AppCompatActivity implements Observer {
-
-    private int currentGoal = 5000;
-    private int stepCount = 0;
-    private int stepCountUnintentional =0;
-    private int stepCountIntentional = 0;
-    private float dailyDistanceCover = 0.f;
-    public int mock_steps_unintentional =0;
-    public int mock_steps_intentional = 0;
+public class HomePage extends AppCompatActivity{
 
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
-
-    private boolean goalMet = false;
     protected TextView step_text;
     protected TextView goal_text;
-    protected EditText set_time_text ;
 
     private static final String TAG = "HomePage";
-
-    public GoogleFitAdapter fit;
-    private DataProcessor dp;
-
+    private Mediator activityMediator;
     private AlertDialog newGoalDialog;
-
-    public LocalDate date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
-        dp = new DataProcessor(this);//dp.loadIntoHomePage() implicitly called inside constructor.
-        DataProcessor.setInstance(dp);
+        //add factory to have mock mediator
+        activityMediator = new ActivityMediator(this);
 
         goal_text = findViewById(R.id.currentGoal);
-        goal_text.setText(Integer.toString(currentGoal));
-
         step_text = findViewById(R.id.stepsCount);
-        step_text.setText(Integer.toString(stepCount));
-
-        goalMet = false;
 
         // after pressing this button, switch to running mode
         Button run_button = findViewById(R.id.startButton);
@@ -85,11 +64,13 @@ public class HomePage extends AppCompatActivity implements Observer {
                 launchRunning();
             }
         });
-        set_time_text = findViewById(R.id.set_time_text);
-        Button set_time_button = findViewById(R.id.set_time_in_hp);
-        set_time_button.setOnClickListener(new View.OnClickListener() {
+        //set_time_text = findViewById(R.id.set_time_text);
+        Button time_forward_button = findViewById(R.id.mock_forward);
+        time_forward_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                activityMediator.timeTravelForward();
+                /*
                 try {
                     int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
                     // store this var in new time.......
@@ -99,6 +80,43 @@ public class HomePage extends AppCompatActivity implements Observer {
                     Toast.makeText(HomePage.this, "Please enter a valid number",
                             Toast.LENGTH_LONG).show();
                 }
+                */
+            }
+        });
+        Button time_backward_button = findViewById(R.id.mock_back);
+        time_backward_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityMediator.timeTravelBackward();
+                /*
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+                */
+            }
+        });
+        Button time_now_button = findViewById(R.id.mock_now);
+        time_now_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityMediator.timeTravelNow();
+                /*
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+                */
             }
         });
 
@@ -131,24 +149,21 @@ public class HomePage extends AppCompatActivity implements Observer {
             }
         });
 
+
         // after pressing this button, increment current steps by 500
         Button add_step_button = findViewById(R.id.addStepButton);
         add_step_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setMock_steps_unintentional(500+mock_steps_unintentional);
-                setStepCountUnintentional(stepCountUnintentional);
-                setStepCount(stepCount);
-                showStepCount();
-                fit.passMockIntoRun();
+                activityMediator.mockStepInHP();
+                //fit.passMockIntoRun();
             }
         });
 
-        //SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
 
-        //currentGoal = goalPreferences.getInt("goalCount", 5000);
-        goal_text.setText(Integer.toString(currentGoal));
-        /** Log into Google Account:
+        //load data into home page and call text view update methods
+        activityMediator.init();
+         /** Log into Google Account:
          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
          * https://developers.google.com/identity/sign-in/android/sign-in
          */
@@ -162,28 +177,21 @@ public class HomePage extends AppCompatActivity implements Observer {
 
         //launches an activity that prompts sign in
         //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.d(TAG, "About to send intent");
+        Log.i(TAG, "About to send intent");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult( signInIntent, RC_SIGN_IN );
-        Log.d(TAG, "Intent is sent");
+        Log.i(TAG, "Intent is sent");
     }
 
-    public void setFitAdapter() {
-
-    }
 
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
-        intent.putExtra("Goal_today",Integer.toString(currentGoal));
-        intent.putExtra("Step_unintentional",Integer.toString(stepCount));
-        intent.putExtra("Daily_distance",Float.toString(dailyDistanceCover));
-        fit.setGoal(currentGoal);
         startActivity(intent);
     }
 
     public void launchBarChart() {
+        activityMediator.saveLocal();
         Intent intent = new Intent(this, BarChartActivity.class);
-
         startActivity(intent);
     }
 
@@ -220,18 +228,16 @@ public class HomePage extends AppCompatActivity implements Observer {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d( TAG, "Intent is done/closed");
+        Log.i( TAG, "Intent is done/closed");
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            fit = new GoogleFitAdapter(this);
-            GoogleFitAdapter.setInstance(fit);
-            fit.addObserver(this);
+            activityMediator.build();
 
-            Log.d(TAG, "Preparing to run Async Task");
+            Log.i(TAG, "Preparing to run Async Task");
             AsyncTaskRunner runner = new AsyncTaskRunner();
             runner.execute();
-            Log.d(TAG, "Async Task is run");
+            Log.i(TAG, "Async Task is run");
         }
 
     }
@@ -244,16 +250,11 @@ public class HomePage extends AppCompatActivity implements Observer {
         newGoalBuilder.setPositiveButton(getString(R.string.suggested) + " " + Integer.toString(goalPreferences.getInt("goalCount", 5000) + 500), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                SharedPreferences goalPreferences = getSharedPreferences("goal_count", MODE_PRIVATE);
-                SharedPreferences.Editor editor = goalPreferences.edit();
-                currentGoal = goalPreferences.getInt("goalCount", 5000) + 500;
+                activityMediator.setGoal_today(activityMediator.getGoal_today()+500);
                 TextView goal_text = findViewById(R.id.currentGoal);
-                goal_text.setText(Integer.toString(currentGoal));
+                goal_text.setText(Integer.toString(activityMediator.getGoal_today()));
 
-                editor.putInt("goalCount", Integer.parseInt(goal_text.getText().toString()));
-                editor.apply();
-
-                goalMet = false;
+                activityMediator.setGoalMet(false);
 
 
                 Toast.makeText(HomePage.this, R.string.goal_updated_toast, Toast.LENGTH_LONG).show();
@@ -321,13 +322,9 @@ public class HomePage extends AppCompatActivity implements Observer {
                         }
                         if(!customInput.isEmpty() && tooLow >= 10){
                             goal_text.setText(customField.getText());
+                            activityMediator.setGoalMet(false);
+                            activityMediator.setGoal_today(tooLow);
 
-                            goalMet = false;
-
-                            currentGoal = tooLow;
-
-                            editor.putInt("goalCount", Integer.parseInt(goal_text.getText().toString()));
-                            editor.apply();
 
                             Toast.makeText(HomePage.this, R.string.goal_updated_toast, Toast.LENGTH_LONG).show();
 
@@ -341,81 +338,30 @@ public class HomePage extends AppCompatActivity implements Observer {
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
-
-    @Override
-    public void update(Observable o, Object arg){
-        Log.d(TAG, "Inside update()");
-
-        Object[] arr = (Object[])arg;
-
-        setStepCount((int)arr[1]);
-        setStepCountIntentional(stepCount-stepCountUnintentional);
-        setStepCountUnintentional(stepCount-stepCountIntentional);
-        showStepCount();
-        setDistance((float)arr[2]);
-
-        if((boolean)arr[0] == true){
-            dp.modifyDay(0);
-            dp.writeToSharedPref();
-        }
-        checkGoal();
+    public void showGoal(int Goal){
+        goal_text.setText(Integer.toString(Goal));
+    }
+    public void showStepCount(int count){
+        Log.i(TAG, "TextView is updated");
+        step_text.setText(Integer.toString(count));
     }
 
-    public void setMock_steps_unintentional(int c){mock_steps_unintentional =c;}
-    public void setMock_steps_intentional (int c){mock_steps_intentional =c;}
-
-    public void setStepCount(int count){
-        stepCount = count+mock_steps_unintentional+mock_steps_intentional;
-    }
-
-    public int getStepCount(){ return stepCount;}
-
-    public void setStepCountUnintentional(int count){stepCountUnintentional = count+mock_steps_unintentional;}
-    public int getStepCountUnintentional(){return stepCountUnintentional;}
-
-    public int getStepCountIntentional(){return stepCountIntentional;}
-    public void setStepCountIntentional(int s){stepCountIntentional = s+mock_steps_intentional;}
-
-    public void setDistance(float d){dailyDistanceCover = d;}
-    public float getDistance(){return dailyDistanceCover;}
-
-    public int getGoal(){return  currentGoal;}
-    public void setGoal(int g){currentGoal = g;}
-
-    public void setGoal_text(int goal) {
-        goal_text.setText(Integer.toString(goal));
-    }
-
-    public boolean getGoalMet() {
-        return goalMet;
-    }
-    public void setGoalMet(boolean isGoalMet) {
-        goalMet = isGoalMet;
-    }
-    public void showStepCount(){
-        Log.d(TAG, "TextView is updated");
-        step_text.setText(Integer.toString(stepCount));
-    }
-
-    public boolean checkGoal() {
-        if(stepCount >= currentGoal && !goalMet) {
-            Log.d(TAG, "Inside checkGoal");
-            goalMet = true;
+    public void checkGoal() {
+        if(activityMediator.checkReachGoal()&& !activityMediator.getGoalMet()) {
+            Log.i(TAG, "Inside checkGoal");
+            activityMediator.setGoalMet(true);
             openCongratsDialog();
-            return true;
         }
-        Log.d(TAG, Boolean.toString(goalMet));
-        Log.d(TAG, "Step Count: " + Integer.toString(stepCount));
-        Log.d(TAG, "Current GOal: " + Integer.toString(currentGoal));
-        return false;
+        Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
+        Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
+        Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
     }
-
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
         @Override
         protected void onPreExecute(){
-            fit.setup();
+            activityMediator.setup();
         }
         @Override
         protected String doInBackground(String... paras){
@@ -437,7 +383,15 @@ public class HomePage extends AppCompatActivity implements Observer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dp.modifyDay(0);
-        dp.writeToSharedPref();
+        activityMediator.saveLocal();
+        activityMediator.stop();
+    }
+
+    protected Mediator getTestMediator(){
+        return activityMediator;
+    }
+
+    protected void setTestMediator(Mediator m){
+        activityMediator = m;
     }
 }
