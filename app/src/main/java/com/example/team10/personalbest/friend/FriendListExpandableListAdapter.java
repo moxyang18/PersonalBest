@@ -169,50 +169,6 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         listNameText.setTypeface(null, Typeface.BOLD);
         listNameText.setText(listTitle);
 
-        //important to allow group to open
-        ImageButton addButton = (ImageButton)convertView.findViewById(R.id.plus_img_button);
-        //TODO onclick listener to add Friend. here .
-        addButton.setFocusable(false);
-        addButton.setOnClickListener( new View.OnClickListener() {
-
-            /**
-             * Open up a new dialogue? maybe use iterator. check later.
-             * TODO finish up
-             * @param v
-             */
-            @Override
-            public void onClick(View v) {
-                //open new dialogue so we can add friend
-                AlertDialog.Builder addFriendBuilder = new AlertDialog.Builder(activity);
-                addFriendBuilder.setTitle(R.string.add_friend_dialogue_title);
-                addFriendBuilder.setMessage(R.string.add_friend_dialogue_description);
-
-                //EditText for entering emails
-                final EditText userEmail = new EditText(activity);
-                userEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                addFriendBuilder.setView(userEmail);
-
-                //set buttons
-                addFriendBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String email = userEmail.getText().toString();
-                        activity.saveNewFriend(email);
-                    }
-                });
-                addFriendBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        return;
-                    }
-                });
-                //Display Dialogue
-                AlertDialog addFriendDialogue = addFriendBuilder.create();
-                addFriendDialogue.setCanceledOnTouchOutside(false);
-                addFriendDialogue.show();
-            }
-        });
-
         return convertView;
     }
 

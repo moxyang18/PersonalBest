@@ -1,15 +1,19 @@
 package com.example.team10.personalbest;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 
 import com.example.team10.personalbest.friend.FriendListExpandableListAdapter;
@@ -29,8 +33,10 @@ public class FriendListPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_list_page);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //newly added
 
         //TODO update to pull from shared preference later
         SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
@@ -67,6 +73,38 @@ public class FriendListPage extends AppCompatActivity {
         });
     }
 
+    // create a custom action bar button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.friend_list_custom_action_bar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Called when button on action bar is pressed
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //which button in the action bar was selected?
+        switch (item.getItemId()) {
+            case R.id.add_friend_button:
+                // User chose add friend button, open the dialogue.
+                addFriendDialgue();
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * A user with the email exists, so we can save this person as our friend.
+     * @param email
+     * @return
+     */
     public boolean saveNewFriend(String email) {
         //method which finds the new friend in our system TODO
 
@@ -88,6 +126,43 @@ public class FriendListPage extends AppCompatActivity {
         //let ExpandableList know new stuff
         listAdapter.addFriend(email);
         return true;
+    }
+
+    /**
+     * Make the Dialogue that adds a friend
+     */
+    public void addFriendDialgue() {
+        //open new dialogue so we can add friend
+        AlertDialog.Builder addFriendBuilder = new AlertDialog.Builder(this);
+        addFriendBuilder.setTitle(R.string.add_friend_dialogue_title);
+        addFriendBuilder.setMessage(R.string.add_friend_dialogue_description);
+
+        //EditText for entering emails
+        final EditText userEmail = new EditText(this);
+        userEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        addFriendBuilder.setView(userEmail);
+
+        //set buttons
+        addFriendBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String email = userEmail.getText().toString();
+
+                //TODO Need to check if this email exists
+                saveNewFriend(email);
+            }
+        });
+        addFriendBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+
+        //Display Dialogue
+        AlertDialog addFriendDialogue = addFriendBuilder.create();
+        addFriendDialogue.setCanceledOnTouchOutside(false);
+        addFriendDialogue.show();
     }
 
 }
