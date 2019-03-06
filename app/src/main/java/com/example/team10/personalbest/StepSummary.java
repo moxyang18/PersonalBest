@@ -1,6 +1,5 @@
 package com.example.team10.personalbest;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
-import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -22,7 +20,6 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
@@ -65,20 +62,27 @@ public class StepSummary extends AppCompatActivity {
         int goal_max = 0;
         int step_max=0;
 
+        // create the labels for the x-axis
         ArrayList<String> labels = new ArrayList<>();
         // Loop over all past 28 days
-        for (int i = 27; i >= 0; i++) {
+        for (int i = 27; i >= 0; i--) {
 
             // Get the day we're processing
             dayDate = iDate.minusDays(i);
 
-            labels.add(dayDate.toString());
+            labels.add(dayDate.toString().substring(5));
             day = dp.retrieveDay(dayDate);
 
             // Add data for that data to the graph
             if (day != null) {
                 entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
+
+                ////////////////////////// wrong intentional and unintentional walks.
+
+                //System.out.println("Day" + (i-27) + " 's steps are :" + day.getStepCountUnintentional() + "\n");
+                //System.out.println("Day" + (i-27) + " 's steps are :" + day.getStepCountIntentional() + "\n");
+
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
                     goal_max = day.getGoal();
@@ -89,6 +93,10 @@ public class StepSummary extends AppCompatActivity {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
+
+            System.out.println("\n\n\n\n\n\n\n");
+            System.out.println("Step_max is :" + step_max +"Goal max is :" + goal_max);
+            System.out.println("\n\n\n\n\n\n\n");
         }
 
         // Gather up the bars into a set
@@ -107,43 +115,12 @@ public class StepSummary extends AppCompatActivity {
         dataSets.add(entrySet);
 
         BarData data = new BarData(dataSets);
-        //data.setValueFormatter(new MyValueFormatter());
         data.setValueTextColor(Color.BLACK);
 
-
-/*
-        // test 28 consecutive days
-        labels.add("02/02");
-        labels.add("02/03");
-        labels.add("02/04");
-        labels.add("02/05");
-        labels.add("02/01");
-        labels.add("02/02");
-        labels.add("02/03");
-        /*labels.add("02/04");
-        labels.add("02/05");
-        labels.add("02/01");
-        labels.add("02/02");
-        labels.add("02/03");
-        labels.add("02/04");
-        labels.add("02/05");
-        labels.add("02/01");
-        labels.add("02/02");
-        labels.add("02/03");
-        labels.add("02/04");
-        labels.add("02/05");
-        labels.add("02/01");
-        labels.add("02/02");
-        labels.add("02/03");
-        labels.add("02/04");
-        labels.add("02/05");
-        labels.add("02/01");
-        labels.add("02/02");
-        labels.add("02/03");  */
-
-
+        // create x-axis labels
         XAxis x = barChart10.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
+
         //x.setCenterAxisLabels(true);
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
         x.setGranularity(1);
@@ -155,6 +132,10 @@ public class StepSummary extends AppCompatActivity {
             leftAxis.setAxisMaximum(step_max * 1.2f);
         else leftAxis.setAxisMaximum(goal_max * 1.2f);
 
+        System.out.println("\n\n\n\n\n\n\n");
+        System.out.println("Step_max is :" + step_max +"Goal max is :" + goal_max);
+        System.out.println("\n\n\n\n\n\n\n");
+
         //barChart10.setDragEnabled(true);
         //barChart10.setVisibleXRangeMaximum(7);
         //barChart10.moveViewToX();
@@ -162,7 +143,12 @@ public class StepSummary extends AppCompatActivity {
 
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
-        //barChart10.setFitBars(true);
+
+        // show at max 7 entries at once
+        //barChart10.setVisibleXRangeMaximum(7);
+        //barChart10.setVisibleXRangeMinimum(7);
+
+        barChart10.setFitBars(true);
         barChart10.animateY(1000);
 
         // display the daily goal limit lines based on which bar of the day gets clicked
@@ -173,7 +159,8 @@ public class StepSummary extends AppCompatActivity {
             public void onValueSelected(Entry e, Highlight h) {
                 barChart10.getAxisLeft().removeAllLimitLines();
                 int day_ind = (int)e.getX();
-                //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
+
+                System.out.println("Value selected!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
                 int day_goal = goal_list[day_ind];
                 if(day_goal !=0)
@@ -216,22 +203,5 @@ public class StepSummary extends AppCompatActivity {
         dataView.setText(info);
     }
 
-/*
-    private class CustMarkerView extends MarkerView {
-        private TextView mContentTv;
-
-        public CustMarkerView(Context context, int layoutResource) {
-            super(context, layoutResource);
-            mContentTv = (TextView) findViewById(R.id.tv_marker_view);
-        }
-
-        @Override
-        public void refreshContent(Entry e, Highlight highlight) {
-            mContentTv.setText("" + e.getVal());
-        }
-
-    }
-
-*/
 
 }
