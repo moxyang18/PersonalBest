@@ -89,9 +89,9 @@ public class ActivityMediator implements Observer, Mediator {
 
     public void init(){
         walkDay = dataProcessor.retrieveDay(date);
-        if (walkDay ==null){
+        if (walkDay == null){
             walkDay = new WalkDay();
-            dataProcessor.insertDay(LocalDate.now(),walkDay);//writeToSharef implicitly called
+            dataProcessor.insertDay(LocalDate.now(),walkDay); //writeToSharef implicitly called
             Log.i(TAG,"start with a new WalkDay ");
         }
 

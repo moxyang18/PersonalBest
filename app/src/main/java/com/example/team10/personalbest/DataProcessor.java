@@ -159,12 +159,4 @@ public class DataProcessor extends AppCompatActivity {
         editor.putString(TABLE_NAME ,gson.toJson(table));
         editor.apply();
     }
-
-    public void retrieveFromCloud() {
-
-    }
-
-    public void updateCloud() {
-
-    }
 }

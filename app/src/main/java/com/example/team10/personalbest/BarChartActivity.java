@@ -94,12 +94,13 @@ public class BarChartActivity extends AppCompatActivity {
             if (day != null) {
                 entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
-                goal_list[i] =day.getGoal();
-                if(goal_max<day.getGoal())
+                goal_list[i] = day.getGoal();
+                if(goal_max < day.getGoal())
                     goal_max = day.getGoal();
-                if(step_max<day.getStepCountDailyReal())
-                    step_max = day.getStepCountDailyReal();
-                goalMet[i] = day.getStepCountDailyReal() >= day.getGoal();
+
+                if(step_max < day.getStepCountDailyTotal())
+                    step_max = day.getStepCountDailyTotal();
+                goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
             } else {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
