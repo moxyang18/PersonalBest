@@ -28,6 +28,8 @@ public class FriendSummary extends AppCompatActivity {
 
     private BarChart barChart10;
     private DataProcessor dp;
+    private String name;
+    private TextView header;
     private int[] goal_list = new int[28];//goal_list = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     @Override
@@ -39,8 +41,13 @@ public class FriendSummary extends AppCompatActivity {
         for (int i = 0; i < 28; i++)
             goal_list[i]=0;
 
+        // get friends name and set the chart's header
+        // name =
+
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.friend_bar_chart);
+        header = findViewById(R.id.name_title);
+        header.setText( this.name + "'s Step Chart");
 
         // Get data for chart
         dp = DataProcessor.getInstance();
@@ -174,6 +181,14 @@ public class FriendSummary extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        Button message_button = findViewById(R.id.message_in_chart);
+        message_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
