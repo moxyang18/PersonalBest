@@ -199,7 +199,7 @@ public class StepSummary extends AppCompatActivity {
                 TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
 
         // get the calculated MPH, daily distance and the total walk time on that day
-        String info = "prevMPH:"+day.getSpeed_average()+"MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
+        String info = "MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
         dataView.setText(info);
     }
 
