@@ -27,6 +27,28 @@
     <string name="end_run_button">End Run/Walk</string>
     <string name="run_back_button">Back</string>
     <string name="today_s_steps">Today\'s steps:</string>
+
     <string name="title_activity_step_summary">StepSummary</string>
     <string name="title_activity_friend_summary">FriendSummary</string>
+
+
+    <!-- Friends Strings -->
+    <string name="outgoing_request_header">Pending Requests:</string>
+    <string name="incoming_request_header">Incoming Request:</string>
+    <string name="friend_list_header">Friend List:</string>
+    <string name="friend_list_button">Go To Friends</string>
+    <string name="title_activity_friend_list_page">FriendListPage</string>
+    <string name="add_friend_dialogue_title">Add Friend</string>
+    <string name="add_friend_dialogue_description">Enter Email:</string>
+    <string name="title_activity_friend_home_page">FriendHomePage</string>
+
+    <!--Message Strings-->
+    <string name="title_activity_message_page">MessagePage</string>
+    <string name="message_location_hint">Message will appear here</string>
+    <string name="username_hint">User name</string>
+    <string name="message_hint">Message</string>
+    <string name="send_message_button">Send</string>
+    <string name="friend_homepage_button">Go To Friend\'s Homepage</string>
+    <string name="message_back_button">Back</string>
+
 </resources>

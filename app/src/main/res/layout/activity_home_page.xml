@@ -92,6 +92,24 @@
         android:textSize="30sp"
         android:layout_gravity="center_horizontal"/>
 
+<<<<<<< HEAD
+    <Button
+        android:id="@+id/friendsListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/friend_list_button"
+        android:background="@color/colorDarkGreen"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="4dp"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <ImageButton
+        android:id="@+id/barButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+=======
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -99,6 +117,7 @@
         android:layout_height="wrap_content"
         android:background="#CFC"
         android:orientation="horizontal"
+>>>>>>> b3f87211b425c2bb113b0af29941d86e149d33ec
         android:layout_marginTop="20dp"
         tools:context=".HomePage">
 

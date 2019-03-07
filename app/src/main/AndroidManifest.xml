@@ -11,6 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".MessagePage"
+            android:label="@string/title_activity_message_page"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".FriendHomePage"
+            android:label="@string/title_activity_friend_home_page"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".FriendListPage"
+            android:label="@string/title_activity_friend_list_page"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".HomePage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +50,14 @@
         <activity
             android:name=".FriendSummary"
             android:label="@string/title_activity_friend_summary"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <service android:name="MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

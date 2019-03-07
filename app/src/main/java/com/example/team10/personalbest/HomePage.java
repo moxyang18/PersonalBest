@@ -42,12 +42,10 @@ public class HomePage extends AppCompatActivity{
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
     protected TextView step_text;
     protected TextView goal_text;
-    //protected EditText set_time_text ;
 
     private static final String TAG = "HomePage";
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
-    //public LocalDate date__;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +133,15 @@ public class HomePage extends AppCompatActivity{
             }
         });
 
+        //Friends List Button
+        Button friends_list_button = findViewById(R.id.friendsListButton);
+        friends_list_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchFriendsList();
+            }
+        });
+
         // after pressing this button, switch to bar chart interface
         ImageButton bar_chart_button = findViewById(R.id.barButton);
         bar_chart_button.setOnClickListener(new View.OnClickListener() {
@@ -190,15 +197,21 @@ public class HomePage extends AppCompatActivity{
         startActivity(intent);
     }
 
+    public void launchFriendsList() {
+        Intent intent = new Intent(this, FriendListPage.class);
+
+        startActivity(intent);
+    }
+
     public void openCongratsDialog() {
         AlertDialog.Builder congratsBuilder = new AlertDialog.Builder(this);
         congratsBuilder.setMessage(R.string.congrats_message);
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                openNewGoalDialog();
-            }
-        });
+            openNewGoalDialog();
+        }
+    });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override
@@ -331,7 +344,6 @@ public class HomePage extends AppCompatActivity{
     public void showGoal(int Goal){
         goal_text.setText(Integer.toString(Goal));
     }
-
     public void showStepCount(int count){
         Log.i(TAG, "TextView is updated");
         step_text.setText(Integer.toString(count));
@@ -345,9 +357,8 @@ public class HomePage extends AppCompatActivity{
         }
         Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
         Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
-        Log.i(TAG, "Current GOal: " + Integer.toString(activityMediator.getGoal_today()));
+        Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
     }
-
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
