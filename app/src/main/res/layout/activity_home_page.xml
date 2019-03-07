@@ -22,7 +22,6 @@
         />
 
     <Button
-
         android:id="@+id/currentGoal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,24 +62,6 @@
         android:textSize="22sp"
         android:layout_gravity="center_horizontal"/>
 
-    <!--
-    <EditText
-        android:id="@+id/set_time_text"
-        android:layout_width="227dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:hint="Enter New Current Time"
-        android:outlineAmbientShadowColor="@color/colorBlack"
-        android:textColorHint="#ffffffff"
-        android:textSize="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.373"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.829" />
-    -->
-
     <Button
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
@@ -92,7 +73,6 @@
         android:textSize="30sp"
         android:layout_gravity="center_horizontal"/>
 
-<<<<<<< HEAD
     <Button
         android:id="@+id/friendsListButton"
         android:layout_width="wrap_content"
@@ -104,12 +84,6 @@
         android:textSize="30sp"
         android:layout_gravity="center_horizontal"/>
 
-    <ImageButton
-        android:id="@+id/barButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_horizontal"
-=======
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -117,7 +91,6 @@
         android:layout_height="wrap_content"
         android:background="#CFC"
         android:orientation="horizontal"
->>>>>>> b3f87211b425c2bb113b0af29941d86e149d33ec
         android:layout_marginTop="20dp"
         tools:context=".HomePage">
 
@@ -201,10 +174,4 @@
             android:scaleType="fitCenter"
             app:srcCompat="@android:drawable/ic_menu_manage" />
     </LinearLayout>
-
-
-
-
-
-
 </LinearLayout>
