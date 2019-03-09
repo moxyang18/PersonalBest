@@ -1,24 +1,16 @@
 package com.example.team10.personalbest.friend;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.media.Image;
-import android.support.v7.app.AlertDialog;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.team10.personalbest.FriendHomePage;
 import com.example.team10.personalbest.FriendListPage;
 import com.example.team10.personalbest.MessagePage;
 

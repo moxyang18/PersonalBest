@@ -193,7 +193,7 @@ public class HomePage extends AppCompatActivity{
 
     public void launchBarChart() {
         activityMediator.saveLocal();
-        Intent intent = new Intent(this, StepSummary.class);
+        Intent intent = new Intent(this, BarChartActivity.class);
         startActivity(intent);
     }
 

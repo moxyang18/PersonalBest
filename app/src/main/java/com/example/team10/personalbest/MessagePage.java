@@ -165,7 +165,7 @@ public class MessagePage extends AppCompatActivity {
     }
 
     public void launchFriendHomepage() {
-        Intent intent = new Intent(this, FriendHomePage.class);
+        Intent intent = new Intent(this, FriendSummary.class);
         intent.putExtra("name", friendEmail); //pass in name
         startActivity(intent);
     }

@@ -33,7 +33,7 @@ public class RunningMode extends AppCompatActivity{
     //private GoogleFitAdapter fit;
     private Mediator activityMediator;
     private  DataProcessor dp;
-    private int goal = 0;
+    //private int goal = 0;
     /*
     private int stepCount =0;
     private int stepCountUnintentional =0;
@@ -163,14 +163,11 @@ public class RunningMode extends AppCompatActivity{
 
     }
 
-
     public void showStepCount(int stepCount){
         Log.i(TAG, "Textview is updated");
         stepText.setText(Integer.toString(stepCount));
 
     }
-
-
 
     public void showStepCountIntentional(int stepCountIntentional){
         Log.i(TAG, "Textview is updated");
@@ -181,13 +178,14 @@ public class RunningMode extends AppCompatActivity{
         distanceText.setText(String.format("%.3f",distance*0.000621371));//distance*0.000621371));//converted to miles
     }
 
-
-
-
     public void showSpeed(float speed){
         //Log.d( "Textview is updated");
         speedText.setText(String.format("%.2f",speed*2.236f));
 
+    }
+
+    public void showGoal(int g){
+        goalText.setText(Integer.toString(g));
     }
 
     @Override

@@ -1,8 +1,10 @@
 package com.example.team10.personalbest;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,7 +32,8 @@ public class FriendSummary extends AppCompatActivity {
     private DataProcessor dp;
     private String name;
     private TextView header;
-    private int[] goal_list = new int[28];//goal_list = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private int[] goal_list = new int[28];
+    private static String TAG = "FriendSummary";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,8 @@ public class FriendSummary extends AppCompatActivity {
             goal_list[i]=0;
 
         // get friends name and set the chart's header
-        // name =
+        Bundle extras = this.getIntent().getExtras();
+        name = extras.getString("email");
 
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.friend_bar_chart);
@@ -97,9 +101,6 @@ public class FriendSummary extends AppCompatActivity {
                 goalMet[i] = false;
             }
 
-            System.out.println("\n\n\n\n\n\n\n");
-            System.out.println("Step_max is :" + step_max +"Goal max is :" + goal_max);
-            System.out.println("\n\n\n\n\n\n\n");
         }
 
         // Gather up the bars into a set
@@ -150,11 +151,15 @@ public class FriendSummary extends AppCompatActivity {
                 barChart10.getAxisLeft().removeAllLimitLines();
                 int day_ind = (int)e.getX();
 
-                int day_goal = goal_list[day_ind];
-                if(day_goal !=0)
-                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+                int day_goal =goal_list[27-day_ind];
 
-                setDataField(dp.retrieveDay(LocalDate.now()));
+                //Log.i(TAG, Integer.toString(day_goal));
+
+                if(day_goal !=0) {
+                    barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+                    Log.i(TAG, Integer.toString(day_goal));
+                }
+                setDataField(dp.retrieveDay(LocalDate.now().minusDays(27-day_ind)));
             }
 
             @Override
@@ -177,19 +182,12 @@ public class FriendSummary extends AppCompatActivity {
 
     private void config() {
         Button back_button = findViewById(R.id.friend_summary_back);
-        back_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        back_button.setOnClickListener(v -> finish());
 
         Button message_button = findViewById(R.id.message_in_chart);
-        message_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+        message_button.setOnClickListener(v -> {
+            Intent message = new Intent(this, MessagePage.class);
+            this.startActivity(message);
         });
     }
 
@@ -206,7 +204,7 @@ public class FriendSummary extends AppCompatActivity {
                 TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
 
         // get the calculated MPH, daily distance and the total walk time on that day
-        String info = "prevMPH:"+day.getSpeed_average()+"MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
+        String info = "MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
         dataView.setText(info);
     }
 
