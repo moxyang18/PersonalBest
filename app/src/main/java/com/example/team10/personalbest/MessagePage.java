@@ -36,6 +36,7 @@ public class MessagePage extends AppCompatActivity {
     String FROM_KEY = "from";
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
+    String friendEmail;
 
     CollectionReference chat;
     String from;
@@ -50,8 +51,8 @@ public class MessagePage extends AppCompatActivity {
 
         TextView friendName = findViewById(R.id.friend_name);
 
-        /*TODO set textview to friend's name*/
-        friendName.setText("Friend");
+        friendName.setText(getIntent().getExtras().getString("name"));
+        friendEmail = getIntent().getExtras().getString("name");
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +60,7 @@ public class MessagePage extends AppCompatActivity {
 
             @Override
             public void onClick(View view){
-                //launchFriendHomepage(); TODO
+                launchFriendHomepage();
             }
         });
 
@@ -163,11 +164,10 @@ public class MessagePage extends AppCompatActivity {
                 );
     }
 
-    /* TODO start activity that contains friend's homepage
     public void launchFriendHomepage() {
-        Intent intent = new Intent(this, FriendHomepage.class);
+        Intent intent = new Intent(this, FriendHomePage.class);
+        intent.putExtra("name", friendEmail); //pass in name
         startActivity(intent);
     }
-    */
 
 }

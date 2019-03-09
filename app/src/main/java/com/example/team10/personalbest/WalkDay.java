@@ -7,16 +7,16 @@ import java.time.LocalDate;
  * A simple class to store a steps associated with a date.
  */
 public class WalkDay {
-    private int stepCountIntentional = 0;
-    private int stepCountUnintentional = 0;
-    private int stepCountUnintentionalReal = 0;
-    private int stepCountIntentionalReal = 0;
-    private int mock_steps_unintentional = 0;
-    private int mock_steps_intentional = 0;
-    private int stepCountDailyReal = 0;
+    private int stepCountIntentional =0;
+    private int stepCountUnintentional =0;
+    private int stepCountUnintentionalReal =0;
+    private int stepCountIntentionalReal =0;
+    private int mock_steps_unintentional =0;
+    private int mock_steps_intentional =0;
+    private int stepCountDailyReal =0;
     private int stepCountDailyTotal = 0;
-    private int goal = 5000;
-    private boolean goalMet = false;
+    private int goal =5000;
+    private boolean goalMet =false;
     private float distanceDaily;
     private float distanceRunTotal;
     private long time_run_sec_daily = 0;

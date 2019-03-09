@@ -98,9 +98,9 @@ public class BarChartActivity extends AppCompatActivity {
                 if(goal_max < day.getGoal())
                     goal_max = day.getGoal();
 
-                if(step_max < day.getStepCountDailyTotal())
+                if(step_max<day.getStepCountDailyTotal())
                     step_max = day.getStepCountDailyTotal();
-                goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
+                goalMet[i] = day.getGoalMet();
             } else {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;

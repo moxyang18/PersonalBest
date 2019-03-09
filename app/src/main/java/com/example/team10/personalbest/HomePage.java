@@ -50,12 +50,10 @@ public class HomePage extends AppCompatActivity{
     private final int RC_SIGN_IN = 1; //For Google Log-in Intent
     protected TextView step_text;
     protected TextView goal_text;
-    protected EditText set_time_text ;
 
     private static final String TAG = "HomePage";
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
-    //public LocalDate date;
 
     // Used to authorize account with Firebase
     private FirebaseAuth firebaseAuth;
@@ -88,12 +86,13 @@ public class HomePage extends AppCompatActivity{
             }
         });
 
-        // Time mocking button
-        set_time_text = findViewById(R.id.set_time_text);
-        Button set_time_button = findViewById(R.id.set_time_in_hp);
-        set_time_button.setOnClickListener(new View.OnClickListener() {
+        //set_time_text = findViewById(R.id.set_time_text);
+        Button time_forward_button = findViewById(R.id.mock_forward);
+        time_forward_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                activityMediator.timeTravelForward();
+                /*
                 try {
                     int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
                     // Store this variable accordingly FIXME
@@ -102,6 +101,43 @@ public class HomePage extends AppCompatActivity{
                     Toast.makeText(HomePage.this, "Please enter a valid number",
                             Toast.LENGTH_LONG).show();
                 }
+                */
+            }
+        });
+        Button time_backward_button = findViewById(R.id.mock_back);
+        time_backward_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityMediator.timeTravelBackward();
+                /*
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+                */
+            }
+        });
+        Button time_now_button = findViewById(R.id.mock_now);
+        time_now_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityMediator.timeTravelNow();
+                /*
+                try {
+                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
+                    // store this var in new time.......
+                    // ..........................
+
+                } catch (Exception e) {
+                    Toast.makeText(HomePage.this, "Please enter a valid number",
+                            Toast.LENGTH_LONG).show();
+                }
+                */
             }
         });
 
@@ -112,6 +148,15 @@ public class HomePage extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 openCustomDialog();
+            }
+        });
+
+        //Friends List Button
+        Button friends_list_button = findViewById(R.id.friendsListButton);
+        friends_list_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchFriendsList();
             }
         });
 
@@ -204,15 +249,21 @@ public class HomePage extends AppCompatActivity{
         startActivity(intent);
     }
 
+    public void launchFriendsList() {
+        Intent intent = new Intent(this, FriendListPage.class);
+
+        startActivity(intent);
+    }
+
     public void openCongratsDialog() {
         AlertDialog.Builder congratsBuilder = new AlertDialog.Builder(this);
         congratsBuilder.setMessage(R.string.congrats_message);
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                openNewGoalDialog();
-            }
-        });
+            openNewGoalDialog();
+        }
+    });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override
@@ -382,9 +433,8 @@ public class HomePage extends AppCompatActivity{
         }
         Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
         Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
-        Log.i(TAG, "Current GOal: " + Integer.toString(activityMediator.getGoal_today()));
+        Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
     }
-
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)

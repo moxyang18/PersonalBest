@@ -1,0 +1,25 @@
+
+<!-- Referenced https://www.vogella.com/tutorials/AndroidListView/article.html#androidlists_adapterintro -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="6dip"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/chat_img_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/chat" />
+
+    <TextView
+        android:id="@+id/friend_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Example application"
+        android:textSize="25sp" />
+
+</LinearLayout>
+
