@@ -1,7 +1,6 @@
 package com.example.team10.personalbest;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -16,8 +15,8 @@ import java.util.List;
  */
 public class PersonalBestUser {
 
-    // Store dates mapping to days of walks
-    private Hashtable<String, WalkDay> table;
+    // Date-walkday table as json string
+    private String table;
 
     // Email
     private String email;
@@ -26,7 +25,7 @@ public class PersonalBestUser {
     private String uid;
 
     // List of friends' emails
-    private ArrayList<String> friends;
+    private List<String> friends;
 
     /**
      * PersonalBestUser ctor
@@ -36,7 +35,6 @@ public class PersonalBestUser {
      */
     public PersonalBestUser() {
         friends = new ArrayList<>();
-        table = new Hashtable<>();
     }
 
     // GETTERS
@@ -49,7 +47,7 @@ public class PersonalBestUser {
         return uid;
     }
 
-    public Hashtable<String, WalkDay> getTable() {
+    public String getTable() {
         return table;
     }
 
@@ -67,7 +65,7 @@ public class PersonalBestUser {
         this.friends = friends;
     }
 
-    public void setTable(Hashtable<String, WalkDay> table) {
+    public void setTable(String table) {
         this.table = table;
     }
 

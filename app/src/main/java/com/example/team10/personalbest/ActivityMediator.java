@@ -1,14 +1,25 @@
 package com.example.team10.personalbest;
 
+import android.app.Person;
 import android.util.Log;
 
+import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
+
+import androidx.annotation.NonNull;
 
 public class ActivityMediator implements Observer, Mediator {
 
@@ -88,6 +99,45 @@ public class ActivityMediator implements Observer, Mediator {
 
 
     public void init(){
+
+        // FIXME REMOVE THIS
+        /*DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        Log.d(TAG, database.toString());
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("users")) {
+                    Log.d(TAG, "AHAHGUIWEHGIU");
+                } else {
+                    Log.d(TAG, "FAIL FAIL FAIL");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.err.println("The read failed: " + databaseError.getCode());
+                Log.d(TAG, "FAIL FAIL FAIL");
+            }
+        });
+
+        WalkDay temp = new WalkDay(LocalDate.now().minusDays(1));
+        temp.setStepCountIntentional(500);
+        temp.setStepCountUnintentional(500);
+
+        PersonalBestUser person = new PersonalBestUser();
+        person.setEmail("person@gmail.com");
+        person.setUid("24fsegseg33");
+
+        Gson gson = new Gson();
+
+        Hashtable<String, WalkDay> table = dataProcessor.getTable();
+        table.put(LocalDate.now().minusDays(1).toString(), temp);
+        person.setTable(gson.toJson(table));
+
+        CloudProcessor.uploadUserData(person);
+        PersonalBestUser person2 = CloudProcessor.getUserFromCloud(person.getUid());*/
+        // FIXME END OF FIXME
+
         walkDay = dataProcessor.retrieveDay(date);
         if (walkDay == null){
             walkDay = new WalkDay();

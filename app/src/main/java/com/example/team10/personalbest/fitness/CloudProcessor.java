@@ -1,5 +1,7 @@
 package com.example.team10.personalbest.fitness;
 
+import android.util.Log;
+
 import com.example.team10.personalbest.PersonalBestUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +27,9 @@ public class CloudProcessor {
     private static final String USERS_DIR = "users";
     private static final String UID_EMAIL_MAP_DIR = "emailToId";
 
+    // Debug
+    private static final String TAG = "CloudProcessor - ";
+
     // DataSnapshot to extract from
     private static DataSnapshot snapshot;
 
@@ -43,6 +48,8 @@ public class CloudProcessor {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
                 .child(USERS_DIR);
 
+        Log.d(TAG, "Attempting to get user info...");
+
         /**
          * Read data once. Add a one-time listener for the database user directory.
          * Data is read immediately. If there is a directory specified by the uid,
@@ -58,8 +65,10 @@ public class CloudProcessor {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild(uid)) {
                     CloudProcessor.setSnapshot(snapshot);
+                    Log.d(TAG, "Found user.");
                 } else {
                     CloudProcessor.setSnapshot(null);
+                    Log.d(TAG, "User not found.");
                 }
             }
 
@@ -188,6 +197,9 @@ public class CloudProcessor {
      * @param snapshot Data snapshot that reflects information from the database
      */
     private static void setSnapshot(DataSnapshot snapshot) {
+        if (snapshot == null) {
+            Log.d(TAG, "Snapshot was null - no data found at queried location.");
+        }
         CloudProcessor.snapshot = snapshot;
     }
 }

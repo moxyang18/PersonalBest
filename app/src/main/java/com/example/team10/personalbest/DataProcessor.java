@@ -170,4 +170,12 @@ public class DataProcessor extends AppCompatActivity {
     public void setDate__(LocalDate d){
         date__ = d;
     }
+
+    public void setTable(Hashtable<String, WalkDay> table) {
+        this.table = table;
+    }
+
+    public Hashtable<String, WalkDay> getTable() {
+        return table;
+    }
 }
