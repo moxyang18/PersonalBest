@@ -46,4 +46,5 @@
     <string name="send_message_button">Send</string>
     <string name="friend_homepage_button">Go To Friend\'s Homepage</string>
     <string name="message_back_button">Back</string>
+    <string name="intent_email_key">email</string>
 </resources>

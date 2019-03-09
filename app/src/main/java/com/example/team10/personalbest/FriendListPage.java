@@ -25,10 +25,13 @@ import java.util.Set;
 public class FriendListPage extends AppCompatActivity {
     private String TAG = "FriendListPage:";
 
+    //final int INCOMING_INDEX = 0;
+    //final int OUTGOING_INDEX = 0;
+    final int FRIEND_INDEX = 2;
+
     ExpandableListView friendExpandableList;
     FriendListExpandableListAdapter listAdapter;
 
-    ArrayList<String> friendNames; //TODO delete later?
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +58,7 @@ public class FriendListPage extends AppCompatActivity {
 
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
         friendExpandableList.setAdapter(listAdapter);
-        friendExpandableList.expandGroup(2); //TODO magic number get rid
+        friendExpandableList.expandGroup(FRIEND_INDEX); //TODO magic number get rid
         friendExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             //Open Friend Home Page while passing in email address
             @Override
@@ -66,7 +69,7 @@ public class FriendListPage extends AppCompatActivity {
                 //Grab the ExpandableListAdapter
                 FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
                 Intent intent = new Intent( myAdapter.getActivity(), FriendHomePage.class );
-                intent.putExtra("email", myAdapter.getChild(groupPosition, childPosition).toString());
+                intent.putExtra(getString(R.string.intent_email_key), myAdapter.getChild(groupPosition, childPosition).toString());
                 myAdapter.getActivity().startActivity(intent);
                 return true;
             }
@@ -93,9 +96,14 @@ public class FriendListPage extends AppCompatActivity {
                 // User chose add friend button, open the dialogue.
                 addFriendDialgue();
                 return true;
+            case android.R.id.home:
+                finish();
+                //User chose the exit button, return to home page
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
+                Log.d(TAG, "" + item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
     }

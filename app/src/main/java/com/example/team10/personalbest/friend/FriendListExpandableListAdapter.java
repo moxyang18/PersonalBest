@@ -205,7 +205,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, MessagePage.class );
-                intent.putExtra("name", email); //pass in name
+                intent.putExtra( activity.getString(R.string.intent_email_key), email); //pass in name
                 activity.startActivity(intent);
             }
         });
