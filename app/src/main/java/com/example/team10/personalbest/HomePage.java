@@ -39,6 +39,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 import java.time.LocalDate;
@@ -72,6 +73,7 @@ public class HomePage extends AppCompatActivity{
 
         // Init app
         FirebaseApp.initializeApp(this);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         // Get the shared instance for firebase
         firebaseAuth = FirebaseAuth.getInstance();
@@ -186,7 +188,7 @@ public class HomePage extends AppCompatActivity{
         });
 
         //load data into home page and call text view update methods
-        activityMediator.init();
+
          /*
           * Log into Google Account:
           * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
@@ -300,8 +302,7 @@ public class HomePage extends AppCompatActivity{
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
 
-            // Build the activity mediator.
-            activityMediator.build();
+
 
             // Obtain the account used to sign in and authenticate firebase
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -310,16 +311,26 @@ public class HomePage extends AppCompatActivity{
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
                 currentUser = firebaseAuth.getCurrentUser();
+
+
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
             }
+            if(currentUser != null){
 
-            // Setup asynchronous tasks.
-            Log.i(TAG, "Preparing to run Async Task");
-            AsyncTaskRunner runner = new AsyncTaskRunner();
-            runner.execute();
-            Log.i(TAG, "Async Task is run");
+
+                //Initialize the activity mediator.
+                activityMediator.init();
+                // Build the activity mediator.
+                activityMediator.build();
+                // Setup asynchronous tasks.
+                Log.i(TAG, "Preparing to run Async Task");
+                AsyncTaskRunner runner = new AsyncTaskRunner();
+                runner.execute();
+                Log.i(TAG, "Async Task is run");
+            }
+
         }
 
     }

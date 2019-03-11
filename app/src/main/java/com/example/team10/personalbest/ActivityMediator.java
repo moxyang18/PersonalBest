@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -86,6 +87,9 @@ public class ActivityMediator implements Observer, Mediator {
     private long time_elapsed_sec_daily = 0;
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
+    private FirebaseUser currentuser;
+    private String userEmail;
+    private String userDisplayName;
 
 
     public ActivityMediator(HomePage hp){
@@ -99,10 +103,16 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
 
+    public void sss(){
+
+    }
 
     public void init(){
 
         // FIXME REMOVE THIS
+
+
+        /*
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         Log.d(TAG, "loading database"+database.toString());
 
@@ -129,17 +139,22 @@ public class ActivityMediator implements Observer, Mediator {
                     WalkDay w1 = dataProcessor.retrieveDay(LocalDate.now().minusDays(3));
                     Log.d(TAG, "3 days ago's Step is"+ w1.getStepCountDailyTotal());
                     */
+
+            /*
                 } else {
                     Log.d(TAG, "FAIL FAIL FAIL");
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.err.println("The read failed: " + databaseError.getCode());
-                Log.d(TAG, "FAIL FAIL FAIL");
-            }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            System.err.println("The read failed: " + databaseError.getCode());
+            Log.d(TAG, "FAIL FAIL FAIL");
+        }
         });
+
+        */
+        /*
         WalkDay temp = new WalkDay(LocalDate.now().minusDays(1));
         temp.setStepCountIntentional(500);
         temp.setStepCountUnintentional(500);
@@ -161,8 +176,7 @@ public class ActivityMediator implements Observer, Mediator {
         CloudProcessor.uploadUserData(person);
         PersonalBestUser person2 = CloudProcessor.getUserFromCloud(person.getUid());
         // FIXME END OF FIXME
-
-
+        */
 
 
 
@@ -420,6 +434,25 @@ public class ActivityMediator implements Observer, Mediator {
         init();
     }
 
+    public void setCurrentuser(FirebaseUser firebaseUser){
+        currentuser = firebaseUser;
+
+        userDisplayName= currentuser.getDisplayName();
+        userEmail = currentuser.getEmail();
+        if(currentuser == null)
+            Log.d(TAG,"current user is null!");
+    }
+    public FirebaseUser getCurrentuser(){
+        return currentuser;
+    }
+
+    public String getUserEmail(){
+        return userEmail;
+    }
+
+    public String getUserDisplayName(){
+        return userDisplayName;
+    }
     public void timeTravelNow(){
         saveLocal();
         date =LocalDate.now();
