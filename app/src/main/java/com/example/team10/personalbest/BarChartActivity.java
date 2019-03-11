@@ -3,6 +3,7 @@ package com.example.team10.personalbest;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -27,6 +28,9 @@ public class BarChartActivity extends AppCompatActivity {
     private BarChart barChart10;
     private DataProcessor dp;
     private int[] goal_list = {0,0,0,0,0,0,0};
+    private static String TAG_IntentStps = "BarChart_IntentionalSteps";
+    private static String TAG_TotalStps = "BarChart_TotalSteps";
+    private static String TAG_DailyGoal = "BarChart_CurrentGoal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +95,8 @@ public class BarChartActivity extends AppCompatActivity {
             if (day != null) {
                 entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
+                Log.i(TAG_IntentStps, Integer.toString(day.getStepCountIntentional()));
+                Log.i(TAG_TotalStps, Integer.toString(day.getStepCountDailyTotal()));
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
                     goal_max = day.getGoal();
@@ -170,6 +176,7 @@ public class BarChartActivity extends AppCompatActivity {
                 //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
 
                 int day_goal = goal_list[day_ind];
+                Log.i(TAG_DailyGoal, Integer.toString(day_goal));
                 if(day_goal !=0)
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
             }

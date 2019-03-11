@@ -67,6 +67,14 @@ public class HomePage extends AppCompatActivity{
                 launchRunning();
             }
         });
+        Button own_summary_button = findViewById(R.id.selfMonthlyChart);
+        own_summary_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchOwnSummaryChart();
+            }
+        });
+
         //set_time_text = findViewById(R.id.set_time_text);
         Button time_forward_button = findViewById(R.id.mock_forward);
         time_forward_button.setOnClickListener(new View.OnClickListener() {
@@ -199,7 +207,11 @@ public class HomePage extends AppCompatActivity{
 
     public void launchFriendsList() {
         Intent intent = new Intent(this, FriendListPage.class);
+        startActivity(intent);
+    }
 
+    public void launchOwnSummaryChart() {
+        Intent intent = new Intent(this, StepSummary.class);
         startActivity(intent);
     }
 

@@ -28,7 +28,7 @@ public class StepSummary extends AppCompatActivity {
 
     private BarChart barChart10;
     private DataProcessor dp;
-    private int[] goal_list = new int[28];//goal_list = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private int[] goal_list = new int[28];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +79,6 @@ public class StepSummary extends AppCompatActivity {
                 entries.add(new BarEntry(27-i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
 
-                //System.out.println("Day" + (i-27) + " 's steps are :" + day.getStepCountUnintentional() + "\n");
-                //System.out.println("Day" + (i-27) + " 's steps are :" + day.getStepCountIntentional() + "\n");
-
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
                     goal_max = day.getGoal();
@@ -93,9 +90,6 @@ public class StepSummary extends AppCompatActivity {
                 goalMet[i] = false;
             }
 
-            System.out.println("\n\n\n\n\n\n\n");
-            System.out.println("Step_max is :" + step_max +"Goal max is :" + goal_max);
-            System.out.println("\n\n\n\n\n\n\n");
         }
 
         // Gather up the bars into a set
@@ -131,11 +125,6 @@ public class StepSummary extends AppCompatActivity {
             leftAxis.setAxisMaximum(step_max * 1.2f);
         else leftAxis.setAxisMaximum(goal_max * 1.2f);
 
-        //barChart10.setDragEnabled(true);
-        //barChart10.setVisibleXRangeMaximum(7);
-        //barChart10.moveViewToX();
-        //barChart10.setVisibleXRangeMinimum(4);
-
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
 
@@ -151,11 +140,11 @@ public class StepSummary extends AppCompatActivity {
                 barChart10.getAxisLeft().removeAllLimitLines();
                 int day_ind = (int)e.getX();
 
-                int day_goal = goal_list[day_ind];
+                int day_goal = goal_list[27-day_ind];
                 if(day_goal !=0)
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
 
-                setDataField(dp.retrieveDay(LocalDate.now()));
+                setDataField(dp.retrieveDay(LocalDate.now().minusDays(27-day_ind)));
             }
 
             @Override

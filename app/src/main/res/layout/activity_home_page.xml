@@ -175,6 +175,17 @@
             android:layout_marginLeft="30dp"
             android:scaleType="fitCenter"
             app:srcCompat="@android:drawable/ic_menu_manage" />
+
+        <Button
+            android:id="@+id/selfMonthlyChart"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@color/colorBlack"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="30dp"
+            android:text="Own Summary"
+            android:textColor="@color/colorWhite"
+            android:scaleType="fitCenter" />
     </LinearLayout>
 
 

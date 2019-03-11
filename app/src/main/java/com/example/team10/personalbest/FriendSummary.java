@@ -35,6 +35,12 @@ public class FriendSummary extends AppCompatActivity {
     private int[] goal_list = new int[28];
     private static String TAG = "FriendSummary";
 
+    /*
+    * Populate the DataProcessor with the friend's monthly data stored in the
+    * FireBase and draw the chart based on it.
+    *
+    * */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +57,9 @@ public class FriendSummary extends AppCompatActivity {
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.friend_bar_chart);
         header = findViewById(R.id.name_title);
+        if(this.name == null)
+            header.setText("The Friend's Step Chart");
+        else
         header.setText( this.name + "'s Step Chart");
 
         // Get data for chart
@@ -187,6 +196,7 @@ public class FriendSummary extends AppCompatActivity {
         Button message_button = findViewById(R.id.message_in_chart);
         message_button.setOnClickListener(v -> {
             Intent message = new Intent(this, MessagePage.class);
+            message.putExtra("name", name);
             this.startActivity(message);
         });
     }
