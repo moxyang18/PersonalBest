@@ -57,9 +57,7 @@ public class PersonalBestUser {
 
     // SETTERS
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public void setEmail(String email) { this.email = email; }
 
     public void setFriends(ArrayList<String> friends) {
         this.friends = friends;

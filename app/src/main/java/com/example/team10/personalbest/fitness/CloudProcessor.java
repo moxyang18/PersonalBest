@@ -81,7 +81,9 @@ public class CloudProcessor {
 
         // Return user if not null
         if (snapshot != null) {
-            return snapshot.child(uid).getValue(PersonalBestUser.class);
+            PersonalBestUser user = snapshot.child(uid).getValue(PersonalBestUser.class);
+            user.setEmail(reformatEmailForUser(user.getEmail()));
+            return user;
         } else {
             return null;
         }
@@ -105,7 +107,7 @@ public class CloudProcessor {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         // Delegate to helper function to get uid
-        String uid = CloudProcessor.getUidFromEmail(email);
+        String uid = CloudProcessor.getUidFromEmail(reformatEmailForCloud(email));
 
         // Delegate to other implemented function b/c we're lazy
         return CloudProcessor.getUserFromCloud(uid);
@@ -127,7 +129,7 @@ public class CloudProcessor {
                 .child(USERS_DIR).child(user.getUid());
 
         // Link email to a uid
-        CloudProcessor.linkIdToEmail(user.getUid(), user.getEmail());
+        CloudProcessor.linkIdToEmail(user.getUid(), reformatEmailForCloud(user.getEmail()));
 
         // Upload data to respective directories
         database.setValue(user);
@@ -147,7 +149,7 @@ public class CloudProcessor {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         // Link
-        database.child(UID_EMAIL_MAP_DIR).child(email).setValue(uid);
+        database.child(UID_EMAIL_MAP_DIR).child(reformatEmailForCloud(email)).setValue(uid);
     }
 
     /**
@@ -185,7 +187,7 @@ public class CloudProcessor {
         });
 
         // Return the UID assumed to be associated with the email
-        return snapshot.child(email).getValue(String.class);
+        return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
     }
 
     /**
@@ -201,5 +203,47 @@ public class CloudProcessor {
             Log.d(TAG, "Snapshot was null - no data found at queried location.");
         }
         CloudProcessor.snapshot = snapshot;
+    }
+
+    /**
+     * reformatEmailForCloud
+     *
+     * Periods (.) are prohibited in JSON strings. We'll reformat
+     * the email string to replace periods with commas.
+     *
+     * @param email The email to reformat
+     * @return A reformatted email with periods replaced with commas.
+     */
+    private static String reformatEmailForCloud (String email) {
+
+        char[] emailChar = email.toCharArray();
+
+        for (int i = 0; i < emailChar.length; i++) {
+            if (emailChar[i] == '.') {
+                emailChar[i] = ',';
+            }
+        }
+        return new String(emailChar);
+    }
+
+    /**
+     * reformatEmailForUser
+     *
+     * For main memory, we'll need strings to be in their original
+     * format. We'll return email strings formatted with commas to
+     * email strings with periods.
+     *
+     * @param email The email to reformat.
+     * @return A reformatted email with commas replaced with periods.
+     */
+    private static String reformatEmailForUser (String email) {
+        char[] emailChar = email.toCharArray();
+
+        for (int i = 0; i < emailChar.length; i++) {
+            if (emailChar[i] == ',') {
+                emailChar[i] = '.';
+            }
+        }
+        return new String(emailChar);
     }
 }
