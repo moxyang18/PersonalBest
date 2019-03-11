@@ -1,35 +1,51 @@
 {
   "project_info": {
-    "project_number": "765331394270",
-    "firebase_url": "https://civil-celerity-230021.firebaseio.com",
-    "project_id": "civil-celerity-230021",
-    "storage_bucket": "civil-celerity-230021.appspot.com"
+    "project_number": "978306071252",
+    "firebase_url": "https://personal-best-messaging.firebaseio.com",
+    "project_id": "personal-best-messaging",
+    "storage_bucket": "personal-best-messaging.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:765331394270:android:d851da1dcd5996b8",
+        "mobilesdk_app_id": "1:978306071252:android:d851da1dcd5996b8",
         "android_client_info": {
           "package_name": "com.example.team10.personalbest"
         }
       },
       "oauth_client": [
         {
-          "client_id": "765331394270-vrs02v6cc6snscplbafpiplt9uo1shef.apps.googleusercontent.com",
+          "client_id": "978306071252-4d9u8tbk3b1kundsocs6novgavirjl6v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.team10.personalbest",
-            "certificate_hash": "6514583ac2ac9ad392921da5898449632d55751d"
+            "certificate_hash": "c7036c47e6824a892244f504d4916521f03fd07a"
           }
         },
         {
-          "client_id": "765331394270-ranp3n16fekon1jrtghqtr9b2aju5rui.apps.googleusercontent.com",
+          "client_id": "978306071252-in61vo73249f0ej9rqrshqhj9k3d939k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.team10.personalbest",
+            "certificate_hash": "d751123f3975fc99fd8308cc6885c7b66ef69b53"
+          }
+        },
+        {
+          "client_id": "978306071252-lfm4nuol1o5sipq9tlj1ta58bb1ljhj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.team10.personalbest",
+            "certificate_hash": "b37cfd6ea6a35bcbee14480c9bd5059add8dbbfd"
+          }
+        },
+        {
+          "client_id": "978306071252-c9ktg25jmu3oouo6bv9k8oht3ocvarq9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCYdBJW5rrE8K_cujOlZECExb7f82UUZw0"
+          "current_key": "AIzaSyBOPiLiedBw-klrdlWk6iNtJkqhWPHokqI"
         }
       ],
       "services": {
@@ -40,7 +56,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "765331394270-ranp3n16fekon1jrtghqtr9b2aju5rui.apps.googleusercontent.com",
+              "client_id": "978306071252-c9ktg25jmu3oouo6bv9k8oht3ocvarq9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

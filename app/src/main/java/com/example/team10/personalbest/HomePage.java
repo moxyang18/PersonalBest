@@ -28,9 +28,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -43,6 +53,16 @@ public class HomePage extends AppCompatActivity{
     private static final String TAG = "HomePage";
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
+
+    String COLLECTION_KEY = "chats";
+    String DOCUMENT_KEY = "chat1";
+    String MESSAGES_KEY = "messages";
+    String FROM_KEY = "from";
+    String TEXT_KEY = "text";
+    String TIMESTAMP_KEY = "timestamp";
+    String from;
+    CollectionReference chat;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,7 +202,6 @@ public class HomePage extends AppCompatActivity{
         startActivityForResult( signInIntent, RC_SIGN_IN );
         Log.i(TAG, "Intent is sent");
     }
-
 
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);

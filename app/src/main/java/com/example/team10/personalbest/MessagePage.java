@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.team10.personalbest.ChatMessaging.FirebaseCloudMessengerAdapter;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MessagePage extends AppCompatActivity {
-    String TAG = MessagePage.class.getSimpleName();
+    private static String TAG = MessagePage.class.getSimpleName();
 
     String COLLECTION_KEY = "chats";
     String DOCUMENT_KEY = "chat1";
@@ -38,7 +39,8 @@ public class MessagePage extends AppCompatActivity {
     String TIMESTAMP_KEY = "timestamp";
     String friendEmail;
 
-    CollectionReference chat;
+    FirebaseCloudMessengerAdapter fcmAdapter;
+    SharedPreferences sharedPreferences;
     String from;
 
     @Override
@@ -49,15 +51,22 @@ public class MessagePage extends AppCompatActivity {
 
         from = sharedpreferences.getString(FROM_KEY, null);
 
+        //Initialize Firebase Store
+        FirebaseApp.initializeApp(this);
+        fcmAdapter = new FirebaseCloudMessengerAdapter(this, DOCUMENT_KEY);
+        fcmAdapter.initMessageUpdateListener();
+        fcmAdapter.subscribeToNotificationsTopic();
+
+
+        //Set up buttons/UI
         TextView friendName = findViewById(R.id.friend_name);
 
+        //Get the friend's name and email from intent (just email)
         friendName.setText(getIntent().getExtras().getString("name"));
         friendEmail = getIntent().getExtras().getString("name");
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View view){
                 launchFriendHomepage();
@@ -66,25 +75,13 @@ public class MessagePage extends AppCompatActivity {
 
         Button message_back_button = findViewById(R.id.message_back_button);
         message_back_button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view){
                 finish();
             }
         });
 
-        FirebaseApp.initializeApp(this);
-
-        chat = FirebaseFirestore.getInstance()
-                .collection(COLLECTION_KEY)
-                .document(DOCUMENT_KEY)
-                .collection(MESSAGES_KEY);
-
-        initMessageUpdateListener();
-
-        subscribeToNotificationsTopic();
-
-        findViewById(R.id.btn_send).setOnClickListener(view -> sendMessage());
+        findViewById(R.id.btn_send).setOnClickListener(view -> fcmAdapter.sendMessage(from));
 
         EditText nameView = findViewById((R.id.user_name));
         nameView.setText(from);
@@ -104,70 +101,9 @@ public class MessagePage extends AppCompatActivity {
             }
         });
     }
-
-    private void sendMessage() {
-        if (from == null || from.isEmpty()) {
-            Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        EditText messageView = findViewById(R.id.text_message);
-
-        Map<String, String> newMessage = new HashMap<>();
-        newMessage.put(FROM_KEY, from);
-        newMessage.put(TEXT_KEY, messageView.getText().toString());
-
-        chat.add(newMessage).addOnSuccessListener(result -> {
-            messageView.setText("");
-        }).addOnFailureListener(error -> {
-            Log.e(TAG, error.getLocalizedMessage());
-        });
-    }
-
-    private void initMessageUpdateListener() {
-        chat.orderBy(TIMESTAMP_KEY, Query.Direction.ASCENDING)
-                .addSnapshotListener((newChatSnapShot, error) -> {
-            if (error != null) {
-                Log.e(TAG, error.getLocalizedMessage());
-                return;
-            }
-
-            if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
-                documentChanges.forEach(change -> {
-                    QueryDocumentSnapshot document = change.getDocument();
-                    sb.append(document.get(FROM_KEY));
-                    sb.append(":\n");
-                    sb.append(document.get(TEXT_KEY));
-                    sb.append("\n");
-                    sb.append("---\n");
-                });
-
-
-                TextView chatView = findViewById(R.id.chat);
-                chatView.append(sb.toString());
-            }
-        });
-    }
-
-    private void subscribeToNotificationsTopic() {
-        FirebaseMessaging.getInstance().subscribeToTopic(DOCUMENT_KEY)
-                .addOnCompleteListener(task -> {
-                            String msg = "Subscribed to notifications";
-                            if (!task.isSuccessful()) {
-                                msg = "Subscribe to notifications failed";
-                            }
-                            Log.d(TAG, msg);
-                            Toast.makeText(MessagePage.this, msg, Toast.LENGTH_SHORT).show();
-                        }
-                );
-    }
-
-    public void launchFriendHomepage() {
+    public void launchFriendHomepage(){
         Intent intent = new Intent(this, FriendHomePage.class);
         intent.putExtra("name", friendEmail); //pass in name
         startActivity(intent);
     }
-
 }

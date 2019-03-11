@@ -118,16 +118,16 @@ public class FriendListPage extends AppCompatActivity {
 
 
         //Found the friend in our system, now save in Shared Preferences/update friend count
-        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
+        SharedPreferences friendPreferences = getSharedPreferences(getString(R.string.shared_pref_file_name), MODE_PRIVATE);
         SharedPreferences.Editor editor = friendPreferences.edit();
 
         //get list of current friends' emails
-        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+        Set<String> emailSet = friendPreferences.getStringSet(getString(R.string.shared_pref_string_set_key), new HashSet<String>());
         Log.d(TAG,"Retrieved email set from Shared Preferences");
 
         //add new email to set and save into Shared Preferences
         emailSet.add(email);
-        editor.putStringSet("emailList", emailSet);
+        editor.putStringSet(getString(R.string.shared_pref_string_set_key), emailSet);
         editor.apply();
         Log.d(TAG, "Saved New List Successfully");
 
