@@ -1,5 +1,7 @@
 package com.example.team10.personalbest;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -64,6 +67,14 @@ public class HomePage extends AppCompatActivity{
                 launchRunning();
             }
         });
+        Button own_summary_button = findViewById(R.id.selfMonthlyChart);
+        own_summary_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchOwnSummaryChart();
+            }
+        });
+
         //set_time_text = findViewById(R.id.set_time_text);
         Button time_forward_button = findViewById(R.id.mock_forward);
         time_forward_button.setOnClickListener(new View.OnClickListener() {
@@ -160,7 +171,6 @@ public class HomePage extends AppCompatActivity{
             }
         });
 
-
         //load data into home page and call text view update methods
         activityMediator.init();
          /** Log into Google Account:
@@ -197,7 +207,11 @@ public class HomePage extends AppCompatActivity{
 
     public void launchFriendsList() {
         Intent intent = new Intent(this, FriendListPage.class);
+        startActivity(intent);
+    }
 
+    public void launchOwnSummaryChart() {
+        Intent intent = new Intent(this, StepSummary.class);
         startActivity(intent);
     }
 
@@ -338,6 +352,7 @@ public class HomePage extends AppCompatActivity{
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
+
     public void showGoal(int Goal){
         goal_text.setText(Integer.toString(Goal));
     }

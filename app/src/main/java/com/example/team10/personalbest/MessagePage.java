@@ -56,8 +56,6 @@ public class MessagePage extends AppCompatActivity {
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View view){
                 launchFriendHomepage();
@@ -66,7 +64,6 @@ public class MessagePage extends AppCompatActivity {
 
         Button message_back_button = findViewById(R.id.message_back_button);
         message_back_button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view){
                 finish();
@@ -165,7 +162,7 @@ public class MessagePage extends AppCompatActivity {
     }
 
     public void launchFriendHomepage() {
-        Intent intent = new Intent(this, FriendHomePage.class);
+        Intent intent = new Intent(this, FriendSummary.class);
         intent.putExtra("name", friendEmail); //pass in name
         startActivity(intent);
     }
