@@ -11,7 +11,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -101,13 +103,32 @@ public class ActivityMediator implements Observer, Mediator {
     public void init(){
 
         // FIXME REMOVE THIS
-        /*DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        Log.d(TAG, database.toString());
-        database.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        Log.d(TAG, "loading database"+database.toString());
+
+        database.child("users").child("24fsegseg33").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild("users")) {
+
                     Log.d(TAG, "AHAHGUIWEHGIU");
+                    PersonalBestUser p = snapshot.getValue(PersonalBestUser.class);
+                    Log.d(TAG, "UID is"+p.getUid());
+                    Log.d(TAG, p.getTable());
+                    if(p.getUid()!=null){
+                        Type type = new TypeToken< Hashtable<String, WalkDay>>(){}.getType();
+                        Gson gson = new Gson();
+                        Hashtable<String, WalkDay> table2 = gson.fromJson(p.getTable(),type);
+                        dataProcessor.setTable(table2);
+                        WalkDay w1 = dataProcessor.retrieveDay(LocalDate.now().minusDays(3));
+                        Log.d(TAG, "3 days ago's Step is"+ w1.getStepCountDailyTotal());
+                    /*
+                    Type type = new TypeToken< Hashtable<String, WalkDay>>(){}.getType();
+                    Gson gson = new Gson();
+                    Hashtable<String, WalkDay> table2 = gson.fromJson(p.getTable(),type);
+                    dataProcessor.setTable(table2);
+                    WalkDay w1 = dataProcessor.retrieveDay(LocalDate.now().minusDays(3));
+                    Log.d(TAG, "3 days ago's Step is"+ w1.getStepCountDailyTotal());
+                    */
                 } else {
                     Log.d(TAG, "FAIL FAIL FAIL");
                 }
@@ -119,24 +140,31 @@ public class ActivityMediator implements Observer, Mediator {
                 Log.d(TAG, "FAIL FAIL FAIL");
             }
         });
-
         WalkDay temp = new WalkDay(LocalDate.now().minusDays(1));
         temp.setStepCountIntentional(500);
         temp.setStepCountUnintentional(500);
 
         PersonalBestUser person = new PersonalBestUser();
-        person.setEmail("person@gmail.com");
+        person.setEmail("person@gmail,com");
         person.setUid("24fsegseg33");
 
         Gson gson = new Gson();
 
         Hashtable<String, WalkDay> table = dataProcessor.getTable();
         table.put(LocalDate.now().minusDays(1).toString(), temp);
+        temp.setStepCountDailyTotal(6666);
+        table.put(LocalDate.now().minusDays(3).toString(), temp);
+        temp.setStepCountDailyTotal(8777);
+        table.put(LocalDate.now().minusDays(5).toString(), temp);
         person.setTable(gson.toJson(table));
 
         CloudProcessor.uploadUserData(person);
-        PersonalBestUser person2 = CloudProcessor.getUserFromCloud(person.getUid());*/
+        PersonalBestUser person2 = CloudProcessor.getUserFromCloud(person.getUid());
         // FIXME END OF FIXME
+
+
+
+
 
         walkDay = dataProcessor.retrieveDay(date);
         if (walkDay == null){
