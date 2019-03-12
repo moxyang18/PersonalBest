@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team10.personalbest.ChatMessaging.FirebaseCloudMessengerAdapter;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -38,6 +40,9 @@ public class MessagePage extends AppCompatActivity {
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
     String friendEmail;
+    String topicName;
+    String userEmail;
+    String userName;
 
     FirebaseCloudMessengerAdapter fcmAdapter;
     SharedPreferences sharedPreferences;
@@ -51,19 +56,36 @@ public class MessagePage extends AppCompatActivity {
 
         from = sharedpreferences.getString(FROM_KEY, null);
 
-        //Initialize Firebase Store
-        FirebaseApp.initializeApp(this);
-        fcmAdapter = new FirebaseCloudMessengerAdapter(this, DOCUMENT_KEY);
-        fcmAdapter.initMessageUpdateListener();
-        fcmAdapter.subscribeToNotificationsTopic();
-
-
         //Set up buttons/UI
         TextView friendName = findViewById(R.id.friend_name);
 
         //Get the friend's name and email from intent (just email)
-        friendName.setText(getIntent().getExtras().getString("name"));
-        friendEmail = getIntent().getExtras().getString("name");
+        friendEmail = getIntent().getExtras().getString(getString(R.string.intent_email_key));
+        friendName.setText(friendEmail);
+
+        /**
+         * Get the user's email
+         */
+        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        if(user != null) {
+            userEmail = user.getEmail();
+            userName = user.getDisplayName();
+        }
+        Log.d(TAG, "The user's email is " + userEmail);
+
+        //Use the two emails in alphabetical order to determine the topic name linking the two people
+        if(friendEmail.compareTo(userEmail) < 0) {
+            topicName = friendEmail + "_" + userEmail;
+        }
+        else if(friendEmail.compareTo(userEmail) > 0) {
+            topicName = userEmail + "_" + friendEmail;
+        }
+
+        //Initialize Firebase Store
+        FirebaseApp.initializeApp(this);
+        fcmAdapter = new FirebaseCloudMessengerAdapter(this, topicName);
+        fcmAdapter.initMessageUpdateListener();
+        fcmAdapter.subscribeToNotificationsTopic(topicName);
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
@@ -83,8 +105,13 @@ public class MessagePage extends AppCompatActivity {
 
         findViewById(R.id.btn_send).setOnClickListener(view -> fcmAdapter.sendMessage(from));
 
-        EditText nameView = findViewById((R.id.user_name));
-        nameView.setText(from);
+        /**
+         * Set the display name to show who the chat is from.
+         */
+        TextView nameView = findViewById((R.id.user_name));
+        nameView.setText(userName);
+        sharedpreferences.edit().putString(FROM_KEY, userName).apply();
+        /*
         nameView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -100,6 +127,7 @@ public class MessagePage extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+        */
     }
     public void launchFriendHomepage(){
         Intent intent = new Intent(this, FriendHomePage.class);
