@@ -17,10 +17,10 @@ public class WalkDay {
     private int stepCountDailyTotal = 0;
     private int goal =5000;
     private boolean goalMet =false;
-    private float distanceDaily;
-    private float distanceRunTotal;
+    private float distanceDaily =0.f;
+    private float distanceRunTotal =0.f;
     private long time_run_sec_daily = 0;
-    private float speed_average;
+    private float speed_average =0.f;
     private LocalDate date =LocalDate.now();
 
 

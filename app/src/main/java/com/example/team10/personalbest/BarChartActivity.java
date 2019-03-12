@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -28,12 +29,16 @@ public class BarChartActivity extends AppCompatActivity {
     private ArrayList<ArrayList> stepList;
     private DataProcessor dp;
     private int[] goal_list = {0,0,0,0,0,0,0};
-
+    private String userEmail;
+    private String userDisplayName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_chart);
         config();
+
+        userEmail = ActivityMediator.getInstance().getUserEmail();
+        userDisplayName = ActivityMediator.getInstance().getUserDisplayName();
 
         barChart10 = (BarChart) findViewById(R.id.bar_chart);
         /* first load the steps in stepList, which will store an array of lists each containing the
@@ -88,7 +93,7 @@ public class BarChartActivity extends AppCompatActivity {
 
             // Get the day we're processing
             dayDate = sundayDate.plusDays(i);
-            day = dp.retrieveDay(dayDate);
+            day = CloudProcessor.retrieveDay(dayDate,userEmail);
 
             // Add data for that data to the graph
             if (day != null) {

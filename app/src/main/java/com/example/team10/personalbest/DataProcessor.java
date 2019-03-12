@@ -49,8 +49,8 @@ public class DataProcessor extends AppCompatActivity {
     // SharedPref
     private static final String FILE_NAME = "STEP DATA";
     private static final String TABLE_NAME = "STEP TABLE";
-
     LocalDate date__ =LocalDate.now();
+
 
     /**
      * DataProcessor ctor
@@ -146,8 +146,9 @@ public class DataProcessor extends AppCompatActivity {
 
         // Create a new day in the table.
         table.put(date.toString(), walkDay);
-        writeToSharedPref();
+        //writeToSharedPref();
     }
+
 
 
     /**

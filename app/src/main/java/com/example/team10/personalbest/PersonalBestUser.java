@@ -27,6 +27,8 @@ public class PersonalBestUser {
     // List of friends' emails
     private List<String> friends;
 
+    private long lastUploadDate;
+
     /**
      * PersonalBestUser ctor
      *
@@ -69,5 +71,13 @@ public class PersonalBestUser {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public void setLastUpLoadDate(long d){
+        this.lastUploadDate = d;
+    }
+
+    public long getLastUploadDate(){
+        return this.lastUploadDate;
     }
 }

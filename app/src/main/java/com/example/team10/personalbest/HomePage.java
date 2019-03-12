@@ -73,7 +73,7 @@ public class HomePage extends AppCompatActivity{
 
         // Init app
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(false);//FIXME enable when everthing else done
 
         // Get the shared instance for firebase
         firebaseAuth = FirebaseAuth.getInstance();
@@ -318,10 +318,10 @@ public class HomePage extends AppCompatActivity{
                 Log.w(TAG, "Google sign in failed", e);
             }
             if(currentUser != null){
-
-
+                activityMediator.setCurrentUser(currentUser);
                 //Initialize the activity mediator.
                 activityMediator.init();
+
                 // Build the activity mediator.
                 activityMediator.build();
                 // Setup asynchronous tasks.

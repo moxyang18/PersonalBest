@@ -6,13 +6,6 @@ import android.util.Log;
 import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -87,10 +80,10 @@ public class ActivityMediator implements Observer, Mediator {
     private long time_elapsed_sec_daily = 0;
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
-    private FirebaseUser currentuser;
+    private FirebaseUser currentUser;
     private String userEmail;
     private String userDisplayName;
-
+    PersonalBestUser personalBestUser;
 
     public ActivityMediator(HomePage hp){
         homePage = hp;
@@ -103,11 +96,69 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
 
-    public void sss(){
+    public boolean sync(){
+        if(CloudProcessor.checkExistingUserData(userEmail)){ //if not first time using the app
+
+            //then check last upload date
+            LocalDate lastInCloud = CloudProcessor.getLastUploadDate(userEmail);
+            //LocalDate today = LocalDate.now();
+
+            //FIXME Question: for none firstime condition, we have write stack which store each uploads,
+            //would we really lose anything except broke the phone?
+            if(lastInCloud.isBefore(LocalDate.now())){
+                //DO SOME THING
+
+                //WE PROBABLY BORKE THE PHONE !!!
+                //BUT WE SHOULD HAVE THINGS SAVED BECAUSE WE ARE ONLY WRITING TO FIREBASE
+                //IF WE WANT TO MERGE/HANLDE OVERLAP, IT MUST BE today because we would call sync
+                //many times and the lastUploadDate in write stack should been changed afterwards
+                //Then we just upload today
+                if(walkDay ==null)
+                    walkDay = new WalkDay(LocalDate.now());
+
+                CloudProcessor.uploadWalkDay(walkDay,userEmail);
+                //need to update friend list;
+                CloudProcessor.setLastUploadDate(LocalDate.now(),userEmail);
+            }
+
+             //FIXME if we want to do actuall merge.
+            //if same day, we only do things if walkDay currently is bad.
+             else if(lastInCloud.isAfter(LocalDate.now())){ //couldn't happen
+
+            }else {//same day
+                //lost phone today and get connected or we are just using the app
+                //we can only get the day from cloud. can't rewrite it. since we don't actually local storage.
+                // we won't be able to use the app if not connected for once. Afterwards, all data at least need to be written to
+                //stacks of firestore.
+                //so we just read
+
+                walkDay = CloudProcessor.retrieveDay(LocalDate.now(), userEmail);
+            }
+        }else{
+            //CloudProcessor.linkIdToEmail();FIXME need input UID
+            //the first time case, and if never connected to internet, sync would be called again and again?
+            //be shouldn't go to this if branch anymore since things are stored locally.
+
+
+            //might need to iterate through a list of dates and call uploads
+            //actually found that impossible since we only have cloud storage, each single walkday would be
+            //inserted once created (at least on the write stack), when ever call sync, it should only upload 1 more day
+            LocalDate d = LocalDate.now(); //....
+            walkDay = new WalkDay(date);
+            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+            //upload other parts for the firstime as well like friend list or simply no.
+            //most user info upload are implictly called in linkIdToEmail
+            CloudProcessor.setLastUploadDate(d,userEmail);
+
+            //then we start using the app.
+
+        }
+
+        return true;
 
     }
 
-    public void init(){
+    public void init(){ //init now only reads and update view doesn't change/add data in the cloud even for firstime
 
         // FIXME REMOVE THIS
 
@@ -179,13 +230,22 @@ public class ActivityMediator implements Observer, Mediator {
         */
 
 
+        //compare and sync the table
+        //
+        //get Today's snapshot/data
 
+
+
+        /*
+
+        //checking first time
         walkDay = dataProcessor.retrieveDay(date);
         if (walkDay == null){
             walkDay = new WalkDay();
             dataProcessor.insertDay(LocalDate.now(),walkDay); //writeToSharef implicitly called
             Log.i(TAG,"start with a new WalkDay ");
         }
+        */
 
 
         goal_today = walkDay.getGoal();
@@ -389,7 +449,7 @@ public class ActivityMediator implements Observer, Mediator {
         updateRunningMode();
     }
 
-    public void saveLocal(){
+    public void saveLocal(){ //FIXME refactor the name maybe later
 
             walkDay.setStepCountUnintentionalReal(stepCountUnintentionalReal);
             walkDay.setStepCountUnintentional(stepCountUnintentionalTotal);//save but doesn't read in init
@@ -405,7 +465,10 @@ public class ActivityMediator implements Observer, Mediator {
             walkDay.setMock_steps_unintentional(mock_steps_unintentional);
             walkDay.setGoal(goal_today);
             walkDay.setGoalMet(goalMet);
-            dataProcessor.insertDay(date,walkDay);
+            //dataProcessor.insertDay(date,walkDay);
+
+            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+            CloudProcessor.setLastUploadDate(date,userEmail);
 
 
     }
@@ -428,47 +491,41 @@ public class ActivityMediator implements Observer, Mediator {
     public void timeTravelForward(){
         saveLocal();
         date =date.plusDays(1);
-        walkDay = dataProcessor.retrieveDay(date);
-        if(walkDay == null) walkDay = new WalkDay();
-        dataProcessor.insertDay(date,walkDay);
-        init();
+        walkDay = CloudProcessor.retrieveDay(date,userEmail);
+        if(walkDay == null){
+            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+        }
+        //used to always insertDay, could be redundant,
+        // it seems only need to insert when not found in storage
+
+        init();//FIXME need to convert to View only init
     }
 
-    public void setCurrentuser(FirebaseUser firebaseUser){
-        currentuser = firebaseUser;
 
-        userDisplayName= currentuser.getDisplayName();
-        userEmail = currentuser.getEmail();
-        if(currentuser == null)
-            Log.d(TAG,"current user is null!");
-    }
-    public FirebaseUser getCurrentuser(){
-        return currentuser;
-    }
-
-    public String getUserEmail(){
-        return userEmail;
-    }
-
-    public String getUserDisplayName(){
-        return userDisplayName;
-    }
     public void timeTravelNow(){
         saveLocal();
         date =LocalDate.now();
-        walkDay = dataProcessor.retrieveDay(date);
-        if(walkDay == null) walkDay = new WalkDay();
-        dataProcessor.insertDay(date,walkDay);
-        init();
+        walkDay = CloudProcessor.retrieveDay(date,userEmail);
+        if(walkDay == null){
+            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+        }
+        //used to always insertDay, could be redundant,
+        // it seems only need to insert when not found in storage
+
+        init();//FIXME need to convert to View only init
     }
 
     public void timeTravelBackward(){
         saveLocal();
         date = date.minusDays(1);
-        walkDay = dataProcessor.retrieveDay(date);
-        if(walkDay == null) walkDay = new WalkDay();
-        dataProcessor.insertDay(date,walkDay);
-        init();
+        walkDay = CloudProcessor.retrieveDay(date,userEmail);
+        if(walkDay == null){
+            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+        }
+        //used to always insertDay, could be redundant,
+        // it seems only need to insert when not found in storage
+
+        init();//FIXME need to convert to View only init
     }
 
     public void mockStepInHP(){
@@ -483,6 +540,30 @@ public class ActivityMediator implements Observer, Mediator {
         computeStep();
         updateRunningMode();
         saveLocal();
+    }
+
+    public void setCurrentUser(FirebaseUser firebaseUser){
+        currentUser = firebaseUser;
+
+        userDisplayName= currentUser.getDisplayName();
+        userEmail = currentUser.getEmail();
+        if(currentUser == null)
+            Log.d(TAG,"current user is null!");
+
+        return;
+    }
+
+
+    public FirebaseUser getCurrentUser(){
+        return currentUser;
+    }
+
+    public String getUserEmail(){
+        return userEmail;
+    }
+
+    public String getUserDisplayName(){
+        return userDisplayName;
     }
 
     public int getGoal_today(){
@@ -507,8 +588,24 @@ public class ActivityMediator implements Observer, Mediator {
 
     public void resetDay(){
         walkDay = new WalkDay();
-        dataProcessor.insertDay(LocalDate.now(),walkDay);//writeToSharef implicitly called
+        CloudProcessor.uploadWalkDay(walkDay,userEmail);
         init();
+    }
+
+    public boolean isFriend(String friendEmail){
+        if (CloudProcessor.checkAisBFriend(userEmail,friendEmail)&&CloudProcessor.checkAisBFriend(friendEmail,userEmail))
+            return true;
+        else return false;
+
+    }
+
+    public boolean addFriend(String friendEmail){
+        if(isFriend(friendEmail)) return false;
+        else{
+            CloudProcessor.aInviteB(userEmail,friendEmail);
+            CloudProcessor.aAddB(userEmail,friendEmail);
+            return true; //only indicate method success, doesn't mean friend accept invitation
+        }
     }
 
 }

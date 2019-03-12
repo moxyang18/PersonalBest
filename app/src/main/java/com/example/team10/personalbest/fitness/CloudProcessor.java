@@ -3,11 +3,16 @@ package com.example.team10.personalbest.fitness;
 import android.util.Log;
 
 import com.example.team10.personalbest.PersonalBestUser;
+import com.example.team10.personalbest.WalkDay;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceIdReceiver;
+
+import java.time.LocalDate;
+
 import androidx.annotation.NonNull;
 
 /**
@@ -33,6 +38,12 @@ public class CloudProcessor {
     // DataSnapshot to extract from
     private static DataSnapshot snapshot;
 
+
+
+    //FIXME comment out all redundant methods, needs UID for firstime, need seperate Zone to store flags
+    //and temporary friend invitation. (Each user pull this list/prompt every few seconds, and decide to accept or not.
+    //lazy way: let the user to grab this info when they click new friend request.
+
     /**
      * getUserFromCloud
      *
@@ -42,6 +53,8 @@ public class CloudProcessor {
      * @param uid The user id to lookup
      * @return PersonalBestUser A user from data in the database; null if not present
      */
+
+    /*
     public static PersonalBestUser getUserFromCloud(String uid) {
 
         // Get database reference @ users directory
@@ -60,6 +73,7 @@ public class CloudProcessor {
          *
          * https://firebase.google.com/docs/database/admin/retrieve-data
          */
+    /*
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -88,6 +102,7 @@ public class CloudProcessor {
             return null;
         }
     }
+    */
 
     /**
      * getUserByEmailFromCloud
@@ -101,6 +116,7 @@ public class CloudProcessor {
      * @return PersonalBestUser A user retrieved from the database; return null if
      *                          not in database
      */
+    /*
     public static PersonalBestUser getUserByEmailFromCloud(String email) {
 
         // Get database reference @ root directory
@@ -112,6 +128,8 @@ public class CloudProcessor {
         // Delegate to other implemented function b/c we're lazy
         return CloudProcessor.getUserFromCloud(uid);
     }
+    */
+
 
     /**
      * uploadUserData
@@ -122,8 +140,11 @@ public class CloudProcessor {
      *
      * @param user The user to upload
      */
+    /*
     public static void uploadUserData(PersonalBestUser user) {
-
+        if(user == null)
+            return;
+        user.setEmail(reformatEmailForCloud(user.getEmail()));
         // Get database reference @ user-specific directory, @ "users" directory
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
                 .child(USERS_DIR).child(user.getUid());
@@ -133,6 +154,125 @@ public class CloudProcessor {
 
         // Upload data to respective directories
         database.setValue(user);
+}
+*/
+
+    /**
+     * uploadWalkDay
+     *
+     * Uploads (overwrites) one walkday, implicitly call setLastUpLoadDate
+     *
+     * @param walkDay walkday to upload
+     * @param email eamail used to distinguish user
+     */
+    public static void uploadWalkDay(WalkDay walkDay, String email){
+        if(walkDay ==null || email == null){
+            Log.d(TAG,"null is input. Expect walkday and email");
+        }
+        String date = walkDay.getDate().toString();
+        //long time = walkDay.getDate().
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference()
+                .child(USERS_DIR).child(getUidFromEmail(reformatEmailForCloud(email)));
+        database.child(date).setValue(walkDay);
+
+    }
+
+    /**
+     * retrieveDay
+     *
+     * retrieve (but doesn't change) one walkday
+     * should only been used for direct reads or assign to mediator's walkday
+     *
+     * @param date Local date of the specific date wanted
+     * @param email eamail used to distinguish user
+     */
+    public static WalkDay retrieveDay(LocalDate date, String email){
+
+        String uid = getUidFromEmail(reformatEmailForCloud(email));
+        if (uid ==null) return null;
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference()
+                .child(USERS_DIR).child(uid);
+
+
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild(date.toString())) {
+                    CloudProcessor.setSnapshot(snapshot);
+                    Log.d(TAG, "Found user's walkday data on "+ date.toString());
+                } else {
+                    CloudProcessor.setSnapshot(null);
+                    Log.d(TAG, "User's walkday data on "+ date.toString()+" not found.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.err.println("The read failed: " + databaseError.getCode());
+                CloudProcessor.setSnapshot(null);
+            }
+        });
+
+        // Return user if not null
+        if (snapshot != null) {
+            return snapshot.child(date.toString()).getValue(WalkDay.class);
+        } else {
+            return new WalkDay(date);
+        }
+    }
+
+
+
+    public static void setLastUploadDate(LocalDate date, String email){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference()
+                .child(USERS_DIR).child(getUidFromEmail(reformatEmailForCloud(email)));
+        database.child("lastUploadDate").setValue(date.toEpochDay());
+    }
+
+    public static LocalDate getLastUploadDate(String email){
+        String uid = getUidFromEmail(reformatEmailForCloud(email));
+        if (uid ==null) return null;
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference()
+                .child(USERS_DIR).child(uid);
+
+
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("lastUploadDate")) {
+                    CloudProcessor.setSnapshot(snapshot);
+                    Log.d(TAG, "Found user's last upload date.");
+                } else {
+                    CloudProcessor.setSnapshot(null);
+                    Log.d(TAG, "User's last upload date not found.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.err.println("The read failed: " + databaseError.getCode());
+                CloudProcessor.setSnapshot(null);
+            }
+        });
+
+        // Return user if not null
+        if (snapshot != null) {
+            return snapshot.child("lastUploadDate").getValue(LocalDate.class);
+        } else {
+            return null;
+        }
+    }
+
+
+    //By checking uid in firebase, we know if user data has been uploaded for at least once
+    public static boolean checkExistingUserData(String email){
+        String uid = getUidFromEmail(reformatEmailForCloud(email));
+        if(uid == null) {
+            return false;
+        }
+        else return true;
     }
 
     /**
@@ -143,6 +283,7 @@ public class CloudProcessor {
      * @param uid The unique user id
      * @param email The email associated with the user
      */
+    //FIXME needs to get uid generated before this method is called
     public static void linkIdToEmail (String uid, String email) {
 
         // Get database reference @ root directory
@@ -150,6 +291,28 @@ public class CloudProcessor {
 
         // Link
         database.child(UID_EMAIL_MAP_DIR).child(reformatEmailForCloud(email)).setValue(uid);
+        database.child(USERS_DIR).child(uid).child("email").setValue(reformatEmailForCloud(email));
+        database.child(USERS_DIR).child(uid).child("uid").setValue(uid);
+    }
+
+
+    //needs to write
+    //FIXME
+    public static boolean aInviteB(String A, String B){
+        if(A==B)
+        return true;
+        else  return  false;
+    }
+
+    //actually change A's friend data
+    public static void aAddB(String A, String B){
+
+    }
+
+    public static boolean checkAisBFriend(String A, String B){
+        if(A==B)
+            return true;
+        else  return  false;
     }
 
     /**
@@ -186,8 +349,13 @@ public class CloudProcessor {
             }
         });
 
+        if(snapshot!=null)
+
         // Return the UID assumed to be associated with the email
-        return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
+            return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
+
+        else
+            return null;
     }
 
     /**
