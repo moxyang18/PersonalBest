@@ -27,7 +27,7 @@ public class BarChartActivity extends AppCompatActivity {
 
     private BarChart barChart10;
     private ArrayList<ArrayList> stepList;
-    private DataProcessor dp;
+    //private DataProcessor dp;
     private int[] goal_list = {0,0,0,0,0,0,0};
     private String userEmail;
     private String userDisplayName;
@@ -46,7 +46,7 @@ public class BarChartActivity extends AppCompatActivity {
         stepList = xxx;*/
 
         // Get data for chart
-        dp = DataProcessor.getInstance();
+        //dp = DataProcessor.getInstance();
 
         // Display chart
         displayChart();

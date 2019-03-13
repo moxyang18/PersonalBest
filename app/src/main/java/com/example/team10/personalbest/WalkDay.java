@@ -21,7 +21,7 @@ public class WalkDay {
     private float distanceRunTotal =0.f;
     private long time_run_sec_daily = 0;
     private float speed_average =0.f;
-    private LocalDate date =LocalDate.now();
+    private String date =LocalDate.now().toString();
 
 
     public WalkDay(){
@@ -37,7 +37,7 @@ public class WalkDay {
      * @param date The date
      */
 
-    public WalkDay(LocalDate date) {
+    public WalkDay(String date) {
         this.date = date;
     }
 
@@ -89,7 +89,7 @@ public class WalkDay {
      *
      * @param date The date
      */
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -159,9 +159,9 @@ public class WalkDay {
      *
      * Gets the date of this day (LocalDate)
      *
-     * @return LocalDate The date.
+     * @return String The date.
      */
-    public LocalDate getDate() {
+    public String getDate() {
         return this.date;
     }
 
@@ -255,4 +255,6 @@ public class WalkDay {
     public void setStepCountIntentionalReal(int stepCountIntentionalReal) {
         this.stepCountIntentionalReal = stepCountIntentionalReal;
     }
+
+
 }

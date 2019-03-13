@@ -74,7 +74,7 @@ public class HomePage extends AppCompatActivity{
 
         // Init app
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);//FIXME enable when everything else done
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);//FIXME enable when everything else done
 
         // Get the shared instance for firebase
         firebaseAuth = FirebaseAuth.getInstance();

@@ -88,7 +88,7 @@ public class ActivityMediator implements Observer, Mediator {
     public ActivityMediator(HomePage hp){
         homePage = hp;
         instance = this;
-        dataProcessor = new DataProcessor(homePage);
+        //dataProcessor = new DataProcessor(homePage);
     }
 
     protected static ActivityMediator getInstance(){
@@ -116,7 +116,7 @@ public class ActivityMediator implements Observer, Mediator {
                 //many times and the lastUploadDate in write stack should been changed afterwards
                 //Then we just upload today
                 if(walkDay ==null)
-                    walkDay = new WalkDay(LocalDate.now());
+                    walkDay = new WalkDay(LocalDate.now().toString());
 
                 CloudProcessor.uploadWalkDay(walkDay,userEmail);
                 //need to update friend list;
@@ -148,7 +148,7 @@ public class ActivityMediator implements Observer, Mediator {
             //actually found that impossible since we only have cloud storage, each single walkday would be
             //inserted once created (at least on the write stack), when ever call sync, it should only upload 1 more day
             LocalDate d = LocalDate.now(); //....
-            walkDay = new WalkDay(date);
+            walkDay = new WalkDay(date.toString());
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
             //upload other parts for the firstime as well like friend list or simply no.
             //most user info upload are implictly called in linkIdToEmail
