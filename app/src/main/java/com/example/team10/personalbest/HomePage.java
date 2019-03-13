@@ -74,7 +74,7 @@ public class HomePage extends AppCompatActivity{
 
         // Init app
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);//FIXME enable when everthing else done
+        FirebaseDatabase.getInstance().setPersistenceEnabled(false);//FIXME enable when everything else done
 
         // Get the shared instance for firebase
         firebaseAuth = FirebaseAuth.getInstance();
@@ -233,8 +233,7 @@ public class HomePage extends AppCompatActivity{
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
-                            // Link UID to email if signin is successful
-                            CloudProcessor.linkIdToEmail(currentUser.getUid(), currentUser.getEmail());
+
                         } else {
                             // If sign in fails, report in log.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -322,10 +321,13 @@ public class HomePage extends AppCompatActivity{
                 Log.w(TAG, "Google sign in failed", e);
             }
             if(currentUser != null){
+
                 activityMediator.setCurrentUser(currentUser);
+                //check cloud and local cache difference
+                boolean isFirstTimeUser = activityMediator.sync();
+                Log.i(TAG, "It"+((isFirstTimeUser)?"is":"is not" )+"user's first time using PersonBest.");
                 //Initialize the activity mediator.
                 activityMediator.init();
-
                 // Build the activity mediator.
                 activityMediator.build();
                 // Setup asynchronous tasks.
@@ -333,6 +335,10 @@ public class HomePage extends AppCompatActivity{
                 AsyncTaskRunner runner = new AsyncTaskRunner();
                 runner.execute();
                 Log.i(TAG, "Async Task is run");
+            }
+
+            else {
+                Log.e(TAG, "ERROR, no valid user account!!!");
             }
 
         }

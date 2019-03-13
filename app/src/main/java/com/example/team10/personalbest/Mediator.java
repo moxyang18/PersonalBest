@@ -24,6 +24,8 @@ public interface Mediator {
 
     void setCurrentUser(FirebaseUser u);
 
+    boolean sync();
+
     boolean getGoalMet();
     void setGoalMet(boolean t);
 

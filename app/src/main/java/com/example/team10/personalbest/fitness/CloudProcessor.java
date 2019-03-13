@@ -37,6 +37,7 @@ public class CloudProcessor {
 
     // DataSnapshot to extract from
     private static DataSnapshot snapshot;
+    private static String uid_temp;
 
 
 
@@ -171,6 +172,7 @@ public class CloudProcessor {
         }
         String date = walkDay.getDate().toString();
         //long time = walkDay.getDate().
+        Log.i(TAG, "Uploading... UID is "+getUidFromEmail(reformatEmailForCloud(email)));
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
                 .child(USERS_DIR).child(getUidFromEmail(reformatEmailForCloud(email)));
         database.child(date).setValue(walkDay);
@@ -327,16 +329,19 @@ public class CloudProcessor {
 
         // Get database reference @ email mapping directory
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                .child(UID_EMAIL_MAP_DIR);
+                .child(UID_EMAIL_MAP_DIR)
+                ;
 
-
-         // Read uid from email once.
-        database.addListenerForSingleValueEvent(new ValueEventListener() {
+        ValueEventListener m = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChild(email)) {
+                CloudProcessor.setSnapshot(snapshot);
+                if (snapshot.hasChild(reformatEmailForCloud(email))) {
                     CloudProcessor.setSnapshot(snapshot);
+                    Log.i(TAG,"Got snapshot with user email as child entry");
+
                 } else {
+                    Log.i(TAG, "snapshot doesn't have user email");
                     CloudProcessor.setSnapshot(null);
                 }
             }
@@ -346,15 +351,39 @@ public class CloudProcessor {
                 System.err.println("The read failed: " + databaseError.getCode());
                 CloudProcessor.setSnapshot(null);
             }
-        });
+        };
+         // Read uid from email once.
+        database.addListenerForSingleValueEvent(m);
+        Log.i(TAG,"set up listener for one time reading");
+        //code below this execute before listener respond
+        //FIXME this whie would take forever
 
-        if(snapshot!=null)
 
+        //while(snapshot==null) {
+            //Log.i(TAG,"waiting for aysn Data Listenr to update");
+
+        //}
         // Return the UID assumed to be associated with the email
-            return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
 
-        else
+
+        //FIXME
+        // would trigger bug in AM.java 152 but won't trigger bug in 102 because the if-else branch there
+        //handled the returned null
+        /*
+        if(snapshot!=null){
+            Log.i(TAG, "Get UID of " + reformatEmailForUser(email) + " " + snapshot.child(reformatEmailForCloud(email)).getValue(String.class));
+            return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
+        }
+        else{
+            Log.d(TAG, "Unsuccessful geting UID, snapshot not set");
             return null;
+        }
+        */
+        //FIXME
+        //Program dies directly at AM's call to checkIsExistingUser
+        Log.i(TAG, "Get UID of " + reformatEmailForUser(email) + " " + snapshot.child(reformatEmailForCloud(email)).getValue(String.class));
+        return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
+
     }
 
     /**
@@ -366,6 +395,8 @@ public class CloudProcessor {
      * @param snapshot Data snapshot that reflects information from the database
      */
     private static void setSnapshot(DataSnapshot snapshot) {
+
+        //FIXME this line never gets called meaning onDataChange never execute quick enough OR my implementation is wrong.
         if (snapshot == null) {
             Log.d(TAG, "Snapshot was null - no data found at queried location.");
         }

@@ -96,6 +96,8 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
 
+    //we don't want to call sync too often, only upon potential difference between the local cache and cloud storage
+    //we call sync whenever we reload the application
     public boolean sync(){
         if(CloudProcessor.checkExistingUserData(userEmail)){ //if not first time using the app
 
@@ -134,8 +136,10 @@ public class ActivityMediator implements Observer, Mediator {
 
                 walkDay = CloudProcessor.retrieveDay(LocalDate.now(), userEmail);
             }
+            return false;
         }else{
-            //CloudProcessor.linkIdToEmail();FIXME need input UID
+            CloudProcessor.linkIdToEmail(currentUser.getUid(),userEmail);
+            Log.i(TAG, "linked user " +userEmail +" with UID: "+ currentUser.getUid() );
             //the first time case, and if never connected to internet, sync would be called again and again?
             //be shouldn't go to this if branch anymore since things are stored locally.
 
@@ -151,103 +155,13 @@ public class ActivityMediator implements Observer, Mediator {
             CloudProcessor.setLastUploadDate(d,userEmail);
 
             //then we start using the app.
-
+            return true;
         }
-
-        return true;
 
     }
 
     public void init(){ //init now only reads and update view doesn't change/add data in the cloud even for firstime
-
-        // FIXME REMOVE THIS
-
-
-        /*
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        Log.d(TAG, "loading database"+database.toString());
-
-        database.child("users").child("24fsegseg33").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    Log.d(TAG, "AHAHGUIWEHGIU");
-                    PersonalBestUser p = snapshot.getValue(PersonalBestUser.class);
-                    Log.d(TAG, "UID is"+p.getUid());
-                    Log.d(TAG, p.getTable());
-                    if(p.getUid()!=null){
-                        Type type = new TypeToken< Hashtable<String, WalkDay>>(){}.getType();
-                        Gson gson = new Gson();
-                        Hashtable<String, WalkDay> table2 = gson.fromJson(p.getTable(),type);
-                        dataProcessor.setTable(table2);
-                        WalkDay w1 = dataProcessor.retrieveDay(LocalDate.now().minusDays(3));
-                        Log.d(TAG, "3 days ago's Step is"+ w1.getStepCountDailyTotal());
-                    /*
-                    Type type = new TypeToken< Hashtable<String, WalkDay>>(){}.getType();
-                    Gson gson = new Gson();
-                    Hashtable<String, WalkDay> table2 = gson.fromJson(p.getTable(),type);
-                    dataProcessor.setTable(table2);
-                    WalkDay w1 = dataProcessor.retrieveDay(LocalDate.now().minusDays(3));
-                    Log.d(TAG, "3 days ago's Step is"+ w1.getStepCountDailyTotal());
-                    */
-
-            /*
-                } else {
-                    Log.d(TAG, "FAIL FAIL FAIL");
-                }
-            }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-            System.err.println("The read failed: " + databaseError.getCode());
-            Log.d(TAG, "FAIL FAIL FAIL");
-        }
-        });
-
-        */
-        /*
-        WalkDay temp = new WalkDay(LocalDate.now().minusDays(1));
-        temp.setStepCountIntentional(500);
-        temp.setStepCountUnintentional(500);
-
-        PersonalBestUser person = new PersonalBestUser();
-        person.setEmail("person@gmail,com");
-        person.setUid("24fsegseg33");
-
-        Gson gson = new Gson();
-
-        Hashtable<String, WalkDay> table = dataProcessor.getTable();
-        table.put(LocalDate.now().minusDays(1).toString(), temp);
-        temp.setStepCountDailyTotal(6666);
-        table.put(LocalDate.now().minusDays(3).toString(), temp);
-        temp.setStepCountDailyTotal(8777);
-        table.put(LocalDate.now().minusDays(5).toString(), temp);
-        person.setTable(gson.toJson(table));
-
-        CloudProcessor.uploadUserData(person);
-        PersonalBestUser person2 = CloudProcessor.getUserFromCloud(person.getUid());
-        // FIXME END OF FIXME
-        */
-
-
-        //compare and sync the table
-        //
-        //get Today's snapshot/data
-
-
-
-        /*
-
-        //checking first time
-        walkDay = dataProcessor.retrieveDay(date);
-        if (walkDay == null){
-            walkDay = new WalkDay();
-            dataProcessor.insertDay(LocalDate.now(),walkDay); //writeToSharef implicitly called
-            Log.i(TAG,"start with a new WalkDay ");
-        }
-        */
-
-
+        //sync called before init when first loading homepage but init could be called alone
         goal_today = walkDay.getGoal();
         goalMet = walkDay.getGoalMet();
         stepCountDailyReal = walkDay.getStepCountDailyReal();
@@ -300,7 +214,7 @@ public class ActivityMediator implements Observer, Mediator {
     public void computeStats(){
         timeElapsedStr =computeTimeElapsed(); //computeTimeElapsed() was precise but have bug
         //time_elapsed_sec_run = timeRunMilli;
-        Log.d(TAG,"timeElapsedStr "+timeElapsedStr);
+        Log.i(TAG,"timeElapsedStr "+timeElapsedStr);
         distanceRunTotal+=distance_delta+7;
         distanceRun += distance_delta+7;
         speed = (time_elapsed_sec_run) <= 1.f
@@ -329,8 +243,8 @@ public class ActivityMediator implements Observer, Mediator {
         cal.setTime(now);
         time_elapsed_sec_run = cal.getTimeInMillis() - timeRunStart;
 
-        Log.d(TAG,"time passed "+time_elapsed_sec_run);
-        Log.d(TAG,"start time was "+timeRunStart);
+        Log.i(TAG,"time passed "+time_elapsed_sec_run);
+        Log.i(TAG,"start time was "+timeRunStart);
         //long millis = time_elapsed % 1000;
         long second = (time_elapsed_sec_run / 1000) % 60;
         long minute = (time_elapsed_sec_run / (1000 * 60)) % 60;
@@ -449,6 +363,7 @@ public class ActivityMediator implements Observer, Mediator {
         updateRunningMode();
     }
 
+    //calls cloud processor uploadWalkDay and setLastUpLoadDate
     public void saveLocal(){ //FIXME refactor the name maybe later
 
             walkDay.setStepCountUnintentionalReal(stepCountUnintentionalReal);
@@ -498,7 +413,7 @@ public class ActivityMediator implements Observer, Mediator {
         //used to always insertDay, could be redundant,
         // it seems only need to insert when not found in storage
 
-        init();//FIXME need to convert to View only init
+        init();//only change the view
     }
 
 
@@ -512,7 +427,7 @@ public class ActivityMediator implements Observer, Mediator {
         //used to always insertDay, could be redundant,
         // it seems only need to insert when not found in storage
 
-        init();//FIXME need to convert to View only init
+        init();//only change the view
     }
 
     public void timeTravelBackward(){
@@ -525,7 +440,7 @@ public class ActivityMediator implements Observer, Mediator {
         //used to always insertDay, could be redundant,
         // it seems only need to insert when not found in storage
 
-        init();//FIXME need to convert to View only init
+        init();//only change the view
     }
 
     public void mockStepInHP(){
