@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -231,6 +232,9 @@ public class HomePage extends AppCompatActivity{
                             // Sign in success - may have to update UI. FIXME
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
+                            // Link UID to email if signin is successful
+                            CloudProcessor.linkIdToEmail(currentUser.getUid(), currentUser.getEmail());
                         } else {
                             // If sign in fails, report in log.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());

@@ -166,7 +166,7 @@ public class CloudProcessor {
      * @param email eamail used to distinguish user
      */
     public static void uploadWalkDay(WalkDay walkDay, String email){
-        if(walkDay ==null || email == null){
+        if(walkDay == null || email == null){
             Log.d(TAG,"null is input. Expect walkday and email");
         }
         String date = walkDay.getDate().toString();
@@ -257,7 +257,7 @@ public class CloudProcessor {
             }
         });
 
-        // Return user if not null
+        // Return latest upload date if not null
         if (snapshot != null) {
             return snapshot.child("lastUploadDate").getValue(LocalDate.class);
         } else {
@@ -283,7 +283,6 @@ public class CloudProcessor {
      * @param uid The unique user id
      * @param email The email associated with the user
      */
-    //FIXME needs to get uid generated before this method is called
     public static void linkIdToEmail (String uid, String email) {
 
         // Get database reference @ root directory
