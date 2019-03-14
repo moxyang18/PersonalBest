@@ -138,7 +138,7 @@ public class ActivityMediator implements Observer, Mediator {
             }
             return false;
         }else{
-            CloudProcessor.linkIdToEmail(currentUser.getUid(),userEmail);
+            CloudProcessor.activateAccount(userEmail);
             Log.i(TAG, "linked user " +userEmail +" with UID: "+ currentUser.getUid() );
             //the first time case, and if never connected to internet, sync would be called again and again?
             //be shouldn't go to this if branch anymore since things are stored locally.
@@ -298,6 +298,7 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void updateRunningMode(){
+        runningMode.showGoal(goal_today);
         runningMode.showStepCount(stepCountDailyTotal);
         runningMode.showStepCountIntentional(stepCountRunWithMock);
         runningMode.showDistance(distanceRun);

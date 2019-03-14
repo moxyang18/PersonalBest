@@ -41,6 +41,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 
 import java.time.LocalDate;
@@ -74,7 +76,10 @@ public class HomePage extends AppCompatActivity{
 
         // Init app
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);//FIXME enable when everything else done
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);//FIXME enable when everything else done
 
         // Get the shared instance for firebase
         firebaseAuth = FirebaseAuth.getInstance();
@@ -253,7 +258,7 @@ public class HomePage extends AppCompatActivity{
     }
 
     public void launchBarChart() {
-        activityMediator.saveLocal();
+        //activityMediator.saveLocal();
         Intent intent = new Intent(this, BarChartActivity.class);
         startActivity(intent);
     }

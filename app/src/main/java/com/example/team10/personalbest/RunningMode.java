@@ -124,6 +124,11 @@ public class RunningMode extends AppCompatActivity{
     }
 
 
+    public void showGoal(int goal){
+        goalText.setText(Integer.toString(goal));
+    }
+
+
     public void showStepCount(int stepCount){
         Log.i(TAG, "Textview is updated");
         stepText.setText(Integer.toString(stepCount));
