@@ -96,6 +96,8 @@ public class FirebaseCloudMessengerAdapter implements MessageService {
                     sb.append(document.get(FROM_KEY));
                     sb.append(":\n");
                     sb.append(document.get(TEXT_KEY));
+                    sb.append("\n\n");
+                    sb.append("Sent at: " + document.getDate(TIMESTAMP_KEY));
                     sb.append("\n");
                     sb.append("---\n");
                 });
