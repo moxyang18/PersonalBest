@@ -31,6 +31,8 @@ public class FriendListPage extends AppCompatActivity {
 
     ExpandableListView friendExpandableList;
     FriendListExpandableListAdapter listAdapter;
+    //TODO use this instead, obtained from ActivityMediator
+    private static HashSet<String> friendList = new HashSet<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +43,18 @@ public class FriendListPage extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //newly added
 
-        //TODO update to pull from shared preference later
+        //TODO use this instead, obtained from ActivityMediator
+        friendList = ActivityMediator.getFriendList();
+
+
         SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
         SharedPreferences.Editor editor = friendPreferences.edit();
         ArrayList<String> emailList = new ArrayList<>(); //TODO Grab from shared Preference
 
 
+
+        //TODO: switch to use friendList
+        //TODO: write an init()/refresh() method to reload Page
         //get list of current friends' emails
         Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
         emailList.addAll(emailSet);
@@ -156,7 +164,11 @@ public class FriendListPage extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String email = userEmail.getText().toString();
 
-                //TODO Need to check if this email exists
+                //Need to check if this email exists
+                //FIXME don't think so actually, doesn't matter
+
+
+                //TODO: Switch to call ActivityMediator.addFriend( userEmail, friendEmail)
                 saveNewFriend(email);
             }
         });

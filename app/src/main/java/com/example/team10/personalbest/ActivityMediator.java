@@ -12,9 +12,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 public class ActivityMediator implements Observer, Mediator {
 
@@ -85,6 +89,11 @@ public class ActivityMediator implements Observer, Mediator {
     private static String userEmail;
     private static String userDisplayName;
 
+    //all the string of emails in this hashset should be friends
+    //email.com is stored as email,com in cloud but here should be .com
+    private static HashSet<String> friendList = new HashSet<>();
+
+
     //PersonalBestUser personalBestUser;
 
     public ActivityMediator(HomePage hp){
@@ -111,6 +120,14 @@ public class ActivityMediator implements Observer, Mediator {
 
     public static void setUserWalkDays(HashMap<String, WalkDay> userWalkDays) {
         ActivityMediator.userWalkDays = userWalkDays;
+    }
+
+    public static HashSet<String> getFriendList() {
+        return friendList;
+    }
+
+    public static void setFriendList(HashSet<String> friendList) {
+        ActivityMediator.friendList = friendList;
     }
 
 
@@ -555,20 +572,15 @@ public class ActivityMediator implements Observer, Mediator {
         init();
     }
 
-    public boolean isFriend(String friendEmail){
-        if (CloudProcessor.checkAisBFriend(userEmail,friendEmail)&&CloudProcessor.checkAisBFriend(friendEmail,userEmail))
-            return true;
-        else return false;
 
+    //modified because all string in friendList are friends
+    public static boolean isUsersFriend(String friendEmail){
+        return friendList.contains(friendEmail);
     }
 
-    public boolean addFriend(String friendEmail){
-        if(isFriend(friendEmail)) return false;
-        else{
-            CloudProcessor.aInviteB(userEmail,friendEmail);
-            CloudProcessor.aAddB(userEmail,friendEmail);
-            return true; //only indicate method success, doesn't mean friend accept invitation
-        }
+    //first parameter should always be user's email
+    public static void addFriend(String userEmail,String friendEmail){
+        CloudProcessor.aInviteB(userEmail,friendEmail);
     }
 
 }

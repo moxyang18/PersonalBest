@@ -14,17 +14,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 
 import static com.example.team10.personalbest.FormatHelper.reformatEmailForCloud;
+import static com.example.team10.personalbest.FormatHelper.reformatEmailForUser;
 
 /**
  * CloudProcessor class
@@ -46,6 +53,11 @@ public class CloudProcessor {
     private static final String WALKDAY_COLLECTION_KEY ="walkdays";
     private static final String UPDATE_TIME_COLLECTION_KEY = "updatedsince";
     private static final String UPDATE_TIME_KEY = "lastUploadDate";
+    private static final String FRIEND_DIR_KEY = "friends";
+    private static final String FRIEND_LIST_KEY = "friendlist";
+    private static final String MUTUAL = "mutual_friend";
+    private static final String ONEDIRECTION = "attempt_friend";
+
 
     //private static final String USERS_DIR = "users";
     //private static final String UID_EMAIL_MAP_DIR = "emailToId";
@@ -56,12 +68,6 @@ public class CloudProcessor {
     // DataSnapshot to extract from
     private static DataSnapshot snapshot;
     private static WalkDay walkDay;
-
-
-    //FIXME comment out all redundant methods, needs UID for firstime, need seperate Zone to store flags
-
-
-
 
     /**
      * uploadWalkDay
@@ -378,9 +384,9 @@ public class CloudProcessor {
     }
 
     /**
-     * linkIdToEmail
+     * activateAccount
      *
-     * Links UIDs to emails in the database so we can look them up later.
+     * activate PersonalBest user in cloud
      *
      *
      * @param email The email associated with the user
@@ -406,128 +412,269 @@ public class CloudProcessor {
     }
 
 
-    //needs to write
-    //FIXME
-    public static boolean aInviteB(String A, String B){
-        if(A==B)
-        return true;
-        else  return  false;
-    }
+    //FIXME Untested
+    //called by aInviteB ( which called by AM's addFriend())
+    //handles all cases of adding friends
+    public static void updateFriendInfo (String userEmail,String friendEmail) {
 
-    //actually change A's friend data
-    public static void aAddB(String A, String B){
+        //user A's dir
+        DocumentReference database1 = FirebaseFirestore.getInstance()
+                .collection(USER_DIR_KEY)
+                .document(reformatEmailForCloud(userEmail))
+                .collection(FRIEND_DIR_KEY)
+                .document(FRIEND_LIST_KEY);
 
-    }
+        //friend candidate B's dir
+        DocumentReference database2 = FirebaseFirestore.getInstance()
+                .collection(USER_DIR_KEY)
+                .document(reformatEmailForCloud(friendEmail))
+                .collection(FRIEND_DIR_KEY)
+                .document(FRIEND_LIST_KEY);
 
-    public static boolean checkAisBFriend(String A, String B){
-        if(A==B)
-            return true;
-        else  return  false;
-    }
+        //check candidate B's dir
+        /*
+        Task<DocumentSnapshot> task_database2= database2.get();
+        while (!task_database2.isComplete()){
+            try{
+                Thread.sleep(20);
+            }catch (Exception e){
 
-    /**
-     * getUidFromEmail
-     *
-     * Yields user UID from a given email by looking up the info
-     * in the database.
-     *
-     * @param email The email to check.
-     * @return String The associated UID.
-     */
-    private static String getUidFromEmail (String email) {
+            }
+        }
+        if(!task_database2.isSuccessful())
+            Log.d(TAG, "task check account unsuccessful");
 
-        // Get database reference @ email mapping directory
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                .child(PERSONBEST_USER_COLLECTION_KEY)
-                ;
+        try {
+            DocumentSnapshot documentSnapshot = task_database2.getResult();
+            if (documentSnapshot == null){
+                Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" doesn't know "+reformatEmailForUser(friendEmail))+" or otherwise");
+                //not friend, first time
+                //FIXME ADD ONE DIRECTION
+                database1.update(reformatEmailForCloud(friendEmail),ONEDIRECTION).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"adding B as candiate" );
+                    }
+                });
+                return;
+            }else{
+                Log.d(TAG, "successful reading B's friendlist");
+                String s1 = (String) documentSnapshot.get(reformatEmailForCloud(userEmail));
 
-        ValueEventListener m = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                CloudProcessor.setSnapshot(snapshot);
-                if (snapshot.hasChild(reformatEmailForCloud(email))) {
-                    CloudProcessor.setSnapshot(snapshot);
-                    Log.i(TAG,"Got snapshot with user email as child entry");
+                if(s1 ==null ){
+                    //friend B added A before;
+                    Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" doesn't know "+reformatEmailForUser(friendEmail))+" or otherwise");
+                    //FIXME ADD ONE DIRECTION
+                    database1.update(reformatEmailForCloud(friendEmail),ONEDIRECTION).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"adding B as candiate" );
+                        }
+                    });
 
-                } else {
-                    Log.i(TAG, "snapshot doesn't have user email");
-                    CloudProcessor.setSnapshot(null);
+                }else if(s1.equals(MUTUAL)){
+                    //already friend
+                    Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" and "+reformatEmailForUser(friendEmail))+" already friends");
+
+                    //Do nothing
+                    return;
+
+                }else if(s1.equals(ONEDIRECTION)){
+                    //Friend B added A before
+                    Log.d(TAG, "B added A or otherwise");
+                    database1.update(reformatEmailForCloud(friendEmail),MUTUAL).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"and B are now friends" );
+                        }
+                    });
+                    database2.update(reformatEmailForCloud(userEmail),MUTUAL).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"user "+reformatEmailForUser(friendEmail)+"and A are now friends" );
+                        }
+                    });
+
+                }else {
+                    //error since last write
+                    Log.d(TAG, "error since last write of friend relation");
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.err.println("The read failed: " + databaseError.getCode());
-                CloudProcessor.setSnapshot(null);
-            }
-        };
-         // Read uid from email once.
-        database.addListenerForSingleValueEvent(m);
-        Log.i(TAG,"set up listener for one time reading");
-        //code below this execute before listener respond
-        //FIXME this whie would take forever
+        }catch (Exception e){
+            Log.d(TAG, "Error updating friendList info");
 
-        while(snapshot==null) {
-        //    Log.i(TAG,"waiting for aysn Data Listenr to update");
-
-            try{
-                Thread.sleep(20);
-            }
-            catch (Exception e){
-
-            }
-        }
-        // Return the UID assumed to be associated with the email
-
-
-        //FIXME
-        // would trigger bug in AM.java 152 but won't trigger bug in 102 because the if-else branch there
-        //handled the returned null
-        /*
-        if(snapshot!=null){
-            Log.i(TAG, "Get UID of " + reformatEmailForUser(email) + " " + snapshot.child(reformatEmailForCloud(email)).getValue(String.class));
-            return snapshot.child(reformatEmailForCloud(email)).getValue(String.class);
-        }
-        else{
-            Log.d(TAG, "Unsuccessful geting UID, snapshot not set");
-            return null;
         }
         */
 
-        //FIXME
-        //Program dies directly at AM's call to checkIsExistingUser
-        String result = snapshot.child(FormatHelper.reformatEmailForCloud(email)).getValue(String.class);
-        Log.i(TAG, "Get UID of " + FormatHelper.reformatEmailForUser(email) + " " + result);
-        setSnapshot(null);
-        return result;
+        //FIXME Untested
+        //Async version
+        database2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String s1 = (String) documentSnapshot.get(reformatEmailForCloud(userEmail));
 
+                if(s1 ==null ){
+                    //friend B added A before;
+                    Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" doesn't know "+reformatEmailForUser(friendEmail))+" or otherwise");
+                    //FIXME Untested
+                    database1.update(reformatEmailForCloud(friendEmail),ONEDIRECTION).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"adding B as candiate" );
+                        }
+                    });
+
+                }else if(s1.equals(MUTUAL)){
+                    //already friend
+                    Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" and "+reformatEmailForUser(friendEmail))+" already friends");
+
+                    //Do nothing
+
+
+
+
+                }else if(s1.equals(ONEDIRECTION)){
+                    //Friend B added A before
+                    Log.d(TAG, "B added A or otherwise");
+                    database1.update(reformatEmailForCloud(friendEmail),MUTUAL).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"and B are now friends" );
+                        }
+                    });
+                    database2.update(reformatEmailForCloud(userEmail),MUTUAL).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG,"user "+reformatEmailForUser(friendEmail)+"and A are now friends" );
+                        }
+                    });
+
+                    //BUT HAVE TO PUSH FRIENDLIST CHANGE
+                    //FIXME
+
+                }else {
+                    //error since last write
+                    Log.d(TAG, "error since last write of friend relation");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@android.support.annotation.NonNull Exception e) {
+                Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" doesn't know "+reformatEmailForUser(friendEmail))+" or otherwise");
+                //not friend, first time
+                //FIXME ADD ONE DIRECTION
+                database1.update(reformatEmailForCloud(friendEmail),ONEDIRECTION).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"adding B as candiate" );
+                    }
+                });
+
+            }
+        });
     }
 
-    /**
-     * setSnapshot
-     *
-     * Sets the static DataSnapshot for the CloudProcessor so the class
-     * can use it
-     *
-     * @param snapshot Data snapshot that reflects information from the database
-     */
-    private static void setSnapshot(DataSnapshot snapshot) {
+    //FIXME Untested
+    //TODO need to be called inside AM's sync
+    //add a listener to auto add new mutal friend to static friendList of current device
+    //would call refresh of FriendListPage or notify it.(FLP would be a observer of AM, and would be notified
+    //when have new friend, (we directly call AM's notifyObservers here)
+    public static void checkFriendList(String userEmail){
+        DocumentReference database1 = FirebaseFirestore.getInstance()
+                .collection(USER_DIR_KEY)
+                .document(reformatEmailForCloud(userEmail))
+                .collection(FRIEND_DIR_KEY)
+                .document(FRIEND_LIST_KEY);
+        database1.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
 
-        //FIXME this line never gets called meaning onDataChange never execute quick enough OR my implementation is wrong.
-        if (snapshot != null) {
-            Log.d(TAG, "Snapshot was set successfully with non-null.");
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (snapshot != null && snapshot.exists()) {
+                    Log.d(TAG, source + " data: " + snapshot.getData());
+                    Map<String,Object> map =snapshot.getData();
+                    Set<String> candidates = map.keySet();
+                    for (String candidate : candidates) {
+                        if(map.get(candidate) == MUTUAL){
+                            if(ActivityMediator.getFriendList().contains(candidate)){
+                                Log.d(TAG, "we got new friends need to be pushed");
+                                ActivityMediator.getFriendList().add(reformatEmailForUser(candidate));
+                                //FIXME prompt to refresh friendListPage;
+                            }
+                        }
+
+
+                    }
+
+                } else {
+                    Log.d(TAG, source + " data: null");
+                }
+            }
+        });
+    }
+
+    //FIXME Untested
+    //TODO need to be called inside AM's sync
+    //used when initialize the app, should be called by AM in sync();
+    //it basically check the cloud storage of friend candidates and add to friendList(static local)
+    // if it's mutual friend.
+    public static void loadFriendList(String userEmail){
+        DocumentReference database = FirebaseFirestore.getInstance()
+                .collection(USER_DIR_KEY)
+                .document(reformatEmailForCloud(userEmail))
+                .collection(FRIEND_DIR_KEY)
+                .document(FRIEND_LIST_KEY);
+        Task<DocumentSnapshot> task_doc = database.get();
+        while (!task_doc.isComplete()){
+            try{
+                Thread.sleep(20);
+            }catch (Exception e){
+
+            }
+        }
+        if(!task_doc.isSuccessful())
+            Log.d(TAG, "task check account unsuccessful");
+
+        try {
+            DocumentSnapshot documentSnapshot = task_doc.getResult();
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                Map<String,Object> map = documentSnapshot.getData();
+                Set<String> candidates = map.keySet();
+                for (String candidate : candidates) {
+                    if(map.get(candidate) == MUTUAL)
+                        ActivityMediator.getFriendList().add(reformatEmailForUser(candidate));
+                }
+            }
+        }catch (Exception e){
+
         }
 
-        CloudProcessor.snapshot = snapshot;
     }
 
-    private static void setWalkDay(WalkDay w){
-        walkDay =w;
+    //needs to write
+    //FIXME
+    public static void aInviteB(String A, String B){
+        updateFriendInfo(A,B);
     }
 
-    private static void resetWalkDay(){
-        walkDay = null;
-    }
+
+    //removed because we should manipulate both's friendlist in the cloud when attempt to add;
+    //actually change A's friend data
+    //public static void aAddB(String A, String B)
+
+
+
+    //removed because we should already checked when attempt to add;
+    //public static boolean checkAisBFriend(String A, String B)
+
 
 
 }
