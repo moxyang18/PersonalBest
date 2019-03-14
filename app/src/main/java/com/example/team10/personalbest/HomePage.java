@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -46,8 +47,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import com.google.firebase.firestore.CollectionReference;
+
+
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -62,9 +69,21 @@ public class HomePage extends AppCompatActivity{
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
 
+
     // Used to authorize account with Firebase
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
+
+    String COLLECTION_KEY = "chats";
+    String DOCUMENT_KEY = "chat1";
+    String MESSAGES_KEY = "messages";
+    String FROM_KEY = "from";
+    String TEXT_KEY = "text";
+    String TIMESTAMP_KEY = "timestamp";
+    String from;
+    String userEmail;
+    CollectionReference chat;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,6 +246,7 @@ public class HomePage extends AppCompatActivity{
         Log.i(TAG, "Intent is sent");
     }
 
+
     /**
      * firebaseAuthWithGoogle
      *
@@ -262,6 +282,7 @@ public class HomePage extends AppCompatActivity{
      *
      * Launches the running mode activity
      */
+
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
         startActivity(intent);
@@ -321,6 +342,9 @@ public class HomePage extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         Log.i( TAG, "Intent is done/closed");
 
+        //GoogleSignInAccount user = Auth.GoogleSignInApi.getSignInIntent(this);
+
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
 
@@ -362,6 +386,14 @@ public class HomePage extends AppCompatActivity{
 
         }
 
+        /**
+         * Get the user's email
+         */
+        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        if(user != null) {
+            userEmail = user.getEmail();
+        }
+        Log.d(TAG, "The user's email is " + userEmail);
     }
 
     public void openNewGoalDialog() {

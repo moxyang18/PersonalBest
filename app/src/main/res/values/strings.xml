@@ -41,6 +41,12 @@
     <string name="add_friend_dialogue_title">Add Friend</string>
     <string name="add_friend_dialogue_description">Enter Email:</string>
     <string name="title_activity_friend_home_page">FriendHomePage</string>
+    <string name="intent_email_key">email</string>
+
+    <!-- Friends List Strings for Shared Preferences -->
+    <string name="shared_pref_file_name">friend_list</string>
+    <string name="shared_pref_string_set_key">emailList</string>
+
 
     <!--Message Strings-->
     <string name="title_activity_message_page">MessagePage</string>
@@ -50,5 +56,6 @@
     <string name="send_message_button">Send</string>
     <string name="friend_homepage_button">Go To Friend\'s Homepage</string>
     <string name="message_back_button">Back</string>
+
 
 </resources>

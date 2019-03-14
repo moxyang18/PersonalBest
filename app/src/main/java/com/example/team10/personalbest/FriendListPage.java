@@ -25,10 +25,13 @@ import java.util.Set;
 public class FriendListPage extends AppCompatActivity {
     private String TAG = "FriendListPage:";
 
+    //final int INCOMING_INDEX = 0;
+    //final int OUTGOING_INDEX = 0;
+    final int FRIEND_INDEX = 2;
+
     ExpandableListView friendExpandableList;
     FriendListExpandableListAdapter listAdapter;
 
-    ArrayList<String> friendNames; //TODO delete later?
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +58,7 @@ public class FriendListPage extends AppCompatActivity {
 
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
         friendExpandableList.setAdapter(listAdapter);
-        friendExpandableList.expandGroup(2); //TODO magic number get rid
+        friendExpandableList.expandGroup(FRIEND_INDEX); //TODO magic number get rid
         friendExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             //Open Friend Home Page while passing in email address
             @Override
@@ -93,9 +96,14 @@ public class FriendListPage extends AppCompatActivity {
                 // User chose add friend button, open the dialogue.
                 addFriendDialgue();
                 return true;
+            case android.R.id.home:
+                finish();
+                //User chose the exit button, return to home page
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
+                Log.d(TAG, "" + item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -110,16 +118,16 @@ public class FriendListPage extends AppCompatActivity {
 
 
         //Found the friend in our system, now save in Shared Preferences/update friend count
-        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
+        SharedPreferences friendPreferences = getSharedPreferences(getString(R.string.shared_pref_file_name), MODE_PRIVATE);
         SharedPreferences.Editor editor = friendPreferences.edit();
 
         //get list of current friends' emails
-        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+        Set<String> emailSet = friendPreferences.getStringSet(getString(R.string.shared_pref_string_set_key), new HashSet<String>());
         Log.d(TAG,"Retrieved email set from Shared Preferences");
 
         //add new email to set and save into Shared Preferences
         emailSet.add(email);
-        editor.putStringSet("emailList", emailSet);
+        editor.putStringSet(getString(R.string.shared_pref_string_set_key), emailSet);
         editor.apply();
         Log.d(TAG, "Saved New List Successfully");
 

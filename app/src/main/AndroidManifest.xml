@@ -36,6 +36,7 @@
             android:label="@string/title_activity_running_mode"
             android:theme="@style/AppTheme.NoActionBar" />
 
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
@@ -49,7 +50,8 @@
             android:label="@string/title_activity_friend_summary"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <service android:name="MyFirebaseMessagingService">
+
+        <service android:name=".ChatMessaging.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

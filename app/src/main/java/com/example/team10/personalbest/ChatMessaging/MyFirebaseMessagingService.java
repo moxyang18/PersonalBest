@@ -1,4 +1,4 @@
-package com.example.team10.personalbest;
+package com.example.team10.personalbest.ChatMessaging;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
