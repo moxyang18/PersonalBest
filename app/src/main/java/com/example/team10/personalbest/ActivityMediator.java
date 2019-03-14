@@ -320,7 +320,8 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void updateRunningMode(){
-        runningMode.showGoal(goal_today);
+
+        runningMode.showGoal(getGoal_today());
         runningMode.showStepCount(stepCountDailyTotal);
         runningMode.showStepCountIntentional(stepCountRunWithMock);
         runningMode.showDistance(distanceRun);

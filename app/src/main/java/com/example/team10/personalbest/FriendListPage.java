@@ -65,7 +65,7 @@ public class FriendListPage extends AppCompatActivity {
                 }
                 //Grab the ExpandableListAdapter
                 FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
-                Intent intent = new Intent( myAdapter.getActivity(), FriendHomePage.class );
+                Intent intent = new Intent( myAdapter.getActivity(), FriendSummary.class );
                 intent.putExtra("email", myAdapter.getChild(groupPosition, childPosition).toString());
                 myAdapter.getActivity().startActivity(intent);
                 return true;
