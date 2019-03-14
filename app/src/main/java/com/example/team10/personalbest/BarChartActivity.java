@@ -23,11 +23,12 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.HashMap;
 
 public class BarChartActivity extends AppCompatActivity {
 
     private BarChart barChart10;
-    private ArrayList<WalkDay> user_WalkDays;
+    private HashMap<String,WalkDay> user_WalkDays;
     //private DataProcessor dp;
     private String userEmail;
     private String userDisplayName;
@@ -42,7 +43,7 @@ public class BarChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_chart);
         config();
-        user_WalkDays = ActivityMediator.getUser_walkDays();
+        user_WalkDays = ActivityMediator.getUserWalkDays();
         userEmail = ActivityMediator.getInstance().getUserEmail();
         userDisplayName = ActivityMediator.getInstance().getUserDisplayName();
 
@@ -97,7 +98,16 @@ public class BarChartActivity extends AppCompatActivity {
 
             // Get the day we're processing
             dayDate = sundayDate.plusDays(i);
-            day = CloudProcessor.retrieveDay(dayDate,userEmail);
+
+            //since we update local walkdays when calling savelocal, no need to read from cloud
+            /*
+            if(dayDate.isEqual(LocalDate.now()))
+                day = day = CloudProcessor.retrieveDay(dayDate,userEmail);
+
+            else
+            */
+                day = user_WalkDays.get(dayDate.toString());
+            //day = CloudProcessor.retrieveDay(dayDate,userEmail);
 
             // Add data for that data to the graph
             if (day != null) {

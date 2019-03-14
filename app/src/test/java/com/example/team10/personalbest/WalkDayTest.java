@@ -13,7 +13,7 @@ public class WalkDayTest {
 
     @Before
     public void init() {
-        day = new WalkDay(LocalDate.now());
+        day = new WalkDay(LocalDate.now().toString());
     }
 
     @Test

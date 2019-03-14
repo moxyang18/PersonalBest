@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -22,14 +23,17 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class StepSummary extends AppCompatActivity {
 
     private BarChart barChart10;
-    private DataProcessor dp;
+    //private DataProcessor dp;
     private int[] goal_list = new int[28];
-
+    private HashMap<String,WalkDay> user_WalkDays;
+    private String userEmail = "";
+    private String displayName = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,9 +45,11 @@ public class StepSummary extends AppCompatActivity {
 
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.summary_bar_chart);
-
+        userEmail = ActivityMediator.getInstance().getUserEmail();
+        user_WalkDays = ActivityMediator.getUserWalkDays();
+        displayName = ActivityMediator.getInstance().getUserDisplayName();
         // Get data for chart
-        dp = DataProcessor.getInstance();
+        //dp = DataProcessor.getInstance();
 
         // Display chart
         displayChart();
@@ -72,7 +78,9 @@ public class StepSummary extends AppCompatActivity {
             dayDate = iDate.minusDays(i);
 
             labels.add(dayDate.toString().substring(5));
-            day = dp.retrieveDay(dayDate);
+            //since we update local walkdays when calling savelocal, no need to read from cloud
+            day = user_WalkDays.get(dayDate.toString());
+            //day = dp.retrieveDay(dayDate);
 
             // Add data for that data to the graph
             if (day != null) {
@@ -144,7 +152,7 @@ public class StepSummary extends AppCompatActivity {
                 if(day_goal !=0)
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
 
-                setDataField(dp.retrieveDay(LocalDate.now().minusDays(27-day_ind)));
+                setDataField(user_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
             }
 
             @Override

@@ -5,10 +5,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -24,16 +24,22 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class FriendSummary extends AppCompatActivity {
 
     private BarChart barChart10;
-    private DataProcessor dp;
-    private String name;
+    //private DataProcessor dp;
+    private String friendEmail ="";
+    private String userEmail = "";
     private TextView header;
     private int[] goal_list = new int[28];
     private static String TAG = "FriendSummary";
+
+    private HashMap<String,WalkDay> user_WalkDays;
+    private HashMap<String,WalkDay> friend_WalkDays;
+    private String displayName = "";
 
     /*
     * Populate the DataProcessor with the friend's monthly data stored in the
@@ -50,20 +56,25 @@ public class FriendSummary extends AppCompatActivity {
         for (int i = 0; i < 28; i++)
             goal_list[i]=0;
 
-        // get friends name and set the chart's header
+        // get friends friendEmail and set the chart's header
         Bundle extras = this.getIntent().getExtras();
-        name = extras.getString("email");
+        friendEmail = extras.getString("email");
+        if(friendEmail != null)
+            //ActivityMediator.getInstance().preloadFriendWalkDays(friendEmail);
+        //FIXME currently using user walkDays since friend unimplemented so not loading
 
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.friend_bar_chart);
         header = findViewById(R.id.name_title);
-        if(this.name == null)
+        if(this.friendEmail == null)
             header.setText("The Friend's Step Chart");
         else
-        header.setText( this.name + "'s Step Chart");
-
+        header.setText( this.friendEmail + "'s Step Chart");
+        userEmail = ActivityMediator.getInstance().getUserEmail();
+        user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
+        friend_WalkDays = ActivityMediator.getFriendWalkDays();
         // Get data for chart
-        dp = DataProcessor.getInstance();
+        //dp = DataProcessor.getInstance();
 
         // Display chart
         displayChart();
@@ -92,8 +103,13 @@ public class FriendSummary extends AppCompatActivity {
             dayDate = iDate.minusDays(i);
 
             labels.add(dayDate.toString().substring(5));
-            day = dp.retrieveDay(dayDate);
+            if(dayDate.isEqual(LocalDate.now()))
+                day = CloudProcessor.retrieveDay(dayDate,userEmail);
+            //FIXME currently using user walkDays since friend unimplemented
 
+            else
+                day = user_WalkDays.get(dayDate.toString());
+            //FIXME currently using user walkDays since friend unimplemented
             // Add data for that data to the graph
             if (day != null) {
                 entries.add(new BarEntry(27-i, new float[]
@@ -168,7 +184,8 @@ public class FriendSummary extends AppCompatActivity {
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
                     Log.i(TAG, Integer.toString(day_goal));
                 }
-                setDataField(dp.retrieveDay(LocalDate.now().minusDays(27-day_ind)));
+                setDataField(user_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
+                //FIXME currently using user walkDays since friend unimplemented
             }
 
             @Override
@@ -196,7 +213,7 @@ public class FriendSummary extends AppCompatActivity {
         Button message_button = findViewById(R.id.message_in_chart);
         message_button.setOnClickListener(v -> {
             Intent message = new Intent(this, MessagePage.class);
-            message.putExtra("name", name);
+            message.putExtra("friendEmail", friendEmail);
             this.startActivity(message);
         });
     }
@@ -216,6 +233,12 @@ public class FriendSummary extends AppCompatActivity {
         // get the calculated MPH, daily distance and the total walk time on that day
         String info = "MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
         dataView.setText(info);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityMediator.setFriendWalkDays(new HashMap<String, WalkDay>());
     }
 
 }

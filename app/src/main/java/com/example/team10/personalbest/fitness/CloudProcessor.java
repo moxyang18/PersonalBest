@@ -2,6 +2,7 @@ package com.example.team10.personalbest.fitness;
 
 import android.util.Log;
 
+import com.example.team10.personalbest.ActivityMediator;
 import com.example.team10.personalbest.FormatHelper;
 import com.example.team10.personalbest.WalkDay;
 import com.example.team10.personalbest.friend.StringAsObject;
@@ -73,8 +74,8 @@ public class CloudProcessor {
     public static void uploadWalkDay(WalkDay walkDay, String email){
         if(walkDay == null)
             Log.d(TAG,"null is input. Expect walkday");
-            if(email == null){
-                Log.d(TAG,"null is input. Expect email");
+        if(email == null){
+            Log.d(TAG,"null is input. Expect email");
         }
         String date = walkDay.getDate().toString();
 
@@ -87,45 +88,85 @@ public class CloudProcessor {
                 .document(date);
 
         database.set(walkDay)
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void v) {
-                //Log.d(TAG, "Walkday successfully uploaded!");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void v) {
+                        //Log.d(TAG, "Walkday successfully uploaded!");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.w(TAG, "Error uploading walkday", e);
             }
         });
 
+    }
 
-        /*
-        DocumentReference docRef = db.collection("cities").document("BJ");
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+    /**
+     * It is used for preloading, listener would assign appropriate value to it
+     * @param date
+     * @param email
+     */
+    public static void requestDay(LocalDate date, String email, boolean isUser){
+        DocumentReference database = FirebaseFirestore.getInstance()
+                .collection(USER_DIR_KEY)
+                .document(reformatEmailForCloud(email))
+                .collection(WALKDAY_COLLECTION_KEY)
+                .document(date.toString());
+
+        Task<DocumentSnapshot> task_documentSnapshot= database.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                City city = documentSnapshot.toObject(City.class);
+                if(!documentSnapshot.exists()){
+                    Log.d(TAG, "requesting walkDay of "+date.toString()+" snapshot doesn't exist, going to return new walkday");
+                    if(isUser){
+                        ActivityMediator.getUserWalkDays().put(date.toString(),new WalkDay(date.toString()));
+                    }else{
+                        ActivityMediator.getFriendWalkDays().put(date.toString(), new WalkDay(date.toString()));
+                    }
+                }
+
+                WalkDay result = documentSnapshot.toObject(WalkDay.class);
+                if(result == null) {
+                    Log.d(TAG, "requesting WalkDay of "+date.toString()+" but got null object");
+                    if(isUser){
+                        ActivityMediator.getUserWalkDays().put(date.toString(),new WalkDay(date.toString()));
+                    }else{
+                        ActivityMediator.getFriendWalkDays().put(date.toString(), new WalkDay(date.toString()));
+                    }
+                    return;
+                }
+                else{
+                    try{
+                        int step = result.getStepCountDailyTotal();
+                        if(isUser){
+                            ActivityMediator.getUserWalkDays().put(date.toString(),result);
+                        }else{
+                            ActivityMediator.getFriendWalkDays().put(date.toString(), result);
+                        }
+                    }catch (Exception e){
+                        Log.d(TAG, "after request, caught error, going to return new walkday");
+                        if(isUser){
+                            ActivityMediator.getUserWalkDays().put(date.toString(),new WalkDay(date.toString()));
+                        }else{
+                            ActivityMediator.getFriendWalkDays().put(date.toString(), new WalkDay(date.toString()));
+                        }
+                    }
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@android.support.annotation.NonNull Exception e) {
+                Log.d(TAG, "requesting WalkDay of "+date.toString()+" but FAIL THE TASK");
+                if(isUser){
+                    ActivityMediator.getUserWalkDays().put(date.toString(),new WalkDay(date.toString()));
+                }else{
+                    ActivityMediator.getFriendWalkDays().put(date.toString(), new WalkDay(date.toString()));
+                }
             }
         });
-        */
-
-        /*
-        String uid = getUidFromEmail(reformatEmailForCloud(email));
-        if(uid != null){
-            Log.i(TAG, "Uploading... UID is "+getUidFromEmail(reformatEmailForCloud(email)));
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                    .child(USERS_DIR).child(uid);
-            database.child(date).setValue(walkDay);
-            Log.i(TAG, "upload walkding using UID");
-        }else{
-            Log.i(TAG, "Uploading... UID is "+getUidFromEmail(reformatEmailForCloud(email)));
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                    .child(USERS_DIR).child(reformatEmailForCloud(email));
-            database.child(date).setValue(walkDay);
-            Log.i(TAG, "upload walkding using email directly");
-        }
-        */
     }
 
     /**

@@ -32,7 +32,7 @@ public class RunningMode extends AppCompatActivity{
 
     //private GoogleFitAdapter fit;
     private Mediator activityMediator;
-    private  DataProcessor dp;
+    //private  DataProcessor dp;
     //private int goal = 0;
     /*
     private int stepCount =0;
@@ -119,16 +119,16 @@ public class RunningMode extends AppCompatActivity{
 
     // the legacy function that sends the message from the system automatically
     public void friendless_notification () {
-        dp = DataProcessor.getInstance();
+
 
         String encourage_mes;
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
 
-        WalkDay todayData = dp.retrieveDay(today);
-        WalkDay yesterdayData = dp.retrieveDay(yesterday);
+        //WalkDay todayData = activityMediator.
+        WalkDay yesterdayData = ActivityMediator.getUserWalkDays().get(yesterday.toString());
 
-        int todayTotals = (todayData==null) ? 0 :todayData.getStepCountDailyTotal();
+        int todayTotals = activityMediator.getStepCountDailyTotal();
         int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
 
         int increment = todayTotals - yesterdayTotals; //stepCount - yesterdayStepCount
