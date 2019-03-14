@@ -1,13 +1,10 @@
 package com.example.team10.personalbest.fitness;
 
-import android.provider.DocumentsContract;
 import android.util.Log;
 
 import com.example.team10.personalbest.FormatHelper;
-import com.example.team10.personalbest.PersonalBestUser;
 import com.example.team10.personalbest.WalkDay;
 import com.example.team10.personalbest.friend.StringAsObject;
-import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -20,19 +17,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.iid.FirebaseInstanceIdReceiver;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalTime;
 
 import androidx.annotation.NonNull;
 
 import static com.example.team10.personalbest.FormatHelper.reformatEmailForCloud;
-import static com.example.team10.personalbest.FormatHelper.reformatEmailForUser;
 
 /**
  * CloudProcessor class
@@ -49,7 +40,7 @@ public class CloudProcessor {
 
     // Constant strings to indicate directories in database
     private static final String USER_DIR_KEY = "users";
-    private static final String UID_EMAIL_MAP_DIR_KEY = "users_stored";
+    private static final String PERSONBEST_USER_COLLECTION_KEY = "users_stored";
     private static final String STORED_USERS_KEY = "activated_users";
     private static final String WALKDAY_COLLECTION_KEY ="walkdays";
     private static final String UPDATE_TIME_COLLECTION_KEY = "updatedsince";
@@ -63,7 +54,6 @@ public class CloudProcessor {
 
     // DataSnapshot to extract from
     private static DataSnapshot snapshot;
-    private static String uid_temp;
     private static WalkDay walkDay;
 
 
@@ -81,11 +71,14 @@ public class CloudProcessor {
      * @param email eamail used to distinguish user
      */
     public static void uploadWalkDay(WalkDay walkDay, String email){
-        if(walkDay == null || email == null){
-            Log.d(TAG,"null is input. Expect walkday and email");
+        if(walkDay == null)
+            Log.d(TAG,"null is input. Expect walkday");
+            if(email == null){
+                Log.d(TAG,"null is input. Expect email");
         }
         String date = walkDay.getDate().toString();
-        //long time = walkDay.getDate().
+
+        //long time = walkDay.getString1().
 
         DocumentReference database = FirebaseFirestore.getInstance()
                 .collection(USER_DIR_KEY)
@@ -97,7 +90,7 @@ public class CloudProcessor {
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void v) {
-                Log.d(TAG, "Walkday successfully uploaded!");
+                //Log.d(TAG, "Walkday successfully uploaded!");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -168,115 +161,22 @@ public class CloudProcessor {
 
             }
         }
-
+        if(task_documentSnapshot.isSuccessful())
+            Log.d(TAG, "Task retrieving walkday is successful");
+        else Log.d(TAG, "Task retrieving walkday is unsuccessful");
         try {
             DocumentSnapshot documentSnapshot = task_documentSnapshot.getResult();
             if (documentSnapshot == null) {
                 Log.d(TAG, "unsuccessful reading walkDay");
                 return null;
             } else {
-                Log.d(TAG, "successful reading walkDay");
+                //Log.d(TAG, "successful reading walkDay");
                 return documentSnapshot.toObject(WalkDay.class);
             }
         }catch (Exception e){
-            Log.d(TAG, "TASK hasn't finished");
+            Log.d(TAG, "retrieve Day TASK has error");
             return null;
         }
-
-
-        /*
-        String uid = getUidFromEmail(reformatEmailForCloud(email));
-        if (uid !=null) {
-
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                    .child(USERS_DIR).child(uid);
-
-
-            database.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.hasChild(date.toString())) {
-                        CloudProcessor.setSnapshot(snapshot);
-                        Log.d(TAG, "Found user's walkday data on "+ date.toString());
-                    } else {
-                        CloudProcessor.setSnapshot(null);
-                        Log.d(TAG, "User's walkday data on "+ date.toString()+" not found.");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.err.println("The read failed: " + databaseError.getCode());
-                    CloudProcessor.setSnapshot(null);
-                }
-            });
-            helperWrite(email);
-            while(snapshot==null) {
-                //    Log.i(TAG,"waiting for aysn Data Listenr to update");
-
-            }
-            Log.i(TAG, "retrieve Day successful with uid");
-            WalkDay result = snapshot.child(date.toString()).getValue(WalkDay.class);
-            setSnapshot(null);
-            return result;
-            /*
-            // Return user if not null
-            if (snapshot != null) {
-                Log.i(TAG, "retrieve Day successful with uid");
-                return snapshot.child(date.toString()).getValue(WalkDay.class);
-            } else {
-                Log.i(TAG, "retrieve Day unsuccessful with uid");
-                return new WalkDay(date.toString());
-
-            }
-            */
-        /*
-        }
-        else{
-
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                    .child(USERS_DIR).child(reformatEmailForCloud(email));
-
-
-            database.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.hasChild(date.toString())) {
-                        CloudProcessor.setSnapshot(snapshot);
-                        Log.d(TAG, "Found user's walkday data on "+ date.toString());
-                    } else {
-                        CloudProcessor.setSnapshot(null);
-                        Log.d(TAG, "User's walkday data on "+ date.toString()+" not found.");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.err.println("The read failed: " + databaseError.getCode());
-                    CloudProcessor.setSnapshot(null);
-                }
-            });
-            helperWrite(email);
-            while(snapshot==null) {
-                //    Log.i(TAG,"waiting for aysn Data Listenr to update");
-
-            }
-            Log.i(TAG, "retrieve Day successful with email");
-            WalkDay result = snapshot.child(date.toString()).getValue(WalkDay.class);
-            setSnapshot(null);
-            return result;
-            /*
-            // Return user if not null
-            if (snapshot != null) {
-                Log.i(TAG, "retrieve Day successful with email");
-                return snapshot.child(date.toString()).getValue(WalkDay.class);
-            } else {
-                Log.i(TAG, "retrieve Day unsuccessful with email");
-                return new WalkDay(date.toString());
-            }
-            */
-        //}
-
 
     }
 
@@ -296,10 +196,12 @@ public class CloudProcessor {
 
     */
 
-    public static void setLastUploadDate(LocalDate date, String email){
+    public static void setUpdateInfo(LocalDate date, LocalTime time, String email){
 
-        if(walkDay == null || email == null){
-            Log.d(TAG,"null is input. Expect walkday and email");
+        if(date == null)
+            Log.d(TAG,"null is input. Expect date");
+        if(email == null){
+            Log.d(TAG,"null is input. Expect email");
         }
 
         DocumentReference database = FirebaseFirestore.getInstance()
@@ -309,10 +211,10 @@ public class CloudProcessor {
                 .document(UPDATE_TIME_KEY);
 
 
-        database.set(new StringAsObject(date.toString())).addOnSuccessListener(new OnSuccessListener<Void>() {
+        database.set(new StringAsObject(date.toString(),time.toString())).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void v) {
-                Log.d(TAG, "LastUploadDate successfully uploaded!");
+                //Log.d(TAG, "LastUploadDate successfully uploaded!");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -320,103 +222,12 @@ public class CloudProcessor {
                 Log.w(TAG, "Error uploading LastUploadDate", e);
             }
         });
-        Log.i(TAG, "setLastUploadDate of "+date.toString()+ " as " + date.toEpochDay());
+        //Log.i(TAG, "setUpdateInfo of "+date.toString()+ " as " + date.toEpochDay());
 
     }
 
-    public static LocalDate getLastUploadDate(String email){
+    public static StringAsObject getUpdateInfo(String email){
 
-        /*
-        String uid = getUidFromEmail(reformatEmailForCloud(email));
-        if (uid ==null) {
-
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                    .child(USERS_DIR).child(reformatEmailForCloud(email));
-
-
-            database.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.hasChild("lastUploadDate")) {
-                        CloudProcessor.setSnapshot(snapshot);
-                        Log.d(TAG, "Found user's last upload date.");
-                    } else {
-                        CloudProcessor.setSnapshot(null);
-                        Log.d(TAG, "User's last upload date not found.");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.err.println("The read failed: " + databaseError.getCode());
-                    CloudProcessor.setSnapshot(null);
-                }
-            });
-            helperWrite(email);
-            while(snapshot==null) {
-                //    Log.i(TAG,"waiting for aysn Data Listenr to update");
-
-            }
-            /*
-            // Return latest upload date if not null
-            if (snapshot != null) {
-                return snapshot.child("lastUploadDate").getValue(LocalDate.class);
-            } else {
-                return null;
-            }
-             */
-
-        /*
-            LocalDate result = snapshot.child("lastUploadDate").getValue(LocalDate.class);
-            setSnapshot(null);
-            return result;
-
-
-        }
-        else{
-
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                    .child(USERS_DIR).child(uid);
-
-
-            database.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.hasChild("lastUploadDate")) {
-                        CloudProcessor.setSnapshot(snapshot);
-                        Log.d(TAG, "Found user's last upload date.");
-                    } else {
-                        CloudProcessor.setSnapshot(null);
-                        Log.d(TAG, "User's last upload date not found.");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    System.err.println("The read failed: " + databaseError.getCode());
-                    CloudProcessor.setSnapshot(null);
-                }
-            });
-            helperWrite(email);
-            while(snapshot==null) {
-                //    Log.i(TAG,"waiting for aysn Data Listenr to update");
-
-            }
-            /*
-            // Return latest upload date if not null
-            if (snapshot != null) {
-                return snapshot.child("lastUploadDate").getValue(LocalDate.class);
-            } else {
-                return null;
-            }
-            */
-
-        /*
-            LocalDate result = snapshot.child("lastUploadDate").getValue(LocalDate.class);
-            setSnapshot(null);
-            return result;
-        }
-        */
         DocumentReference database = FirebaseFirestore.getInstance()
                 .collection(USER_DIR_KEY)
                 .document(reformatEmailForCloud(email))
@@ -424,7 +235,7 @@ public class CloudProcessor {
                 .document(UPDATE_TIME_KEY);
 
         Task<DocumentSnapshot> task_documentSnapshot = database.get();
-        DocumentSnapshot documentSnapshot = task_documentSnapshot.getResult();
+
 
         while (!task_documentSnapshot.isComplete()){
             try{
@@ -434,14 +245,14 @@ public class CloudProcessor {
             }
         }
 
-        try {
+        try {DocumentSnapshot documentSnapshot = task_documentSnapshot.getResult();
             if (documentSnapshot == null){
                 Log.d(TAG, "unsuccessful reading lastuploaddate");
                 return null;
             }else{
-                Log.d(TAG, "successful reading lastuploaddate");
+                //Log.d(TAG, "successful reading lastuploaddate");
 
-                return LocalDate.parse(documentSnapshot.toObject(StringAsObject.class).getString());
+                return documentSnapshot.toObject(StringAsObject.class);
             }
         }catch (Exception e){
             Log.d(TAG, "TASK hasn't finished");
@@ -460,8 +271,45 @@ public class CloudProcessor {
 
     //return true if found account
     public static boolean checkAccount(String email){
+
+
+        //database.
+        Task<DocumentSnapshot> task_documentSnapshot = FirebaseFirestore.getInstance()
+                .collection(PERSONBEST_USER_COLLECTION_KEY)
+                .document(reformatEmailForCloud(email)).get();;
+
+
+
+        while (!task_documentSnapshot.isComplete()){
+            try{
+                Thread.sleep(20);
+            }catch (Exception e){
+
+            }
+        }
+        if(!task_documentSnapshot.isSuccessful())
+            Log.d(TAG, "task check account unsuccessful");
+
+
+
+        try {
+            DocumentSnapshot documentSnapshot = task_documentSnapshot.getResult();
+            if (documentSnapshot == null){
+                Log.d(TAG, "unsuccessful reading email");
+                return false;
+            }else{
+                Log.d(TAG, "successful reading email");
+                String mail = documentSnapshot.toObject(StringAsObject.class).getString1();Log.d(TAG,"converting email");
+                if(mail == null) Log.d(TAG, "email is null");else if(mail.equals(email)) Log.d(TAG, "found revisiting user within cloud");
+                return true;
+            }
+        }catch (Exception e){
+            Log.d(TAG, "Error converting back user email");
+            return true;
+        }
+        /*
         CollectionReference database = FirebaseFirestore.getInstance()
-                .collection(UID_EMAIL_MAP_DIR_KEY);
+                .collection(PERSONBEST_USER_COLLECTION_KEY);
         Query query = database.whereEqualTo(reformatEmailForCloud(email),reformatEmailForCloud(email));
         Task<QuerySnapshot> task_querySnapshot = query.get();
 
@@ -472,14 +320,20 @@ public class CloudProcessor {
 
             }
         }
-
+        if(!task_querySnapshot.isSuccessful())
+            Log.d(TAG, "task for query is not successful");
         try {
-        QuerySnapshot querySnapshot =task_querySnapshot.getResult();
+            QuerySnapshot querySnapshot =task_querySnapshot.getResult();
+            if (querySnapshot.isEmpty())
+                Log.d(TAG, querySnapshot.toString());
+                Log.d(TAG, "query doesn't find account satisfying requirement");
             return ! querySnapshot.isEmpty();
         }catch (Exception e){
-            Log.d(TAG, "TASK hasn't finished");
+            Log.d(TAG, "check Account query unsuccessful");
             return false;
         }
+         */
+
     }
 
     /**
@@ -492,10 +346,10 @@ public class CloudProcessor {
      */
     public static void activateAccount (String email) {
         DocumentReference database = FirebaseFirestore.getInstance()
-                .collection(UID_EMAIL_MAP_DIR_KEY)
-                .document(STORED_USERS_KEY);
+                .collection(PERSONBEST_USER_COLLECTION_KEY)
+                .document(reformatEmailForCloud(email));
         // Get database reference @ root directory
-        database.update(reformatEmailForCloud(email),reformatEmailForCloud(email)).addOnSuccessListener(new OnSuccessListener<Void>() {
+        database.set(new StringAsObject(reformatEmailForCloud(email),reformatEmailForCloud(email))).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "User successfully stored!");
@@ -543,7 +397,7 @@ public class CloudProcessor {
 
         // Get database reference @ email mapping directory
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
-                .child(UID_EMAIL_MAP_DIR_KEY)
+                .child(PERSONBEST_USER_COLLECTION_KEY)
                 ;
 
         ValueEventListener m = new ValueEventListener() {

@@ -1,19 +1,30 @@
 package com.example.team10.personalbest.friend;
 
 public class StringAsObject extends Object {
-    private String string;
+    private String string1;
+    private String string2;
     public StringAsObject(){
-        string="";
+        string1 ="";
+        string2 ="";
     }
 
-    public StringAsObject(String s){
-        string=s;
+    public StringAsObject(String s1, String s2){
+        string1 =s1;
+        string2 =s2;
     }
 
-    public String getString() {
-        return string;
+    public String getString1() {
+        return string1;
     }
-    public void setString(String s) {
-        string = s;
+    public void setString1(String s) {
+        string1 = s;
+    }
+
+    public String getString2() {
+        return string2;
+    }
+
+    public void setString2(String string2) {
+        this.string2 = string2;
     }
 }

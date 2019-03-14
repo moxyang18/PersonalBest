@@ -151,6 +151,7 @@
 
 
     <TextView
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#188bc2"
@@ -168,8 +169,9 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
         android:background="#e7743d"
-        android:hint="0"
+        android:text="00:00:00"
         android:textColor="#ffffffff"
         android:textColorHint="#ffffffff"
         android:textSize="30dp"
@@ -235,8 +237,15 @@
         android:text="increment steps"
         android:textColor="#ffffff"
         android:textSize="20dp"
-        tools:layout_editor_absoluteX="282dp"
-        tools:layout_editor_absoluteY="390dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.464"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.969"
+        android:layout_marginLeft="190dp"
+        />
+
 
 
     <Button

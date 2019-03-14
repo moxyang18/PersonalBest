@@ -83,7 +83,7 @@ public class WalkDay {
     }
 
     /**
-     * setDate
+     * setString1
      *
      * Sets the date
      *
@@ -155,7 +155,7 @@ public class WalkDay {
     public int getStepCountDailyReal() { return this.stepCountDailyReal; }
 
     /**
-     * getDate
+     * getString1
      *
      * Gets the date of this day (LocalDate)
      *

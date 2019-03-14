@@ -1,21 +1,19 @@
 package com.example.team10.personalbest;
 
-import android.app.Person;
 import android.util.Log;
 
 import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.example.team10.personalbest.friend.StringAsObject;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
-
-import androidx.annotation.NonNull;
 
 public class ActivityMediator implements Observer, Mediator {
 
@@ -23,10 +21,10 @@ public class ActivityMediator implements Observer, Mediator {
 
 
 
-    static private String TAG = "Activity Mediator";
+    static private String TAG = "Mediator-";
 
     protected LocalDate date = LocalDate.now();
-    private WalkDay walkDay;
+    private static WalkDay walkDay;
     private RunningMode runningMode;
     private HomePage homePage;
     private DataProcessor dataProcessor;
@@ -81,9 +79,11 @@ public class ActivityMediator implements Observer, Mediator {
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
     private FirebaseUser currentUser;
-    private String userEmail;
-    private String userDisplayName;
-    PersonalBestUser personalBestUser;
+    private static String userEmail;
+    private static String userDisplayName;
+    private static ArrayList<WalkDay> user_walkDays = new ArrayList<WalkDay>();
+    private static ArrayList<WalkDay> friend_walkDays = new ArrayList<WalkDay>();
+    //PersonalBestUser personalBestUser;
 
     public ActivityMediator(HomePage hp){
         homePage = hp;
@@ -95,14 +95,32 @@ public class ActivityMediator implements Observer, Mediator {
         return instance;
     }
 
+    public static ArrayList<WalkDay> getUser_walkDays() {
+        return user_walkDays;
+    }
+
+    public static void setUser_walkDays(ArrayList<WalkDay> user_walkDays) {
+        ActivityMediator.user_walkDays = user_walkDays;
+    }
+
+    public static ArrayList<WalkDay> getFriend_walkDays() {
+        return friend_walkDays;
+    }
+
+    public static void setFriend_walkDays(ArrayList<WalkDay> friend_walkDays) {
+        ActivityMediator.friend_walkDays = friend_walkDays;
+    }
+
 
     //we don't want to call sync too often, only upon potential difference between the local cache and cloud storage
     //we call sync whenever we reload the application
     public boolean sync(){
         if(CloudProcessor.checkExistingUserData(userEmail)){ //if not first time using the app
 
+            Log.d(TAG, "revisiting user");
+            StringAsObject updateInfo = CloudProcessor.getUpdateInfo(userEmail);
             //then check last upload date
-            LocalDate lastInCloud = CloudProcessor.getLastUploadDate(userEmail);
+            LocalDate lastInCloud = LocalDate.parse(updateInfo.getString1());
             //LocalDate today = LocalDate.now();
 
             //FIXME Question: for none firstime condition, we have write stack which store each uploads,
@@ -120,7 +138,7 @@ public class ActivityMediator implements Observer, Mediator {
 
                 CloudProcessor.uploadWalkDay(walkDay,userEmail);
                 //need to update friend list;
-                CloudProcessor.setLastUploadDate(LocalDate.now(),userEmail);
+                CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
             }
 
              //FIXME if we want to do actuall merge.
@@ -133,12 +151,16 @@ public class ActivityMediator implements Observer, Mediator {
                 // we won't be able to use the app if not connected for once. Afterwards, all data at least need to be written to
                 //stacks of firestore.
                 //so we just read
-
+                //if(LocalTime.parse(updateInfo.getString2()))
                 walkDay = CloudProcessor.retrieveDay(LocalDate.now(), userEmail);
+                if(walkDay ==null)
+                    Log.d(TAG, "error, didn't read walkDay from cloud when loading HomePage");
             }
             return false;
         }else{
+            Log.d(TAG, "First time user");
             CloudProcessor.activateAccount(userEmail);
+            Log.d(TAG, "activated account with email: "+userEmail);
             Log.i(TAG, "linked user " +userEmail +" with UID: "+ currentUser.getUid() );
             //the first time case, and if never connected to internet, sync would be called again and again?
             //be shouldn't go to this if branch anymore since things are stored locally.
@@ -152,7 +174,7 @@ public class ActivityMediator implements Observer, Mediator {
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
             //upload other parts for the firstime as well like friend list or simply no.
             //most user info upload are implictly called in linkIdToEmail
-            CloudProcessor.setLastUploadDate(d,userEmail);
+            CloudProcessor.setUpdateInfo(date,LocalTime.now(),userEmail);
 
             //then we start using the app.
             return true;
@@ -191,7 +213,7 @@ public class ActivityMediator implements Observer, Mediator {
         if(walkDay.getStepCountIntentional()-stepCountIntentionalTotal <-2 ||walkDay.getStepCountIntentional()-stepCountIntentionalTotal >2 )
             Log.i(TAG,"Incorrect data computed for init");
         updateHomePage();
-        Log.i(TAG,"loaded today's data from shRef into HomePage");
+        Log.i(TAG,"initialize Activity Mediator");
 
 
     }
@@ -384,7 +406,7 @@ public class ActivityMediator implements Observer, Mediator {
             //dataProcessor.insertDay(date,walkDay);
 
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
-            CloudProcessor.setLastUploadDate(date,userEmail);
+            CloudProcessor.setUpdateInfo(date,LocalTime.now(),userEmail);
 
 
     }
@@ -409,6 +431,7 @@ public class ActivityMediator implements Observer, Mediator {
         date =date.plusDays(1);
         walkDay = CloudProcessor.retrieveDay(date,userEmail);
         if(walkDay == null){
+            walkDay = new WalkDay(date.toString());
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
         }
         //used to always insertDay, could be redundant,
@@ -423,6 +446,7 @@ public class ActivityMediator implements Observer, Mediator {
         date =LocalDate.now();
         walkDay = CloudProcessor.retrieveDay(date,userEmail);
         if(walkDay == null){
+            walkDay = new WalkDay(date.toString());
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
         }
         //used to always insertDay, could be redundant,
@@ -436,6 +460,7 @@ public class ActivityMediator implements Observer, Mediator {
         date = date.minusDays(1);
         walkDay = CloudProcessor.retrieveDay(date,userEmail);
         if(walkDay == null){
+            walkDay = new WalkDay(date.toString());
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
         }
         //used to always insertDay, could be redundant,
@@ -503,7 +528,7 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void resetDay(){
-        walkDay = new WalkDay();
+        walkDay = new WalkDay(LocalDate.now().toString());
         CloudProcessor.uploadWalkDay(walkDay,userEmail);
         init();
     }

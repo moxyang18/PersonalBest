@@ -26,7 +26,7 @@ import java.time.LocalDate;
 public class BarChartActivity extends AppCompatActivity {
 
     private BarChart barChart10;
-    private ArrayList<ArrayList> stepList;
+    private ArrayList<WalkDay> user_WalkDays;
     //private DataProcessor dp;
     private int[] goal_list = {0,0,0,0,0,0,0};
     private String userEmail;
@@ -36,7 +36,7 @@ public class BarChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_chart);
         config();
-
+        user_WalkDays = ActivityMediator.getUser_walkDays();
         userEmail = ActivityMediator.getInstance().getUserEmail();
         userDisplayName = ActivityMediator.getInstance().getUserDisplayName();
 

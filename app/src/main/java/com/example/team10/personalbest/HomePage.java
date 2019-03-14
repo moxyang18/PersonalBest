@@ -451,19 +451,19 @@ public class HomePage extends AppCompatActivity{
     }
 
     public void showStepCount(int count){
-        Log.i(TAG, "TextView is updated");
+        //Log.i(TAG, "TextView is updated");
         step_text.setText(Integer.toString(count));
     }
 
     public void checkGoal() {
         if(activityMediator.checkReachGoal()&& !activityMediator.getGoalMet()) {
-            Log.i(TAG, "Inside checkGoal");
+            //Log.i(TAG, "Inside checkGoal");
             activityMediator.setGoalMet(true);
             openCongratsDialog();
         }
-        Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
-        Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
-        Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
+        //Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
+        //Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
+        //Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
     }
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
