@@ -42,6 +42,6 @@ public class WalkDayTest {
 
     @Test
     public void getDate() {
-        assertEquals(LocalDate.now(), day.getDate());
+        assertEquals(LocalDate.now().toString(), day.getDate());
     }
 }

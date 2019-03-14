@@ -551,7 +551,7 @@ public class ActivityMediator implements Observer, Mediator {
 
     public void resetDay(){
         walkDay = new WalkDay(LocalDate.now().toString());
-        CloudProcessor.uploadWalkDay(walkDay,userEmail);
+        //CloudProcessor.uploadWalkDay(walkDay,userEmail);
         init();
     }
 
