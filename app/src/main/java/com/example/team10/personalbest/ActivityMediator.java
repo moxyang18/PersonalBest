@@ -379,7 +379,6 @@ public class ActivityMediator implements Observer, Mediator {
         updateHomePage();
         time_elapsed_sec_daily += time_elapsed_sec_run;///needs modification
         time_elapsed_sec_run = 0;
-        distanceRunTotal +=distanceRun;
         distanceRun =0;
         average_speed =
                 (time_elapsed_sec_daily == 0.f)
