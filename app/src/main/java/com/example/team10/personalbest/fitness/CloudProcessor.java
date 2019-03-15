@@ -341,18 +341,26 @@ public class CloudProcessor {
 
         try {
             DocumentSnapshot documentSnapshot = task_documentSnapshot.getResult();
-            if (documentSnapshot == null){
+            if (documentSnapshot == null ||!documentSnapshot.exists()){
                 Log.d(TAG, "unsuccessful reading email");
                 return false;
             }else{
                 Log.d(TAG, "successful reading email");
-                String mail = documentSnapshot.toObject(StringAsObject.class).getString1();Log.d(TAG,"converting email");
-                if(mail == null) Log.d(TAG, "email is null");else if(mail.equals(email)) Log.d(TAG, "found revisiting user within cloud");
-                return true;
+                String mail = documentSnapshot.toObject(StringAsObject.class).getString1();
+                Log.d(TAG,"converting email");
+                if(mail == null) {
+                    Log.d(TAG, "email is null");
+                    return  false;
+                }
+                else if(mail.equals(email)) {
+                    Log.d(TAG, "found revisiting user within cloud");
+                    return true;
+                }else
+                    return  false;
             }
         }catch (Exception e){
             Log.d(TAG, "Error converting back user email");
-            return true;
+            return false;
         }
         /*
         CollectionReference database = FirebaseFirestore.getInstance()
