@@ -89,6 +89,7 @@ public class FriendListPage extends AppCompatActivity {
                 }
                 //Grab the ExpandableListAdapter
                 FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
+                ActivityMediator.getInstance().preloadFriendWalkDays(myAdapter.getChild(groupPosition, childPosition).toString());
                 Intent intent = new Intent( myAdapter.getActivity(), FriendSummary.class );
                 intent.putExtra("email", myAdapter.getChild(groupPosition, childPosition).toString());
                 myAdapter.getActivity().startActivity(intent);
@@ -128,51 +129,6 @@ public class FriendListPage extends AppCompatActivity {
                 // Invoke the superclass to handle it.
                 Log.d(TAG, "" + item.getItemId());
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * A user with the email exists, so we can save this person as our friend.
-     * @param email
-     * @return
-     */
-    public boolean saveNewFriend(String email) {
-        //method which finds the new friend in our system TODO
-
-
-        //Found the friend in our system, now save in Shared Preferences/update friend count
-        SharedPreferences friendPreferences = getSharedPreferences(getString(R.string.shared_pref_file_name), MODE_PRIVATE);
-        SharedPreferences.Editor editor = friendPreferences.edit();
-
-        //get list of current friends' emails
-        Set<String> emailSet = friendPreferences.getStringSet(getString(R.string.shared_pref_string_set_key), new HashSet<String>());
-        Log.d(TAG,"Retrieved email set from Shared Preferences");
-
-        //Remove the email set from sharedpreference DONT DELETE
-        editor.remove(getString(R.string.shared_pref_string_set_key));
-        editor.apply();
-
-
-        //add new email to set and save into Shared Preferences
-        emailSet.add(email);
-        editor.putStringSet(getString(R.string.shared_pref_string_set_key), emailSet);
-        editor.apply();
-        Log.d(TAG, "Saved New List Successfully");
-
-        //let ExpandableList know new stuff
-        listAdapter.addFriend(email);
-
-        Log.d(TAG, "Saved " + email);
-        getEmailList();
-        return true;
-    }
-
-    public void getEmailList() {
-        Log.d(TAG, "inside getEmailList");
-        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
-        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
-        for(String s : emailSet) {
-            Log.d(TAG, s + "is an email saved in SharedPreferences");
         }
     }
 

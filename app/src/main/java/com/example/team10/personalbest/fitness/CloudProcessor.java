@@ -407,7 +407,7 @@ public class CloudProcessor {
         database.set(new StringAsObject(reformatEmailForCloud(email),reformatEmailForCloud(email))).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "User successfully stored!");
+                Log.d(TAG, "User account successfully stored!");
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -428,7 +428,7 @@ public class CloudProcessor {
         database2.set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "User successfully stored!");
+                Log.d(TAG, "User friendlist successfully setup!");
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -569,13 +569,13 @@ public class CloudProcessor {
                     database1.update(reformatEmailForCloud(friendEmail),MUTUAL).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"and B are now friends" );
+                            Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"and "+reformatEmailForUser(friendEmail)+" are now friends" );
                         }
                     });
                     database2.update(reformatEmailForCloud(userEmail),MUTUAL).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d(TAG,"user "+reformatEmailForUser(friendEmail)+"and A are now friends" );
+                            Log.d(TAG,"user "+reformatEmailForUser(friendEmail)+"and" +reformatEmailForUser(userEmail)+" are now friends" );
                         }
                     });
 

@@ -189,7 +189,7 @@ public class ActivityMediator implements Observer, Mediator {
 
             //might need to iterate through a list of dates and call uploads
             //actually found that impossible since we only have cloud storage, each single walkday would be
-            //inserted once created (at least on the write stack), 0when ever call sync, it should only upload 1 more day
+            //inserted once created (at least on the write stack), 0w0hen ever call sync, it should only upload 1 more day
             LocalDate d = LocalDate.now(); //....
             walkDay = new WalkDay(date.toString());
             CloudProcessor.uploadWalkDay(walkDay,userEmail);

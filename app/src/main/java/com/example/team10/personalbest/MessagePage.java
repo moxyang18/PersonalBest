@@ -106,6 +106,7 @@ public class MessagePage extends AppCompatActivity {
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
+
                 launchFriendHomepage();
             }
         });
@@ -185,8 +186,9 @@ public class MessagePage extends AppCompatActivity {
     */
 
     public void launchFriendHomepage() {
+        ActivityMediator.getInstance().preloadFriendWalkDays(friendEmail);
         Intent intent = new Intent(this, FriendSummary.class);
-        intent.putExtra("name", friendEmail); //pass in name
+        intent.putExtra("email", friendEmail); //pass in name
         startActivity(intent);
     }
 }

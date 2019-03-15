@@ -59,11 +59,11 @@ public class FriendSummary extends AppCompatActivity {
         // get friends friendEmail and set the chart's header
         Bundle extras = this.getIntent().getExtras();
         friendEmail = extras.getString("email");
-        if(friendEmail != null){
+        if(friendEmail == null){
             Log.d(TAG, "ERROR, didn't get friend name");
         }
             //ActivityMediator.getInstance().preloadFriendWalkDays(friendEmail);
-        //FIXME currently using user walkDays since friend unimplemented so not loading
+
 
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.friend_bar_chart);
@@ -105,13 +105,17 @@ public class FriendSummary extends AppCompatActivity {
             dayDate = iDate.minusDays(i);
 
             labels.add(dayDate.toString().substring(5));
-            if(dayDate.isEqual(LocalDate.now()))
+            if(dayDate.isEqual(LocalDate.now())){
                 day = CloudProcessor.retrieveDay(dayDate,userEmail);
-            //FIXME currently using user walkDays since friend unimplemented
+                if(day ==null)
+                    day = friend_WalkDays.get(dayDate.toString());
+            }
 
-            else
-                day = user_WalkDays.get(dayDate.toString());
-            //FIXME currently using user walkDays since friend unimplemented
+            else{
+                day = friend_WalkDays.get(dayDate.toString());
+            }
+
+
             // Add data for that data to the graph
             if (day != null) {
                 entries.add(new BarEntry(27-i, new float[]
