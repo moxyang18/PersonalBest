@@ -175,6 +175,8 @@ public class ActivityMediator implements Observer, Mediator {
                     Log.d(TAG, "error, didn't read walkDay from cloud when loading HomePage");
             }
             preloadUserWalkDays();
+            CloudProcessor.loadFriendList(userEmail);
+            CloudProcessor.checkFriendList(userEmail);
             return false;
         }else{
             Log.d(TAG, "First time user");
@@ -197,6 +199,8 @@ public class ActivityMediator implements Observer, Mediator {
 
             //then we start using the app.
             preloadUserWalkDays();
+            CloudProcessor.loadFriendList(userEmail);
+            CloudProcessor.checkFriendList(userEmail);
             return true;
         }
 
@@ -581,6 +585,11 @@ public class ActivityMediator implements Observer, Mediator {
     //first parameter should always be user's email
     public static void addFriend(String userEmail,String friendEmail){
         CloudProcessor.aInviteB(userEmail,friendEmail);
+    }
+
+    public static void addInFriendList(String s){
+        friendList.add(s);
+        Log.d(TAG, "friendlist in AM is now: "+friendList.toString());
     }
 
 }

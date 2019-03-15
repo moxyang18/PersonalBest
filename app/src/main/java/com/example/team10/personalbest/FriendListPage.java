@@ -34,6 +34,8 @@ public class FriendListPage extends AppCompatActivity {
     //TODO use this instead, obtained from ActivityMediator
     private static HashSet<String> friendList = new HashSet<String>();
 
+    String myEmail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +47,14 @@ public class FriendListPage extends AppCompatActivity {
 
         //TODO use this instead, obtained from ActivityMediator
         friendList = ActivityMediator.getFriendList();
+        Log.d(TAG, "loading friendlistpage, current list is"+friendList.toString());
+        for(String s:friendList){
+            Log.d(TAG,"have user "+s+" inside friendlist before loading page");
+        }
+        myEmail = ActivityMediator.getInstance().getUserEmail();
 
-
-        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
-        SharedPreferences.Editor editor = friendPreferences.edit();
+        //SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
+        //SharedPreferences.Editor editor = friendPreferences.edit();
         ArrayList<String> emailList = new ArrayList<>(); //TODO Grab from shared Preference
 
 
@@ -56,8 +62,8 @@ public class FriendListPage extends AppCompatActivity {
         //TODO: switch to use friendList
         //TODO: write an init()/refresh() method to reload Page
         //get list of current friends' emails
-        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
-        emailList.addAll(emailSet);
+        //Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+        emailList.addAll(friendList);
         Log.d(TAG,"Retrieved email list from Shared Preferences");
 
         //Pass in Friend List
@@ -83,6 +89,8 @@ public class FriendListPage extends AppCompatActivity {
             }
         });
     }
+
+
 
     // create a custom action bar button
     @Override
@@ -169,7 +177,11 @@ public class FriendListPage extends AppCompatActivity {
 
 
                 //TODO: Switch to call ActivityMediator.addFriend( userEmail, friendEmail)
-                saveNewFriend(email);
+
+
+                //currently won't handle refresh page, need to go somewhere else and go back
+                ActivityMediator.addFriend(myEmail,email); // last arg is actually input email which is friend
+                //saveNewFriend(email);
             }
         });
         addFriendBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

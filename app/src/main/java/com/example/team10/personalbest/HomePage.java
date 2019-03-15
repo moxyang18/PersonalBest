@@ -295,6 +295,10 @@ public class HomePage extends AppCompatActivity{
     }
 
     public void launchFriendsList() {
+        for(String s:ActivityMediator.getFriendList()){
+            Log.d(TAG,"have user "+s+" inside friendlist before loading page");
+        }
+
         Intent intent = new Intent(this, FriendListPage.class);
         startActivity(intent);
     }

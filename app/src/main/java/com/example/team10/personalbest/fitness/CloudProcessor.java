@@ -603,10 +603,12 @@ public class CloudProcessor {
                     Map<String,Object> map =snapshot.getData();
                     Set<String> candidates = map.keySet();
                     for (String candidate : candidates) {
-                        if(map.get(candidate) == MUTUAL){
-                            if(ActivityMediator.getFriendList().contains(candidate)){
+                        Log.d(TAG, "found snapshot changes! candidate : "+ candidate+" is "+map.get(candidate)+" with user");
+                        if(((String)(map.get(candidate))).equals(MUTUAL) ){
+                            if(!ActivityMediator.getFriendList().contains(candidate)){
                                 Log.d(TAG, "we got new friends need to be pushed");
-                                ActivityMediator.getFriendList().add(reformatEmailForUser(candidate));
+                                ActivityMediator.addInFriendList(reformatEmailForUser(candidate));
+                                Log.d(TAG, "added user "+reformatEmailForUser(candidate)+ " to friendList");
                                 //FIXME prompt to refresh friendListPage;
                             }
                         }
@@ -649,8 +651,13 @@ public class CloudProcessor {
                 Map<String,Object> map = documentSnapshot.getData();
                 Set<String> candidates = map.keySet();
                 for (String candidate : candidates) {
-                    if(map.get(candidate) == MUTUAL)
-                        ActivityMediator.getFriendList().add(reformatEmailForUser(candidate));
+                    Log.d(TAG, "candidate : "+ candidate+" is "+map.get(candidate)+" with user");
+                    if(((String)(map.get(candidate))).equals(MUTUAL) ) {
+                        Log.d(TAG, "added user "+reformatEmailForUser(candidate)+ " to friendList");
+                        ActivityMediator.addInFriendList(reformatEmailForUser(candidate));
+                    }else{
+                        Log.d(TAG, (String)map.get(candidate));
+                    }
                 }
             }
         }catch (Exception e){
