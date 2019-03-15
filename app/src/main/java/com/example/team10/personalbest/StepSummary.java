@@ -186,9 +186,9 @@ public class StepSummary extends AppCompatActivity {
     private void setDataField(WalkDay day) {
         TextView dataView = findViewById(R.id.summary_data_field);
 
-        double mpH = Math.round(day.getSpeed_average()*100.0)/100.0;
+        float mpH = day.getSpeed_average()*2.236f;
 
-        double distance = day.getDistanceRunTotal();
+        float distance = day.getDistanceRunTotal()*0.000621371f;
 
         long millis = day.getTime_run_sec_daily();
         String time = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
@@ -196,7 +196,7 @@ public class StepSummary extends AppCompatActivity {
                 TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
 
         // get the calculated MPH, daily distance and the total walk time on that day
-        String info = "MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
+        String info = "MPH: " + String.format("%.2f",mpH) +" \n" + "Daily Distance: " +  String.format("%.3f",distance) + " \n" + "Total Time: " + time;
         dataView.setText(info);
     }
 

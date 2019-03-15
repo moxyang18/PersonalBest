@@ -59,7 +59,9 @@ public class FriendSummary extends AppCompatActivity {
         // get friends friendEmail and set the chart's header
         Bundle extras = this.getIntent().getExtras();
         friendEmail = extras.getString("email");
-        if(friendEmail != null)
+        if(friendEmail != null){
+            Log.d(TAG, "ERROR, didn't get friend name");
+        }
             //ActivityMediator.getInstance().preloadFriendWalkDays(friendEmail);
         //FIXME currently using user walkDays since friend unimplemented so not loading
 
@@ -69,7 +71,7 @@ public class FriendSummary extends AppCompatActivity {
         if(this.friendEmail == null)
             header.setText("The Friend's Step Chart");
         else
-        header.setText( this.friendEmail + "'s Step Chart");
+            header.setText( this.friendEmail + "'s Step Chart");
         userEmail = ActivityMediator.getInstance().getUserEmail();
         user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
         friend_WalkDays = ActivityMediator.getFriendWalkDays();
@@ -213,7 +215,7 @@ public class FriendSummary extends AppCompatActivity {
         Button message_button = findViewById(R.id.message_in_chart);
         message_button.setOnClickListener(v -> {
             Intent message = new Intent(this, MessagePage.class);
-            message.putExtra("friendEmail", friendEmail);
+            message.putExtra("email", friendEmail);
             this.startActivity(message);
         });
     }
@@ -221,9 +223,9 @@ public class FriendSummary extends AppCompatActivity {
     private void setDataField(WalkDay day) {
         TextView dataView = findViewById(R.id.friend_summary_data);
 
-        double mpH = Math.round(day.getSpeed_average()*100.0)/100.0;
+        float mpH = day.getSpeed_average()*2.236f;
 
-        double distance = day.getDistanceRunTotal();
+        float distance = day.getDistanceRunTotal()*0.000621371f;
 
         long millis = day.getTime_run_sec_daily();
         String time = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
@@ -231,7 +233,7 @@ public class FriendSummary extends AppCompatActivity {
                 TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
 
         // get the calculated MPH, daily distance and the total walk time on that day
-        String info = "MPH: " + mpH +" \n" + "Daily Distance: " + distance + " \n" + "Total Time: " + time;
+        String info = "MPH: " + String.format("%.3f",mpH) +" \n" + "Daily Distance: " + String.format("%.3f",distance) + " \n" + "Total Time: " + time;
         dataView.setText(info);
     }
 

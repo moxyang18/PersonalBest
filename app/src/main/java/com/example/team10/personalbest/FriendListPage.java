@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 
 import com.example.team10.personalbest.friend.FriendListExpandableListAdapter;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,7 +54,10 @@ public class FriendListPage extends AppCompatActivity {
         for(String s:friendList){
             Log.d(TAG,"have user "+s+" inside friendlist before loading page");
         }
-        myEmail = ActivityMediator.getInstance().getUserEmail();
+        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        myEmail = ActivityMediator.getInstance().getUserEmail()!=null
+                ? ActivityMediator.getInstance().getUserEmail()
+                :user.getEmail();
 
         //SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
         //SharedPreferences.Editor editor = friendPreferences.edit();

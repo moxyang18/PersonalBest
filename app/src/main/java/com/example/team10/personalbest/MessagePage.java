@@ -76,6 +76,7 @@ public class MessagePage extends AppCompatActivity {
             String completeEmail = user.getEmail();
             userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
             userName = user.getDisplayName();
+            from = userName;
         }
         Log.d(TAG, "The user's email is " + userEmail);
 
