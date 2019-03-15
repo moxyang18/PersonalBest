@@ -11,6 +11,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.team10.personalbest.ActivityMediator;
 import com.example.team10.personalbest.FriendListPage;
 import com.example.team10.personalbest.MessagePage;
 
@@ -196,8 +197,10 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         chatButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ActivityMediator.getInstance().preloadFriendWalkDays(email);
                 Intent intent = new Intent(activity, MessagePage.class );
                 intent.putExtra( activity.getString(R.string.intent_email_key), email); //pass in name
+
                 activity.startActivity(intent);
             }
         });

@@ -5,6 +5,8 @@ import android.util.Log;
 import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 import com.example.team10.personalbest.friend.StringAsObject;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
@@ -102,7 +104,7 @@ public class ActivityMediator implements Observer, Mediator {
         //dataProcessor = new DataProcessor(homePage);
     }
 
-    protected static ActivityMediator getInstance(){
+    public static ActivityMediator getInstance(){
         return instance;
     }
 
@@ -518,6 +520,12 @@ public class ActivityMediator implements Observer, Mediator {
         if(currentUser == null)
             Log.d(TAG,"current user is null!");
 
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(homePage);
+        String uEmail_2 = account.getEmail();
+        if(!uEmail_2.equals(currentUser)){
+            Log.d(TAG,"Conflicting current user from last signin GoogleSignIn is: "+uEmail_2+" FirebaseUser is: "+userEmail);
+        }
+
         return;
     }
 
@@ -562,10 +570,11 @@ public class ActivityMediator implements Observer, Mediator {
         }
     }
     public void preloadFriendWalkDays(String friendEmail){
-        LocalDate dayDate;
-        for (int i = 27; i >= 0; i--) {
-            dayDate= date.minusDays(i);
-            CloudProcessor.requestDay(dayDate,friendEmail,false);
+        Log.d(TAG,"preloading friend walkdays");
+        LocalDate dayDate2 ;
+        for (int j = 0; j < 28; j++) {
+            dayDate2= date.minusDays(j);
+            CloudProcessor.requestDay(dayDate2,friendEmail,false);
         }
     }
 

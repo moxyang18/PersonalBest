@@ -266,7 +266,7 @@ public class HomePage extends AppCompatActivity{
                         if (task.isSuccessful()) {
                             // Sign in success - may have to update UI. FIXME
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
 
 
                         } else {

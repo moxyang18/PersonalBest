@@ -16,8 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team10.personalbest.ChatMessaging.FirebaseCloudMessengerAdapter;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -71,11 +69,11 @@ public class MessagePage extends AppCompatActivity {
         /**
          * Get the user's email
          */
-        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        String user = ActivityMediator.getInstance().getUserEmail();
         if(user != null) {
-            String completeEmail = user.getEmail();
+            String completeEmail = user;
             userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
-            userName = user.getDisplayName();
+            userName = ActivityMediator.getInstance().getUserDisplayName();
             from = userName;
         }
         Log.d(TAG, "The user's email is " + userEmail);
