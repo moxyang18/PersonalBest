@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * and collapsed by touching to view and their respective children items.
  */
 
-public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
+public class FriendListExpandableListAdapter extends BaseExpandableListAdapter implements EListAdapter{
     private String TAG = "FriendListExpandableListAdapter:";
     FriendListPage activity;
     ArrayList<String> lists;

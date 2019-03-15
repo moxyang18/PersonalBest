@@ -41,14 +41,14 @@ public class FriendListPage extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //newly added
 
-        //TODO update to pull from shared preference later
-        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
+        //Get FriendList from Shared Preference
+        SharedPreferences friendPreferences = getSharedPreferences(getString(R.string.shared_pref_file_name), MODE_PRIVATE);
         SharedPreferences.Editor editor = friendPreferences.edit();
-        ArrayList<String> emailList = new ArrayList<>(); //TODO Grab from shared Preference
+        ArrayList<String> emailList = new ArrayList<>();
 
 
         //get list of current friends' emails
-        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+        Set<String> emailSet = friendPreferences.getStringSet(getString(R.string.shared_pref_string_set_key), new HashSet<String>());
         emailList.addAll(emailSet);
         Log.d(TAG,"Retrieved email list from Shared Preferences");
 
@@ -58,23 +58,33 @@ public class FriendListPage extends AppCompatActivity {
 
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
         friendExpandableList.setAdapter(listAdapter);
-        friendExpandableList.expandGroup(FRIEND_INDEX); //TODO magic number get rid
+        friendExpandableList.expandGroup(FRIEND_INDEX);
         friendExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             //Open Friend Home Page while passing in email address
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                if( groupPosition != 2 ) {
-                    return false;
-                }
-                //Grab the ExpandableListAdapter
-                FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
-                Intent intent = new Intent( myAdapter.getActivity(), FriendHomePage.class );
-                intent.putExtra(getString(R.string.intent_email_key), myAdapter.getChild(groupPosition, childPosition).toString());
-                myAdapter.getActivity().startActivity(intent);
-                return true;
+                return setOnChildClickListener(parent, groupPosition, childPosition);
             }
         });
     }
+
+    public boolean setOnChildClickListener(ExpandableListView parent, int groupPosition, int childPosition) {
+        if( groupPosition != 2 ) {
+            return false;
+        }
+        //Grab the ExpandableListAdapter
+        launchFriendHomePage(parent, groupPosition, childPosition);
+        return true;
+    }
+
+    public void launchFriendHomePage(ExpandableListView parent, int groupPosition, int childPosition) {
+        FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
+        Intent intent = new Intent( myAdapter.getActivity(), FriendHomePage.class );
+        intent.putExtra(getString(R.string.intent_email_key), myAdapter.getChild(groupPosition, childPosition).toString());
+        myAdapter.getActivity().startActivity(intent);
+        System.out.println( "inside launchFreind Home Page");
+    }
+
 
     // create a custom action bar button
     @Override
@@ -124,6 +134,12 @@ public class FriendListPage extends AppCompatActivity {
         //get list of current friends' emails
         Set<String> emailSet = friendPreferences.getStringSet(getString(R.string.shared_pref_string_set_key), new HashSet<String>());
         Log.d(TAG,"Retrieved email set from Shared Preferences");
+
+
+        //Remove the email from sharedpreference DONT DELETE
+        editor.remove(getString(R.string.shared_pref_string_set_key));
+        editor.apply();
+
 
         //add new email to set and save into Shared Preferences
         emailSet.add(email);
