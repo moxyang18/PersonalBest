@@ -352,7 +352,7 @@ public class CloudProcessor {
                     Log.d(TAG, "email is null");
                     return  false;
                 }
-                else if(mail.equals(email)) {
+                else if(mail.equals(reformatEmailForCloud(email))) {
                     Log.d(TAG, "found revisiting user within cloud");
                     return true;
                 }else
