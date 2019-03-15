@@ -410,12 +410,33 @@ public class CloudProcessor {
                 Log.d(TAG, "User successfully stored!");
             }
         })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "Error storing user", e);
-                }
-            });
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error storing user", e);
+                    }
+                });
+
+        DocumentReference database2 = FirebaseFirestore.getInstance()
+                .collection(USER_DIR_KEY)
+                .document(reformatEmailForCloud(email))
+                .collection(FRIEND_DIR_KEY)
+                .document(FRIEND_LIST_KEY);
+        // Get database reference @ root directory
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put(reformatEmailForCloud(email),ONEDIRECTION);
+        database2.set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "User successfully stored!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error storing user", e);
+                    }
+                });
 
     }
 
