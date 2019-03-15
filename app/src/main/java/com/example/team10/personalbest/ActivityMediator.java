@@ -268,7 +268,7 @@ public class ActivityMediator implements Observer, Mediator {
                 :distanceRun*1000/time_elapsed_sec_run;
         average_speed =
                 (time_elapsed_sec_daily == 0.f)
-                        ? 0
+                        ? 0.f
                         : (distanceRunTotal *1000/ time_elapsed_sec_daily);
     }
 
