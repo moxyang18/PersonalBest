@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,46 +41,57 @@ public class MessagePage extends AppCompatActivity {
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
     String friendEmail;
+    String friendEmailFragment;
     String topicName;
     String userEmail;
     String userName;
 
     FirebaseCloudMessengerAdapter fcmAdapter;
-    SharedPreferences sharedPreferences;
+    //SharedPreferences sharedPreferences;
     String from;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_page);
-        SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
+        //SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
-        from = sharedpreferences.getString(FROM_KEY, null);
+        //from = sharedpreferences.getString(FROM_KEY, null);
 
         //Set up buttons/UI
         TextView friendName = findViewById(R.id.friend_name);
 
         //Get the friend's name and email from intent (just email)
-        friendEmail = getIntent().getExtras().getString(getString(R.string.intent_email_key));
-        friendName.setText(friendEmail);
+
+            //else if intent from regular flow
+            friendEmail = getIntent().getExtras().getString(getString(R.string.intent_email_key));
+            friendName.setText(friendEmail);
+            friendEmailFragment = friendEmail.substring(0, friendEmail.indexOf("@"));
 
         /**
          * Get the user's email
          */
         GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
         if(user != null) {
-            userEmail = user.getEmail();
+            String completeEmail = user.getEmail();
+            userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
             userName = user.getDisplayName();
         }
         Log.d(TAG, "The user's email is " + userEmail);
 
+        /**
+         * Set the display name to show who the chat is from.
+         */
+        TextView nameView = findViewById((R.id.user_name));
+        nameView.setText(userName);
+
 
         //Use the two emails in alphabetical order to determine the topic name linking the two people
         if(friendEmail.compareTo(userEmail) < 0) {
-            topicName = friendEmail + "_" + userEmail;
+            topicName = friendEmailFragment + "%" + userEmail;
         }
         else if(friendEmail.compareTo(userEmail) > 0) {
-            topicName = userEmail + "_" + friendEmail;
+            topicName = userEmail + "%" + friendEmailFragment;
         }
 
         //Initialize Firebase Store
@@ -107,29 +119,7 @@ public class MessagePage extends AppCompatActivity {
 
         findViewById(R.id.btn_send).setOnClickListener(view -> fcmAdapter.sendMessage(from));
 
-        /**
-         * Set the display name to show who the chat is from.
-         */
-        TextView nameView = findViewById((R.id.user_name));
-        nameView.setText(userName);
-        sharedpreferences.edit().putString(FROM_KEY, userName).apply();
-        /*
-        nameView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                from = s.toString();
-                sharedpreferences.edit().putString(FROM_KEY, from).apply();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-        */
+        ScrollView chat = findViewById(R.id.scroll_view);
     }
 
             /*

@@ -15,10 +15,12 @@
         <activity
             android:name=".MessagePage"
             android:label="@string/title_activity_message_page"
+            android:parentActivityName=".FriendListPage"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".FriendListPage"
             android:label="@string/title_activity_friend_list_page"
+            android:parentActivityName=".HomePage"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".HomePage">
             <intent-filter>

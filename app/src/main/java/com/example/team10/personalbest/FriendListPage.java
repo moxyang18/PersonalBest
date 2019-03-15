@@ -45,6 +45,7 @@ public class FriendListPage extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //newly added
 
+
         //TODO use this instead, obtained from ActivityMediator
         friendList = ActivityMediator.getFriendList();
         Log.d(TAG, "loading friendlistpage, current list is"+friendList.toString());
@@ -56,6 +57,7 @@ public class FriendListPage extends AppCompatActivity {
         //SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
         //SharedPreferences.Editor editor = friendPreferences.edit();
         ArrayList<String> emailList = new ArrayList<>(); //TODO Grab from shared Preference
+
 
 
 
@@ -72,7 +74,7 @@ public class FriendListPage extends AppCompatActivity {
 
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
         friendExpandableList.setAdapter(listAdapter);
-        friendExpandableList.expandGroup(FRIEND_INDEX); //TODO magic number get rid
+        friendExpandableList.expandGroup(FRIEND_INDEX);
         friendExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             //Open Friend Home Page while passing in email address
             @Override
@@ -141,6 +143,11 @@ public class FriendListPage extends AppCompatActivity {
         Set<String> emailSet = friendPreferences.getStringSet(getString(R.string.shared_pref_string_set_key), new HashSet<String>());
         Log.d(TAG,"Retrieved email set from Shared Preferences");
 
+        //Remove the email set from sharedpreference DONT DELETE
+        editor.remove(getString(R.string.shared_pref_string_set_key));
+        editor.apply();
+
+
         //add new email to set and save into Shared Preferences
         emailSet.add(email);
         editor.putStringSet(getString(R.string.shared_pref_string_set_key), emailSet);
@@ -149,7 +156,19 @@ public class FriendListPage extends AppCompatActivity {
 
         //let ExpandableList know new stuff
         listAdapter.addFriend(email);
+
+        Log.d(TAG, "Saved " + email);
+        getEmailList();
         return true;
+    }
+
+    public void getEmailList() {
+        Log.d(TAG, "inside getEmailList");
+        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
+        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+        for(String s : emailSet) {
+            Log.d(TAG, s + "is an email saved in SharedPreferences");
+        }
     }
 
     /**
