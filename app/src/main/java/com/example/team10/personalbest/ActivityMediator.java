@@ -147,7 +147,9 @@ public class ActivityMediator implements Observer, Mediator {
     public static void setUserWalkDays(HashMap<String, WalkDay> userWalkDays) {
         ActivityMediator.userWalkDays = userWalkDays;
     }
-
+    public HashSet<String> getFriendListByI() {
+        return friendList;
+    }
     public static HashSet<String> getFriendList() {
         return friendList;
     }
@@ -679,6 +681,9 @@ public class ActivityMediator implements Observer, Mediator {
         return friendList.contains(friendEmail);
     }
 
+    public void addFriendByI(String userEmail,String friendEmail){
+        CloudProcessor.aInviteB(userEmail,friendEmail);
+    }
     //first parameter should always be user's email
     public static void addFriend(String userEmail,String friendEmail){
         CloudProcessor.aInviteB(userEmail,friendEmail);

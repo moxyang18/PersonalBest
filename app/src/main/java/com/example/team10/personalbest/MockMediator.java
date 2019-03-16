@@ -105,7 +105,9 @@ public class MockMediator implements Mediator,Observer {
     private static HashSet<String> friendList = new HashSet<>();
     protected FirebaseAuth firebaseAuth;
 
-
+    public MockMediator(){
+        instance = this;
+    }
     public MockMediator(HomePage hp){
         homePage = hp;
         instance = this;
@@ -115,6 +117,8 @@ public class MockMediator implements Mediator,Observer {
     public static MockMediator getInstance(){
         return instance;
     }
+
+
 
     public static HashMap<String, WalkDay> getFriendWalkDays() {
         return friendWalkDays;
@@ -132,6 +136,9 @@ public class MockMediator implements Mediator,Observer {
         MockMediator.userWalkDays = userWalkDays;
     }
 
+    public HashSet<String> getFriendListByI(){
+        return friendList;
+    }
     public static HashSet<String> getFriendList() {
         return friendList;
     }
@@ -539,6 +546,11 @@ public class MockMediator implements Mediator,Observer {
     public static boolean isUsersFriend(String friendEmail){
         return friendList.contains(friendEmail);
     }
+
+    public void addFriendByI(String userEmail,String friendEmail){
+        friendList.add(friendEmail);
+    }
+
 
     //first parameter should always be user's email
     public static void addFriend(String userEmail,String friendEmail){
