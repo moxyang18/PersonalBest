@@ -1,13 +1,7 @@
 package com.example.team10.personalbest;
 
-
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.support.v4.app.NotificationCompat;
-
 import android.util.Log;
 
 import com.example.team10.personalbest.fitness.CloudProcessor;
@@ -30,20 +24,16 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
-public class ActivityMediator implements Observer, Mediator {
+public class MockMediator implements Mediator,Observer {
 
-    protected static ActivityMediator instance;
+    protected static MockMediator instance;
     private final int RC_SIGN_IN = 1;
 
 
@@ -53,7 +43,7 @@ public class ActivityMediator implements Observer, Mediator {
     private static WalkDay walkDay;
     private RunningMode runningMode;
     private HomePage homePage;
-    private GoogleFitAdapter fit;
+    private FakeFit fit;
 
     private static HashMap<String,WalkDay> userWalkDays = new HashMap<String,WalkDay>();
     private static HashMap<String,WalkDay> friendWalkDays = new HashMap<String,WalkDay>();
@@ -107,37 +97,35 @@ public class ActivityMediator implements Observer, Mediator {
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
     private FirebaseUser currentUser;
-    private static String userEmail;
-    private static String userDisplayName;
+    private static String userEmail ="yad027@ucsd.edu";
+    private static String userDisplayName="Yanzhi Ding";
 
     //all the string of emails in this hashset should be friends
     //email.com is stored as email,com in cloud but here should be .com
     private static HashSet<String> friendList = new HashSet<>();
-
     protected FirebaseAuth firebaseAuth;
-    private static int oneTimeShown = 0;
-    private static int doubleShown = 0;
-    private static int tripleShown = 0;
 
-
-    //PersonalBestUser personalBestUser;
-
-    public ActivityMediator(HomePage hp){
+    public MockMediator(){
+        instance = this;
+    }
+    public MockMediator(HomePage hp){
         homePage = hp;
         instance = this;
         //dataProcessor = new DataProcessor(homePage);
     }
 
-    public static ActivityMediator getInstance(){
+    public static MockMediator getInstance(){
         return instance;
     }
+
+
 
     public static HashMap<String, WalkDay> getFriendWalkDays() {
         return friendWalkDays;
     }
 
     public static void setFriendWalkDays(HashMap<String, WalkDay> friendWalkDays) {
-        ActivityMediator.friendWalkDays = friendWalkDays;
+        MockMediator.friendWalkDays = friendWalkDays;
     }
 
     public static HashMap<String, WalkDay> getUserWalkDays() {
@@ -145,9 +133,10 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public static void setUserWalkDays(HashMap<String, WalkDay> userWalkDays) {
-        ActivityMediator.userWalkDays = userWalkDays;
+        MockMediator.userWalkDays = userWalkDays;
     }
-    public HashSet<String> getFriendListByI() {
+
+    public HashSet<String> getFriendListByI(){
         return friendList;
     }
     public static HashSet<String> getFriendList() {
@@ -155,149 +144,45 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public static void setFriendList(HashSet<String> friendList) {
-        ActivityMediator.friendList = friendList;
+        MockMediator.friendList = friendList;
     }
 
 
     @Override
     public void setUpFireApp(){
-        // Init app
-        FirebaseApp.initializeApp(homePage);
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);//FIXME enable when everything else done
 
-        // Get the shared instance for firebase
-        firebaseAuth = FirebaseAuth.getInstance();
     }
 
 
     @Override
     public void GoogleCloudIntetnSend(){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(homePage.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        //https://developers.google.com/identity/sign-in/android/sign-in
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(homePage, gso);
-
-        //launches an activity that prompts sign in
-        //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.i(TAG, "About to send intent");
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent);
-        //TODO change second
-        Log.i(TAG, "Intent is sent");
+        mockStartActivity();
     }
 
     public void startActivityForResult(Intent signInIntent){
         homePage.startActivityForResult( signInIntent, RC_SIGN_IN );
     }
 
+    public void mockStartActivity(){
+        //TODO
+
+
+
+
+
+    }
+
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(homePage, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success - may have to update UI. FIXME
-                            Log.d(TAG, "signInWithCredential:success");
-
-
-
-                        } else {
-                            // If sign in fails, report in log.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        }
-                    }
-                });
     }
 
     //we don't want to call sync too often, only upon potential difference between the local cache and cloud storage
     //we call sync whenever we reload the application
     public boolean sync(){
-        if(CloudProcessor.checkExistingUserData(userEmail)){ //if not first time using the app
 
-            Log.d(TAG, "revisiting user");
-            StringAsObject updateInfo = CloudProcessor.getUpdateInfo(userEmail);
-            //then check last upload date
-            LocalDate lastInCloud = LocalDate.parse(updateInfo.getString1());
-            //LocalDate today = LocalDate.now()
-            //FIXME Question: for none firstime condition, we have write stack which store each uploads,
-            //would we really lose anything except broke the phone?
-            if(lastInCloud.isBefore(LocalDate.now())){
-                //DO SOME THING
-
-                //WE PROBABLY BORKE THE PHONE !!!
-                //BUT WE SHOULD HAVE THINGS SAVED BECAUSE WE ARE ONLY WRITING TO FIREBASE
-                //IF WE WANT TO MERGE/HANLDE OVERLAP, IT MUST BE today because we would call sync
-                //many times and the lastUploadDate in write stack should been changed afterwards
-                //Then we just upload today
-                if(walkDay ==null)
-                    walkDay = new WalkDay(LocalDate.now().toString());
-
-                CloudProcessor.uploadWalkDay(walkDay,userEmail);
-                //need to update friend list;
-                CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
-                Log.d(TAG, "Read in day from cloud");
-            }
-
-             //FIXME if we want to do actuall merge.
-            //if same day, we only do things if walkDay currently is bad.
-             else if(lastInCloud.isAfter(LocalDate.now())){ //couldn't happen
-                Log.d(TAG, "Error: impossible");
-                Log.d(TAG, lastInCloud.toString());
-                Log.d(TAG, LocalDate.now().toString());
-                walkDay = CloudProcessor.retrieveDay(LocalDate.now(), userEmail);
-                if(walkDay ==null)
-                    Log.d(TAG, "error, didn't read walkDay from cloud when loading HomePage");
-            }else {//same day
-                //lost phone today and get connected or we are just using the app
-                //we can only get the day from cloud. can't rewrite it. since we don't actually local storage.
-                // we won't be able to use the app if not connected for once. Afterwards, all data at least need to be written to
-                //stacks of firestore.
-                //so we just read
-                //if(LocalTime.parse(updateInfo.getString2()))
-                walkDay = CloudProcessor.retrieveDay(LocalDate.now(), userEmail);
-                if(walkDay ==null)
-                    Log.d(TAG, "error, didn't read walkDay from cloud when loading HomePage");
-            }
-            preloadUserWalkDays();
-            CloudProcessor.loadFriendList(userEmail);
-            CloudProcessor.checkFriendList(userEmail);
-            return false;
-        }else{
-            Log.d(TAG, "First time user");
-            CloudProcessor.activateAccount(userEmail);
-            Log.d(TAG, "activated account with email: "+userEmail);
-            Log.i(TAG, "linked user " +userEmail +" with UID: "+ currentUser.getUid() );
-            //the first time case, and if never connected to internet, sync would be called again and again?
-            //be shouldn't go to this if branch anymore since things are stored locally.
-
-
-            //might need to iterate through a list of dates and call uploads
-            //actually found that impossible since we only have cloud storage, each single walkday would be
-            //inserted once created (at least on the write stack), 0w0hen ever call sync, it should only upload 1 more day
             LocalDate d = LocalDate.now(); //....
-            walkDay = new WalkDay(date.toString());
-            CloudProcessor.uploadWalkDay(walkDay,userEmail);
-            //upload other parts for the firstime as well like friend list or simply no.
-            //most user info upload are implictly called in linkIdToEmail
-            CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
-
-            //then we start using the app.
-            preloadUserWalkDays();
-            CloudProcessor.loadFriendList(userEmail);
-            CloudProcessor.checkFriendList(userEmail);
-            return true;
-        }
-
+            walkDay = userWalkDays.get(date.toString());
+        return false;
     }
 
     public void init(){ //init now only reads and update view doesn't change/add data in the cloud even for firstime
@@ -451,7 +336,6 @@ public class ActivityMediator implements Observer, Mediator {
         homePage.showGoal(goal_today);
         homePage.showStepCount(stepCountDailyTotal);
         homePage.checkGoal();
-        thresholdNotification();
     }
 
     public boolean checkReachGoal(){
@@ -477,8 +361,8 @@ public class ActivityMediator implements Observer, Mediator {
         distanceRun =0;
         average_speed =
                 (time_elapsed_sec_daily == 0.f)
-                ? 0
-                : (distanceRunTotal*1000 / time_elapsed_sec_daily);
+                        ? 0
+                        : (distanceRunTotal*1000 / time_elapsed_sec_daily);
 
         saveLocal();
     }
@@ -508,31 +392,26 @@ public class ActivityMediator implements Observer, Mediator {
     //calls cloud processor uploadWalkDay and setLastUpLoadDate
     public void saveLocal(){ //FIXME refactor the name maybe later
 
-            walkDay.setStepCountUnintentionalReal(stepCountUnintentionalReal);
-            walkDay.setStepCountUnintentional(stepCountUnintentionalTotal);//save but doesn't read in init
-            walkDay.setStepCountIntentionalReal(stepCountIntentionalReal);
-            walkDay.setStepCountIntentional(stepCountIntentionalTotal);//save but doesn't read in init
-            walkDay.setStepCountDailyReal(stepCountDailyReal);
-            walkDay.setStepCountDailyTotal(stepCountDailyTotal);//save but doesn't read in init
-            walkDay.setDistanceDaily(distanceDailyTotal);
-            walkDay.setDistanceRunTotal(distanceRunTotal);
-            walkDay.setTime_run_sec_daily(time_elapsed_sec_daily);
-            walkDay.setSpeed_average(average_speed);//save but doesn't read in init
-            walkDay.setMock_steps_intentional(mock_steps_intentional+mock_steps_run);
-            walkDay.setMock_steps_unintentional(mock_steps_unintentional);
-            walkDay.setGoal(goal_today);
-            walkDay.setGoalMet(goalMet);
-            //dataProcessor.insertDay(date,walkDay);
-            userWalkDays.put(date.toString(),walkDay);
-            CloudProcessor.uploadWalkDay(walkDay,userEmail);
-            CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
-
-
+        walkDay.setStepCountUnintentionalReal(stepCountUnintentionalReal);
+        walkDay.setStepCountUnintentional(stepCountUnintentionalTotal);//save but doesn't read in init
+        walkDay.setStepCountIntentionalReal(stepCountIntentionalReal);
+        walkDay.setStepCountIntentional(stepCountIntentionalTotal);//save but doesn't read in init
+        walkDay.setStepCountDailyReal(stepCountDailyReal);
+        walkDay.setStepCountDailyTotal(stepCountDailyTotal);//save but doesn't read in init
+        walkDay.setDistanceDaily(distanceDailyTotal);
+        walkDay.setDistanceRunTotal(distanceRunTotal);
+        walkDay.setTime_run_sec_daily(time_elapsed_sec_daily);
+        walkDay.setSpeed_average(average_speed);//save but doesn't read in init
+        walkDay.setMock_steps_intentional(mock_steps_intentional+mock_steps_run);
+        walkDay.setMock_steps_unintentional(mock_steps_unintentional);
+        walkDay.setGoal(goal_today);
+        walkDay.setGoalMet(goalMet);
+        //dataProcessor.insertDay(date,walkDay);
+        userWalkDays.put(date.toString(),walkDay);
     }
 
     public void build(){
-        fit = new GoogleFitAdapter(homePage);
-        GoogleFitAdapter.setInstance(fit);
+        fit = new FakeFit();
         fit.addObserver(this);
     }
 
@@ -541,7 +420,7 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void setup(){
-        fit.setup();
+
     }
 
 
@@ -606,19 +485,6 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void setCurrentUser(FirebaseUser firebaseUser){
-        currentUser = firebaseUser;
-
-        userDisplayName= currentUser.getDisplayName();
-        userEmail = currentUser.getEmail();
-        if(currentUser == null)
-            Log.d(TAG,"current user is null!");
-
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(homePage);
-        String uEmail_2 = account.getEmail();
-        if(!uEmail_2.equals(currentUser)){
-            Log.d(TAG,"Conflicting current user from last signin GoogleSignIn is: "+uEmail_2+" FirebaseUser is: "+userEmail);
-        }
-
         return;
     }
 
@@ -656,8 +522,8 @@ public class ActivityMediator implements Observer, Mediator {
     public void preloadUserWalkDays(){
         LocalDate dayDate;
         for (int i = 27; i >= 0; i--) {
-             dayDate= date.minusDays(i);
-             CloudProcessor.requestDay(dayDate,userEmail,true);
+            dayDate= date.minusDays(i);
+            CloudProcessor.requestDay(dayDate,userEmail,true);
         }
     }
     public void preloadFriendWalkDays(String friendEmail){
@@ -682,11 +548,13 @@ public class ActivityMediator implements Observer, Mediator {
     }
 
     public void addFriendByI(String userEmail,String friendEmail){
-        CloudProcessor.aInviteB(userEmail,friendEmail);
+        friendList.add(friendEmail);
     }
+
+
     //first parameter should always be user's email
     public static void addFriend(String userEmail,String friendEmail){
-        CloudProcessor.aInviteB(userEmail,friendEmail);
+        friendList.add(friendEmail);
     }
 
     public static void addInFriendList(String s){
@@ -694,61 +562,4 @@ public class ActivityMediator implements Observer, Mediator {
         Log.d(TAG, "friendlist in AM is now: "+friendList.toString());
     }
 
-
-
-    private void thresholdNotification() {
-        String encourage_mes = "";
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1);
-
-        //WalkDay todayData = ActivityMediator.getUserWalkDays().get(today.toString());
-        WalkDay yesterdayData = ActivityMediator.getUserWalkDays().get(yesterday.toString());
-
-        int todayTotals = getStepCountDailyTotal();
-        int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
-        int increSteps = todayTotals-yesterdayTotals;
-        double increment = 0;
-
-        // display increment if there is any
-        if(yesterdayTotals == 0 ){
-            encourage_mes = "Awesome! You've increased your " +
-                    "daily steps by " + increSteps + " steps.";
-        }
-
-        else {
-            increment = todayTotals / yesterdayTotals * 1.0; //stepCount - yesterdayStepCount
-            if (tripleShown == 0 && increment >= 3.0){
-                encourage_mes = "Wonderful! You have tripled yesterday's goal!";
-                tripleShown = 1;
-            }
-            else if (doubleShown == 0 && increment < 3.0 && increment >= 2.0) {
-                encourage_mes = "Congratulations! You have doubled yesterday's goal!";
-                doubleShown = 1;
-            }
-            else if (oneTimeShown == 0 && increment > 1.0 && increment < 2.0) {
-                encourage_mes = "Awesome! You've increased your " +
-                        "daily steps by " + increSteps + " steps.";
-                oneTimeShown = 1;
-            }
-        }
-
-        // create the notification manager and the channel
-        NotificationManager notificationManager = (NotificationManager) homePage.getSystemService(Context.NOTIFICATION_SERVICE);
-        String id = "threshold_message_chanel";
-        CharSequence name = "threshold_encourage";
-        int importance = NotificationManager.IMPORTANCE_LOW;
-        NotificationChannel encChannel = new NotificationChannel(id, name, importance);
-        encChannel.enableLights(true);
-        notificationManager.createNotificationChannel(encChannel);
-
-        // build the local message sender
-        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(homePage, id)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setSmallIcon(R.drawable.ic_stat_name)
-                .setContentTitle("Notification From PersonalBest Team")
-                .setContentText(encourage_mes);
-
-        if (increment >1.0)
-            notificationManager.notify(1, notBuilder.build());
-    }
 }
