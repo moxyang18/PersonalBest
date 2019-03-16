@@ -34,9 +34,7 @@ public class BarChartActivity extends AppCompatActivity {
     private String userDisplayName;
 
     private int[] goal_list = {0,0,0,0,0,0,0};
-    private static String TAG_IntentStps = "BarChart_IntentionalSteps";
-    private static String TAG_TotalStps = "BarChart_TotalSteps";
-    private static String TAG_DailyGoal = "BarChart_CurrentGoal";
+    private static String TAG = "BarChartActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +42,8 @@ public class BarChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bar_chart);
         config();
         user_WalkDays = ActivityMediator.getUserWalkDays();
-        userEmail = ActivityMediator.getInstance().getUserEmail();
-        userDisplayName = ActivityMediator.getInstance().getUserDisplayName();
+//        userEmail = ActivityMediator.getInstance().getUserEmail();
+//        userDisplayName = ActivityMediator.getInstance().getUserDisplayName();
 
         barChart10 =  findViewById(R.id.bar_chart);
 
@@ -58,13 +56,6 @@ public class BarChartActivity extends AppCompatActivity {
     }
 
     private void displayChart() {
-         /* first load the steps in stepList, which will store an array of lists each containing the
-           planned steps and unplanned steps
-        stepList = xxx;
-        int xInd = 2;
-        for (ArrayList<int> day: stepList)
-            entries.add(new BarEntry(xInd++, new float[]{day[0], day[1]}));
-        */
 
         // Determine the day of the week so we can start on Sunday
         String dayOfWeek = LocalDate.now().getDayOfWeek().toString();
@@ -114,8 +105,8 @@ public class BarChartActivity extends AppCompatActivity {
                 entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
 
-                //Log.i(TAG_IntentStps, Integer.toString(day.getStepCountIntentional()));
-                //Log.i(TAG_TotalStps, Integer.toString(day.getStepCountDailyTotal()));
+                Log.i(TAG+"'s Intentional Steps: ", Integer.toString(day.getStepCountIntentional()));
+                Log.i(TAG+"'s Total Steps: ", Integer.toString(day.getStepCountDailyTotal()));
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
                     goal_max = day.getGoal();
@@ -165,7 +156,6 @@ public class BarChartActivity extends AppCompatActivity {
 
         XAxis x = barChart10.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
-        //x.setCenterAxisLabels(true);
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
         x.setGranularity(1);
         x.setGranularityEnabled(true);
@@ -175,14 +165,9 @@ public class BarChartActivity extends AppCompatActivity {
         if(step_max > goal_max)
             leftAxis.setAxisMaximum(step_max * 1.2f);
         else leftAxis.setAxisMaximum(goal_max * 1.2f);
-        //if(step_at_goal_max!=0 && goal_max !=0)
-        //leftAxis.setSpaceTop((1-(float)step_at_goal_max/ (float)goal_max *100f*0.9f));
-
-        //barChart10.setDragEnabled(true);
 
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
-        //barChart10.setFitBars(true);
         barChart10.animateY(1000);
 
         // display the daily goal limit lines based on which bar of the day gets clicked
@@ -196,7 +181,7 @@ public class BarChartActivity extends AppCompatActivity {
                 //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
 
                 int day_goal = goal_list[day_ind];
-                Log.i(TAG_DailyGoal, Integer.toString(day_goal));
+                Log.i(TAG + "'s Daily Goal is displayed:", Integer.toString(day_goal));
                 if(day_goal !=0)
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
             }

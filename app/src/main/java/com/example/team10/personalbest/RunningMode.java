@@ -109,7 +109,8 @@ public class RunningMode extends AppCompatActivity{
             public void onClick(View v) {
 
                 // Condition: If numOfFriends == 0
-                friendless_notification();
+                if(ActivityMediator.getFriendList().isEmpty())
+                    friendless_notification();
 
                 finish();
             }
@@ -119,7 +120,6 @@ public class RunningMode extends AppCompatActivity{
 
     // the legacy function that sends the message from the system automatically
     public void friendless_notification () {
-
 
         String encourage_mes;
         LocalDate today = LocalDate.now();

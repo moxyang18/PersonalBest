@@ -1,7 +1,13 @@
 package com.example.team10.personalbest;
 
+
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.support.v4.app.NotificationCompat;
+
 import android.util.Log;
 
 import com.example.team10.personalbest.fitness.CloudProcessor;
@@ -107,7 +113,12 @@ public class ActivityMediator implements Observer, Mediator {
     //all the string of emails in this hashset should be friends
     //email.com is stored as email,com in cloud but here should be .com
     private static HashSet<String> friendList = new HashSet<>();
+
     protected FirebaseAuth firebaseAuth;
+    private static int oneTimeShown = 0;
+    private static int doubleShown = 0;
+    private static int tripleShown = 0;
+
 
     //PersonalBestUser personalBestUser;
 
@@ -438,6 +449,7 @@ public class ActivityMediator implements Observer, Mediator {
         homePage.showGoal(goal_today);
         homePage.showStepCount(stepCountDailyTotal);
         homePage.checkGoal();
+        thresholdNotification();
     }
 
     public boolean checkReachGoal(){
@@ -677,4 +689,61 @@ public class ActivityMediator implements Observer, Mediator {
         Log.d(TAG, "friendlist in AM is now: "+friendList.toString());
     }
 
+
+
+    private void thresholdNotification() {
+        String encourage_mes = "";
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+
+        //WalkDay todayData = ActivityMediator.getUserWalkDays().get(today.toString());
+        WalkDay yesterdayData = ActivityMediator.getUserWalkDays().get(yesterday.toString());
+
+        int todayTotals = getStepCountDailyTotal();
+        int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
+        int increSteps = todayTotals-yesterdayTotals;
+        double increment = 0;
+
+        // display increment if there is any
+        if(yesterdayTotals == 0 ){
+            encourage_mes = "Awesome! You've increased your " +
+                    "daily steps by " + increSteps + " steps.";
+        }
+
+        else {
+            increment = todayTotals / yesterdayTotals * 1.0; //stepCount - yesterdayStepCount
+            if (tripleShown == 0 && increment >= 3.0){
+                encourage_mes = "Wonderful! You have tripled yesterday's goal!";
+                tripleShown = 1;
+            }
+            else if (doubleShown == 0 && increment < 3.0 && increment >= 2.0) {
+                encourage_mes = "Congratulations! You have doubled yesterday's goal!";
+                doubleShown = 1;
+            }
+            else if (oneTimeShown == 0 && increment > 1.0 && increment < 2.0) {
+                encourage_mes = "Awesome! You've increased your " +
+                        "daily steps by " + increSteps + " steps.";
+                oneTimeShown = 1;
+            }
+        }
+
+        // create the notification manager and the channel
+        NotificationManager notificationManager = (NotificationManager) homePage.getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "threshold_message_chanel";
+        CharSequence name = "threshold_encourage";
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel encChannel = new NotificationChannel(id, name, importance);
+        encChannel.enableLights(true);
+        notificationManager.createNotificationChannel(encChannel);
+
+        // build the local message sender
+        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(homePage, id)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Notification From PersonalBest Team")
+                .setContentText(encourage_mes);
+
+        if (increment >1.0)
+            notificationManager.notify(1, notBuilder.build());
+    }
 }
