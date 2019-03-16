@@ -73,7 +73,7 @@ public class FriendSummary extends AppCompatActivity {
         else
             header.setText( this.friendEmail + "'s Step Chart");
         userEmail = ActivityMediator.getInstance().getUserEmail();
-        user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
+        //user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
         friend_WalkDays = ActivityMediator.getFriendWalkDays();
         // Get data for chart
         //dp = DataProcessor.getInstance();
@@ -105,8 +105,9 @@ public class FriendSummary extends AppCompatActivity {
             dayDate = iDate.minusDays(i);
 
             labels.add(dayDate.toString().substring(5));
+
             if(dayDate.isEqual(LocalDate.now())){
-                day = CloudProcessor.retrieveDay(dayDate,userEmail);
+                day = CloudProcessor.retrieveDay(dayDate,friendEmail);
                 if(day ==null)
                     day = friend_WalkDays.get(dayDate.toString());
             }
@@ -190,7 +191,7 @@ public class FriendSummary extends AppCompatActivity {
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
                     Log.i(TAG, Integer.toString(day_goal));
                 }
-                setDataField(user_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
+                setDataField(friend_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
                 //FIXME currently using user walkDays since friend unimplemented
             }
 
