@@ -1,5 +1,7 @@
 package com.example.team10.personalbest;
 
+import android.content.Intent;
+import android.os.Environment;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -9,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.lang.reflect.Array;
 import java.time.LocalDate;
@@ -33,7 +36,7 @@ public class RunningModeTest {
         currentGoal = runningMode.findViewById(R.id.goal_running_mode);
         totalSteps = runningMode.findViewById(R.id.total_steps_rm);
         intentionalSteps = runningMode.findViewById(R.id.running_steps);
-
+        Intent intent = new Intent(RuntimeEnvironment.application,RunningMode.class)
     }
 
     @Test
