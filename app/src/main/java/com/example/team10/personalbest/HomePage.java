@@ -356,6 +356,15 @@ public class HomePage extends AppCompatActivity{
 
             // Obtain the account used to sign in and authenticate firebase
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            while(!task.isComplete()){
+                try{
+                    Thread.sleep(20);
+                }catch (Exception e){
+
+                }
+            }
+            if(!task.isSuccessful())
+                Log.d(TAG, "Google sign from intent is not successfully reached");
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
