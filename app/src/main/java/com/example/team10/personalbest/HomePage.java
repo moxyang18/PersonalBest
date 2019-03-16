@@ -24,7 +24,9 @@ import android.widget.Toast;
 
 
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +63,7 @@ public class HomePage extends AppCompatActivity{
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
     String from;
+    String userEmail;
     CollectionReference chat;
 
 
@@ -216,7 +219,7 @@ public class HomePage extends AppCompatActivity{
 
     public void launchFriendsList() {
         Intent intent = new Intent(this, FriendListPage.class);
-
+        intent.putExtra("myEmail", userEmail);
         startActivity(intent);
     }
 
@@ -249,6 +252,9 @@ public class HomePage extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         Log.i( TAG, "Intent is done/closed");
 
+        //GoogleSignInAccount user = Auth.GoogleSignInApi.getSignInIntent(this);
+
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             activityMediator.build();
@@ -259,6 +265,14 @@ public class HomePage extends AppCompatActivity{
             Log.i(TAG, "Async Task is run");
         }
 
+        /**
+         * Get the user's email
+         */
+        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        if(user != null) {
+            userEmail = user.getEmail();
+        }
+        Log.d(TAG, "The user's email is " + userEmail);
     }
 
     public void openNewGoalDialog() {

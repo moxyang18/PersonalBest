@@ -11,10 +11,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team10.personalbest.ChatMessaging.FirebaseCloudMessengerAdapter;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -38,6 +41,10 @@ public class MessagePage extends AppCompatActivity {
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
     String friendEmail;
+    String friendEmailFragment;
+    String topicName;
+    String userEmail;
+    String userName;
 
     FirebaseCloudMessengerAdapter fcmAdapter;
     SharedPreferences sharedPreferences;
@@ -51,19 +58,47 @@ public class MessagePage extends AppCompatActivity {
 
         from = sharedpreferences.getString(FROM_KEY, null);
 
-        //Initialize Firebase Store
-        FirebaseApp.initializeApp(this);
-        fcmAdapter = new FirebaseCloudMessengerAdapter(this, DOCUMENT_KEY);
-        fcmAdapter.initMessageUpdateListener();
-        fcmAdapter.subscribeToNotificationsTopic();
-
-
         //Set up buttons/UI
         TextView friendName = findViewById(R.id.friend_name);
 
         //Get the friend's name and email from intent (just email)
-        friendName.setText(getIntent().getExtras().getString("name"));
-        friendEmail = getIntent().getExtras().getString("name");
+
+            //else if intent from regular flow
+            friendEmail = getIntent().getExtras().getString(getString(R.string.intent_email_key));
+            friendName.setText(friendEmail);
+            friendEmailFragment = friendEmail.substring(0, friendEmail.indexOf("@"));
+
+        /**
+         * Get the user's email
+         */
+        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        if(user != null) {
+            String completeEmail = user.getEmail();
+            userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
+            userName = user.getDisplayName();
+        }
+        Log.d(TAG, "The user's email is " + userEmail);
+
+        /**
+         * Set the display name to show who the chat is from.
+         */
+        TextView nameView = findViewById((R.id.user_name));
+        nameView.setText(userName);
+        sharedpreferences.edit().putString(FROM_KEY, userName).apply();
+
+        //Use the two emails in alphabetical order to determine the topic name linking the two people
+        if(friendEmail.compareTo(userEmail) < 0) {
+            topicName = friendEmailFragment + "%" + userEmail;
+        }
+        else if(friendEmail.compareTo(userEmail) > 0) {
+            topicName = userEmail + "%" + friendEmailFragment;
+        }
+
+        //Initialize Firebase Store
+        FirebaseApp.initializeApp(this);
+        fcmAdapter = new FirebaseCloudMessengerAdapter(this, topicName);
+        fcmAdapter.initMessageUpdateListener();
+        fcmAdapter.subscribeToNotificationsTopic(topicName);
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
@@ -83,23 +118,7 @@ public class MessagePage extends AppCompatActivity {
 
         findViewById(R.id.btn_send).setOnClickListener(view -> fcmAdapter.sendMessage(from));
 
-        EditText nameView = findViewById((R.id.user_name));
-        nameView.setText(from);
-        nameView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                from = s.toString();
-                sharedpreferences.edit().putString(FROM_KEY, from).apply();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        ScrollView chat = findViewById(R.id.scroll_view);
     }
     public void launchFriendHomepage(){
         Intent intent = new Intent(this, FriendHomePage.class);

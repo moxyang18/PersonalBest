@@ -41,10 +41,13 @@ public class FriendListPage extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //newly added
 
+
         //Get FriendList from Shared Preference
         SharedPreferences friendPreferences = getSharedPreferences(getString(R.string.shared_pref_file_name), MODE_PRIVATE);
         SharedPreferences.Editor editor = friendPreferences.edit();
         ArrayList<String> emailList = new ArrayList<>();
+
+        getEmailList();
 
 
         //get list of current friends' emails
@@ -149,7 +152,19 @@ public class FriendListPage extends AppCompatActivity {
 
         //let ExpandableList know new stuff
         listAdapter.addFriend(email);
+
+        Log.d(TAG, "Saved " + email);
+        getEmailList();
         return true;
+    }
+
+    public void getEmailList() {
+        Log.d(TAG, "inside getEmailList");
+        SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
+        Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+        for(String s : emailSet) {
+            Log.d(TAG, s + "is an email saved in SharedPreferences");
+        }
     }
 
     /**
