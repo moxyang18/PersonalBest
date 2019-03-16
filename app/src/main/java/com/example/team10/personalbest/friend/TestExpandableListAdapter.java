@@ -38,6 +38,10 @@ public class TestExpandableListAdapter implements EListAdapter {
         friend.performClick();
     }
 
+    public void clickChild( View child, int childPosition ) {
+        expListView.performItemClick( child, childPosition, child.getId() );
+    }
+
     public void addFriend(String email) {
         emailList.add(email);
         friendAdapter.addFriend(email);

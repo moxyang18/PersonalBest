@@ -74,8 +74,9 @@ public class FriendListPageTest {
 
     }
 
-    //Test that Friend List is really displaying all of the Friends:
-    // friends exist in the activity
+    /**
+     * Test that FriendList HomePage displays friends given that we have friends! :) (6 friends)
+     */
     @Test
     public void testFriendListCorrect() {
         //Setup: Make a list of friends to put into FriendList
@@ -102,6 +103,20 @@ public class FriendListPageTest {
             String name = nameView.getText().toString();
             assertTrue(nameList.contains(name));
         }
+    }
+
+    /**
+     * Test that FriendList HomePage displays no friends given that we have no friends! :) (0 friends)
+     */
+    @Test
+    public void testNoFriendOnUI() {
+        ArrayList<String> friendList = new ArrayList<>();
+        ExpandableListView listView = activity.findViewById( R.id.expandable_friend_list_view);
+        TestExpandableListAdapter testAdapter = new TestExpandableListAdapter(activity, friendList, listView );
+
+        final int NAME_GROUP_INDEX = 2;
+        assertTrue( testAdapter.getChildrenCount(NAME_GROUP_INDEX) == 0 );
+
     }
 
     /**
@@ -141,8 +156,6 @@ public class FriendListPageTest {
 
 
         //The view within the AdapterView that was clicked, the position of the view in the adapter, The row id of the item that was clicked
-        //listView.performItemClick(friend, 2,friendListAdapter.getChildId(2, 1) );
-
         //Grab image button and name/email
         TextView emailTextView = friend.findViewById( R.id.friend_name_text);
         String email = emailTextView.getText().toString();
@@ -152,8 +165,6 @@ public class FriendListPageTest {
 
 
         //Check that MessagingPage is opened, with the name sent.
-        //ShadowActivity.IntentForResult result = shadowActivity.peekNextStartedActivityForResult();
-        //Intent intent = result.intent;
         Intent actualIntent = shadowActivity.getNextStartedActivity();
 
         //construct expected intent
@@ -162,9 +173,6 @@ public class FriendListPageTest {
 
         //Actual Assert:
         assertTrue(actualIntent.filterEquals(expectedIntent));
-
-        //assertThat(intent.getStringExtra(MessagePage.EXTRA_MESSAGE)).isEqualTo(R.string.intent_email_key);
-        //assertThat(intent.getComponent()).isEqualTo(new ComponentName(activity, MessagePage.class));
     }
 
     /**
@@ -172,40 +180,27 @@ public class FriendListPageTest {
      */
     @Test
     public void testGoToFriendSummaryPage() {
-        //Press child view //grab name of child view?  (getText)
         //Grab the listView and the list of names.
         ExpandableListView listView = activity.findViewById(R.id.expandable_friend_list_view);
         ArrayList<String> emailList = new ArrayList<>();
-        //emailList.addAll(sharedPreferences.getStringSet(emailKey, new HashSet<>()));
         emailList.add("Friend1");
         emailList.add("friend2");
-
-        FriendListExpandableListAdapter friendListAdapter = new FriendListExpandableListAdapter(activity, emailList);
-        listView.setAdapter(friendListAdapter);
 
         TestExpandableListAdapter testAdapter = new TestExpandableListAdapter(activity, emailList, listView);
 
         //Grab Child View
-        View friend =  testAdapter.getFriendAdapter().getChildView(2,1,false, null, null);
+        View friend =  testAdapter.getChildView(2,1,true, null, null);
 
+        //Click the childview that corresponds to friend
+        friend.setClickable(true);
+        testAdapter.click(2, 1, false, null, null );
 
-        //The view within the AdapterView that was clicked, the position of the view in the adapter, The row id of the item that was clicked
-        listView.performItemClick(friend, 2,friendListAdapter.getChildId(2, 1) );
-
-        //
-        Shadows.shadowOf(listView).performItemClick(  1);
         //Grab button and name/email
         TextView emailTextView = friend.findViewById( R.id.friend_name_text);
         String email = emailTextView.getText().toString();
+        activity.launchFriendHomePage(listView, 2, 1);
 
-        //Click the childview that corresponds to friend
-        //friend.setClickable(true);
-        //friend.performClick();
-        //testAdapter.click(2, 1, false, null, null );
-
-        //Check that FriendHomePage is opened, with the email sent.
-        //Intent actualIntent = shadowActivity.getNextStartedActivity();
-        Intent actualIntent = shadowActivity.getResultIntent();
+        Intent actualIntent = shadowActivity.getNextStartedActivity();
         assertNotNull(actualIntent);
 
 
@@ -213,8 +208,9 @@ public class FriendListPageTest {
         Intent expectedIntent = new Intent(activity, FriendHomePage.class); //TODO replace with Moxuan's class activity later
         actualIntent.putExtra(activity.getString(R.string.intent_email_key), email);
 
-
         //Actual Assert:
         assertTrue(actualIntent.filterEquals(expectedIntent));
     }
+
+
 }
