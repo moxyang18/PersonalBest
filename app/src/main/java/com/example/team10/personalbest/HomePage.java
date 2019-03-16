@@ -75,6 +75,7 @@ public class HomePage extends AppCompatActivity{
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
 
+
     String COLLECTION_KEY = "chats";
     String DOCUMENT_KEY = "chat1";
     String MESSAGES_KEY = "messages";
@@ -223,7 +224,7 @@ public class HomePage extends AppCompatActivity{
             }
         });
 
-        thresholdNotification();
+
 
         //load data into home page and call text view update methods
 
@@ -559,45 +560,7 @@ public class HomePage extends AppCompatActivity{
         activityMediator.stop();
     }
 
-    private void thresholdNotification() {
-        String encourage_mes = "";
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1);
 
-        //WalkDay todayData = ActivityMediator.getUserWalkDays().get(today.toString());
-        WalkDay yesterdayData = ActivityMediator.getUserWalkDays().get(yesterday.toString());
-
-        int todayTotals = activityMediator.getStepCountDailyTotal();
-        int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
-        int increSteps = todayTotals-yesterdayTotals;
-        double increment = todayTotals/yesterdayTotals*1.0; //stepCount - yesterdayStepCount
-        if (increment >= 3.0)
-            encourage_mes = "Wonderful! You have tripled yesterday's goal!";
-        else if (increment < 3.0 && increment >=2.0)
-            encourage_mes = "Congratulations! You have doubled yesterday's goal!";
-        else if (increment >1.0 && increment <2.0)
-            encourage_mes = "Awesome! You've increased your " +
-                    "daily steps by " + increSteps + " steps.";
-
-        // create the notification manager and the channel
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String id = "threshold_message_chanel";
-        CharSequence name = "threshold_encourage";
-        int importance = NotificationManager.IMPORTANCE_LOW;
-        NotificationChannel encChannel = new NotificationChannel(id, name, importance);
-        encChannel.enableLights(true);
-        notificationManager.createNotificationChannel(encChannel);
-
-        // build the local message sender
-        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, id)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setSmallIcon(R.drawable.ic_stat_name)
-                .setContentTitle("Notification From PersonalBest Team")
-                .setContentText(encourage_mes);
-
-        if (increment >1.0)
-            notificationManager.notify(1, notBuilder.build());
-    }
 
     protected Mediator getTestMediator(){
         return activityMediator;
