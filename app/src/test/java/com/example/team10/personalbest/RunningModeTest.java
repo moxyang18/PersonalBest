@@ -36,7 +36,10 @@ public class RunningModeTest {
         currentGoal = runningMode.findViewById(R.id.goal_running_mode);
         totalSteps = runningMode.findViewById(R.id.total_steps_rm);
         intentionalSteps = runningMode.findViewById(R.id.running_steps);
-        Intent intent = new Intent(RuntimeEnvironment.application,RunningMode.class)
+
+        Intent intent = new Intent(RuntimeEnvironment.application,HomePage.class);
+        intent.putExtra("GET_MEDIATOR","MOCK_MEDIATOR");
+        //HomePage homePage = Robolectric.setupActivity(HomePage.class);
     }
 
     @Test
