@@ -1,5 +1,6 @@
 package com.example.team10.personalbest;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseUser;
 
 public interface Mediator {
@@ -28,6 +29,10 @@ public interface Mediator {
 
     boolean getGoalMet();
     void setGoalMet(boolean t);
+
+    void setUpFireApp();
+    void GoogleCloudIntetnSend();
+    void firebaseAuthWithGoogle(GoogleSignInAccount acct);
 
     int getStepCountDailyTotal();
 }

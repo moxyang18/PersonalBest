@@ -68,21 +68,16 @@ public class HomePage extends AppCompatActivity{
     private static final String TAG = "HomePage";
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
-
+    public AsyncTaskRunner runner;
 
     // Used to authorize account with Firebase
-    private FirebaseAuth firebaseAuth;
+
     private FirebaseUser currentUser;
 
-    String COLLECTION_KEY = "chats";
-    String DOCUMENT_KEY = "chat1";
-    String MESSAGES_KEY = "messages";
-    String FROM_KEY = "from";
-    String TEXT_KEY = "text";
-    String TIMESTAMP_KEY = "timestamp";
     String from;
     String userEmail;
     CollectionReference chat;
+    String MEDIATOR_KEY = "GET MEDIATOR";
 
 
     @Override
@@ -91,19 +86,25 @@ public class HomePage extends AppCompatActivity{
         // Init
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+        Intent intent = getIntent();
+        String MediatorKey =null;
 
+        if(intent!= null)
+            MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
+
+        if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
+            activityMediator = new ActivityMediator(this);
+        }
+        else if (MediatorKey.equals("MOCK_MEDIATOR")){
+
+            activityMediator = MediatorFactory.create(MediatorKey, this);
+        }else{
+            Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
+        }
         // Add factory to have mock mediator
-        activityMediator = new ActivityMediator(this);
 
-        // Init app
-        FirebaseApp.initializeApp(this);
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);//FIXME enable when everything else done
+        activityMediator.setUpFireApp();
 
-        // Get the shared instance for firebase
-        firebaseAuth = FirebaseAuth.getInstance();
 
         // Creating and setting home page text
         goal_text = findViewById(R.id.currentGoal);
@@ -168,17 +169,7 @@ public class HomePage extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 activityMediator.timeTravelNow();
-                /*
-                try {
-                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
-                    // store this var in new time.......
-                    // ..........................
 
-                } catch (Exception e) {
-                    Toast.makeText(HomePage.this, "Please enter a valid number",
-                            Toast.LENGTH_LONG).show();
-                }
-                */
             }
         });
 
@@ -229,21 +220,8 @@ public class HomePage extends AppCompatActivity{
           * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
           * https://developers.google.com/identity/sign-in/android/sign-in
           */
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        //https://developers.google.com/identity/sign-in/android/sign-in
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        //launches an activity that prompts sign in
-        //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.i(TAG, "About to send intent");
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult( signInIntent, RC_SIGN_IN );
-        Log.i(TAG, "Intent is sent");
+        activityMediator.GoogleCloudIntetnSend();
     }
 
 
@@ -255,27 +233,7 @@ public class HomePage extends AppCompatActivity{
      *
      * @param acct The account to authenticate with firebase
      */
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success - may have to update UI. FIXME
-                            Log.d(TAG, "signInWithCredential:success");
-
-
-
-                        } else {
-                            // If sign in fails, report in log.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        }
-                    }
-                });
-    }
 
     /**
      * launchRunning
@@ -368,8 +326,8 @@ public class HomePage extends AppCompatActivity{
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-                currentUser = firebaseAuth.getCurrentUser();
+                ActivityMediator.getInstance().firebaseAuthWithGoogle(account);
+                currentUser = ActivityMediator.getInstance().firebaseAuth.getCurrentUser();
 
 
             } catch (ApiException e) {
@@ -388,7 +346,7 @@ public class HomePage extends AppCompatActivity{
                 activityMediator.build();
                 // Setup asynchronous tasks.
                 Log.i(TAG, "Preparing to run Async Task");
-                AsyncTaskRunner runner = new AsyncTaskRunner();
+                runner = new AsyncTaskRunner();
                 runner.execute();
                 Log.i(TAG, "Async Task is run");
             }
