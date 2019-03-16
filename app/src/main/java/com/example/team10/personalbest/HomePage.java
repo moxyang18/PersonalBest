@@ -2,6 +2,7 @@ package com.example.team10.personalbest;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -225,13 +226,17 @@ public class HomePage extends AppCompatActivity{
 
         thresholdNotification();
 
+        if(getIntent().getExtras() != null) {
+            openCongratsDialog();
+        }
+
         //load data into home page and call text view update methods
 
-         /*
-          * Log into Google Account:
-          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
-          * https://developers.google.com/identity/sign-in/android/sign-in
-          */
+        /*
+         * Log into Google Account:
+         * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
+         * https://developers.google.com/identity/sign-in/android/sign-in
+         */
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -317,9 +322,9 @@ public class HomePage extends AppCompatActivity{
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-            openNewGoalDialog();
-        }
-    });
+                openNewGoalDialog();
+            }
+        });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override
@@ -523,6 +528,7 @@ public class HomePage extends AppCompatActivity{
             //Log.i(TAG, "Inside checkGoal");
             activityMediator.setGoalMet(true);
             openCongratsDialog();
+            sendCongratsNotification();
         }
         //Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
         //Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
@@ -557,6 +563,32 @@ public class HomePage extends AppCompatActivity{
         super.onDestroy();
         activityMediator.saveLocal();
         activityMediator.stop();
+    }
+
+    public void sendCongratsNotification() {
+
+        // create the notification manager and the channel
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "goal_message_channel";
+        CharSequence name = "congratulations";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel goalChannel = new NotificationChannel(id, name, importance);
+        goalChannel.enableLights(true);
+        notificationManager.createNotificationChannel(goalChannel);
+
+        Intent homeIntent = new Intent(this, HomePage.class);
+        homeIntent.putExtra("dialog flag", "true");
+        PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // build the local message sender
+        NotificationCompat.Builder goalBuilder = new NotificationCompat.Builder(this, id)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Notification From PersonalBest Team")
+                .setContentText("Congratulations! You've reached your step goal for today.")
+                .setContentIntent(homePendingIntent);
+
+        notificationManager.notify(23, goalBuilder.build());
     }
 
     private void thresholdNotification() {
