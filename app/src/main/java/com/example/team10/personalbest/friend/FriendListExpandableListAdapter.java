@@ -1,27 +1,21 @@
 package com.example.team10.personalbest.friend;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.media.Image;
-import android.support.v7.app.AlertDialog;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.team10.personalbest.FriendHomePage;
+import com.example.team10.personalbest.ActivityMediator;
 import com.example.team10.personalbest.FriendListPage;
 import com.example.team10.personalbest.MessagePage;
 
+import com.example.team10.personalbest.MockMediator;
 import com.example.team10.personalbest.R;
 
 import java.util.ArrayList;
@@ -36,27 +30,28 @@ import java.util.ArrayList;
  * and collapsed by touching to view and their respective children items.
  */
 
-public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
+public class FriendListExpandableListAdapter extends BaseExpandableListAdapter implements EListAdapter{
     private String TAG = "FriendListExpandableListAdapter:";
     FriendListPage activity;
     ArrayList<String> lists;
     ArrayList<String> incomingRequest;
     ArrayList<String> outgoingRequest;
     ArrayList<String> friends;
+    private boolean flag = true;
 
     //Currently incomingRrequesting and outGoingRequest is postponed.
     //Note:
     //Add Friend Mechanic: Only need to add email address to see their information.
 
     //TODO revise constructor to take in incoming/outgoing request string arraylist
-    public FriendListExpandableListAdapter(Context listActivity, ArrayList<String> friendList ) {
+    public FriendListExpandableListAdapter(Context listActivity, ArrayList<String> friendList, boolean Flag ) {
         //init everything
         friends = friendList;
         incomingRequest = new ArrayList<>();
         outgoingRequest = new ArrayList<>();
         lists = new ArrayList<>();
         activity = (FriendListPage)listActivity;
-
+        flag = Flag;
 
         //make the list title
         lists.add( activity.getString(R.string.incoming_request_header) );
@@ -204,8 +199,15 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter {
         chatButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if ( flag ) {
+                    ActivityMediator.getInstance().preloadFriendWalkDays(email);
+                }
+                else {
+                    MockMediator.getInstance().preloadFriendWalkDays(email);
+                }
                 Intent intent = new Intent(activity, MessagePage.class );
-                intent.putExtra("name", email); //pass in name
+                intent.putExtra( activity.getString(R.string.intent_email_key), email); //pass in name
+
                 activity.startActivity(intent);
             }
         });

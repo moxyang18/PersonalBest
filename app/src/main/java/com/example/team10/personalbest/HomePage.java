@@ -1,12 +1,18 @@
 package com.example.team10.personalbest;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,16 +29,37 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+
+import com.google.firebase.firestore.CollectionReference;
+
 
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+
 
 public class HomePage extends AppCompatActivity{
 
@@ -43,15 +70,53 @@ public class HomePage extends AppCompatActivity{
     private static final String TAG = "HomePage";
     private Mediator activityMediator;
     private AlertDialog newGoalDialog;
+    public AsyncTaskRunner runner;
+
+    // Used to authorize account with Firebase
+
+    private FirebaseUser currentUser;
+
+
+    String COLLECTION_KEY = "chats";
+    String DOCUMENT_KEY = "chat1";
+    String MESSAGES_KEY = "messages";
+    String FROM_KEY = "from";
+    String TEXT_KEY = "text";
+    String TIMESTAMP_KEY = "timestamp";
+
+    String from;
+    String userEmail;
+    CollectionReference chat;
+    String MEDIATOR_KEY = "GET MEDIATOR";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Init
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+        Intent intent = getIntent();
+        String MediatorKey =null;
 
-        //add factory to have mock mediator
-        activityMediator = new ActivityMediator(this);
+        if(intent!= null)
+            MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
 
+        if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
+            activityMediator = new ActivityMediator(this);
+        }
+        else if (MediatorKey.equals("MOCK_MEDIATOR")){
+
+            activityMediator = MediatorFactory.create(MediatorKey, this);
+        }else{
+            Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
+        }
+        // Add factory to have mock mediator
+
+        activityMediator.setUpFireApp();
+
+
+        // Creating and setting home page text
         goal_text = findViewById(R.id.currentGoal);
         step_text = findViewById(R.id.stepsCount);
 
@@ -64,23 +129,21 @@ public class HomePage extends AppCompatActivity{
                 launchRunning();
             }
         });
+
+        Button own_summary_button = findViewById(R.id.selfMonthlyChart);
+        own_summary_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchOwnSummaryChart();
+            }
+        });
+
         //set_time_text = findViewById(R.id.set_time_text);
         Button time_forward_button = findViewById(R.id.mock_forward);
         time_forward_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 activityMediator.timeTravelForward();
-                /*
-                try {
-                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
-                    // store this var in new time.......
-                    // ..........................
-
-                } catch (Exception e) {
-                    Toast.makeText(HomePage.this, "Please enter a valid number",
-                            Toast.LENGTH_LONG).show();
-                }
-                */
             }
         });
         Button time_backward_button = findViewById(R.id.mock_back);
@@ -88,17 +151,6 @@ public class HomePage extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 activityMediator.timeTravelBackward();
-                /*
-                try {
-                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
-                    // store this var in new time.......
-                    // ..........................
-
-                } catch (Exception e) {
-                    Toast.makeText(HomePage.this, "Please enter a valid number",
-                            Toast.LENGTH_LONG).show();
-                }
-                */
             }
         });
         Button time_now_button = findViewById(R.id.mock_now);
@@ -106,17 +158,7 @@ public class HomePage extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 activityMediator.timeTravelNow();
-                /*
-                try {
-                    int time_in_milli = Integer.parseInt(set_time_text.getText().toString());
-                    // store this var in new time.......
-                    // ..........................
 
-                } catch (Exception e) {
-                    Toast.makeText(HomePage.this, "Please enter a valid number",
-                            Toast.LENGTH_LONG).show();
-                }
-                */
             }
         });
 
@@ -160,29 +202,39 @@ public class HomePage extends AppCompatActivity{
             }
         });
 
+        if(getIntent().getExtras() != null) {
+            openCongratsDialog();
+        }
 
         //load data into home page and call text view update methods
-        activityMediator.init();
-         /** Log into Google Account:
-         * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
-         * https://developers.google.com/identity/sign-in/android/sign-in
-         */
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        //https://developers.google.com/identity/sign-in/android/sign-in
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //launches an activity that prompts sign in
-        //https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInClient
-        Log.i(TAG, "About to send intent");
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult( signInIntent, RC_SIGN_IN );
-        Log.i(TAG, "Intent is sent");
+         /*
+          * Log into Google Account:
+          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
+          * https://developers.google.com/identity/sign-in/android/sign-in
+          */
+
+        activityMediator.GoogleCloudIntetnSend();
+
     }
 
+
+    /**
+     * firebaseAuthWithGoogle
+     *
+     * Authenticate an account using firebase with google. Gets a credential
+     * and signs in using it. If it is successful, we have a listener
+     *
+     * @param acct The account to authenticate with firebase
+     */
+
+
+    /**
+     * launchRunning
+     *
+     * Launches the running mode activity
+     */
 
     public void launchRunning() {
         Intent intent = new Intent(this, RunningMode.class);
@@ -190,14 +242,22 @@ public class HomePage extends AppCompatActivity{
     }
 
     public void launchBarChart() {
-        activityMediator.saveLocal();
+        //activityMediator.saveLocal();
         Intent intent = new Intent(this, BarChartActivity.class);
         startActivity(intent);
     }
 
     public void launchFriendsList() {
-        Intent intent = new Intent(this, FriendListPage.class);
+        for(String s:ActivityMediator.getFriendList()){
+            Log.d(TAG,"have user "+s+" inside friendlist before loading page");
+        }
 
+        Intent intent = new Intent(this, FriendListPage.class);
+        startActivity(intent);
+    }
+
+    public void launchOwnSummaryChart() {
+        Intent intent = new Intent(this, StepSummary.class);
         startActivity(intent);
     }
 
@@ -207,9 +267,9 @@ public class HomePage extends AppCompatActivity{
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-            openNewGoalDialog();
-        }
-    });
+                openNewGoalDialog();
+            }
+        });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override
@@ -222,24 +282,84 @@ public class HomePage extends AppCompatActivity{
         congratsDialog.show();
     }
 
-    //onActivityResult is called after startActivityForResult() (called in onCreate() ) is finished
-    //Code from: https://developers.google.com/identity/sign-in/android/sign-in
-    //After the user signs in, GoogleSignInAccount can be reached here.
+    /**
+     * onActivityResult
+     *
+     * Called after startActivityForResult() (called in onCreate()) is finished
+     * Code from: https://developers.google.com/identity/sign-in/android/sign-in
+     * After the user signs in, GoogleSignInAccount can be reached here.
+     * Firebase authenticated on a successful login.
+     *
+     * @param requestCode   Request code used with the activity
+     * @param resultCode    The code from the activity
+     * @param data          Data associated with activity
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i( TAG, "Intent is done/closed");
 
+        //GoogleSignInAccount user = Auth.GoogleSignInApi.getSignInIntent(this);
+
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            activityMediator.build();
 
-            Log.i(TAG, "Preparing to run Async Task");
-            AsyncTaskRunner runner = new AsyncTaskRunner();
-            runner.execute();
-            Log.i(TAG, "Async Task is run");
+
+
+            // Obtain the account used to sign in and authenticate firebase
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            while(!task.isComplete()){
+                try{
+                    Thread.sleep(20);
+                }catch (Exception e){
+
+                }
+            }
+            if(!task.isSuccessful())
+                Log.d(TAG, "Google sign from intent is not successfully reached");
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                ActivityMediator.getInstance().firebaseAuthWithGoogle(account);
+                currentUser = ActivityMediator.getInstance().firebaseAuth.getCurrentUser();
+
+
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+            }
+            if(currentUser != null){
+
+                activityMediator.setCurrentUser(currentUser);
+                //check cloud and local cache difference
+                boolean isFirstTimeUser = activityMediator.sync();
+                Log.i(TAG, "It"+((isFirstTimeUser)?"is":"is not" )+"user's first time using PersonBest.");
+                //Initialize the activity mediator.
+                activityMediator.init();
+                // Build the activity mediator.
+                activityMediator.build();
+                // Setup asynchronous tasks.
+                Log.i(TAG, "Preparing to run Async Task");
+                runner = new AsyncTaskRunner();
+                runner.execute();
+                Log.i(TAG, "Async Task is run");
+            }
+
+            else {
+                Log.e(TAG, "ERROR, no valid user account!!!");
+            }
+
         }
 
+        /**
+         * Get the user's email
+         */
+        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        if(user != null) {
+            userEmail = user.getEmail();
+        }
+        Log.d(TAG, "The user's email is " + userEmail);
     }
 
     public void openNewGoalDialog() {
@@ -338,23 +458,26 @@ public class HomePage extends AppCompatActivity{
         customDialog.setCanceledOnTouchOutside(false);
         customDialog.show();
     }
+
     public void showGoal(int Goal){
         goal_text.setText(Integer.toString(Goal));
     }
+
     public void showStepCount(int count){
-        Log.i(TAG, "TextView is updated");
+        //Log.i(TAG, "TextView is updated");
         step_text.setText(Integer.toString(count));
     }
 
     public void checkGoal() {
         if(activityMediator.checkReachGoal()&& !activityMediator.getGoalMet()) {
-            Log.i(TAG, "Inside checkGoal");
+            //Log.i(TAG, "Inside checkGoal");
             activityMediator.setGoalMet(true);
             openCongratsDialog();
+            sendCongratsNotification();
         }
-        Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
-        Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
-        Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
+        //Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
+        //Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
+        //Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
     }
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
@@ -387,6 +510,32 @@ public class HomePage extends AppCompatActivity{
         activityMediator.stop();
     }
 
+    public void sendCongratsNotification() {
+
+        // create the notification manager and the channel
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "goal_message_channel";
+        CharSequence name = "congratulations";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel goalChannel = new NotificationChannel(id, name, importance);
+        goalChannel.enableLights(true);
+        notificationManager.createNotificationChannel(goalChannel);
+
+        Intent homeIntent = new Intent(this, HomePage.class);
+        homeIntent.putExtra("dialog flag", "true");
+        PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // build the local message sender
+        NotificationCompat.Builder goalBuilder = new NotificationCompat.Builder(this, id)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Notification From PersonalBest Team")
+                .setContentText("Congratulations! You've reached your step goal for today.")
+                .setContentIntent(homePendingIntent);
+
+        notificationManager.notify(23, goalBuilder.build());
+    }
+
     protected Mediator getTestMediator(){
         return activityMediator;
     }
@@ -394,4 +543,5 @@ public class HomePage extends AppCompatActivity{
     protected void setTestMediator(Mediator m){
         activityMediator = m;
     }
+
 }

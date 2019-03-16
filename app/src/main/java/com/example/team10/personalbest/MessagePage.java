@@ -11,9 +11,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.team10.personalbest.ChatMessaging.FirebaseCloudMessengerAdapter;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -28,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MessagePage extends AppCompatActivity {
-    String TAG = MessagePage.class.getSimpleName();
+    private static String TAG = MessagePage.class.getSimpleName();
 
     String COLLECTION_KEY = "chats";
     String DOCUMENT_KEY = "chat1";
@@ -37,74 +39,90 @@ public class MessagePage extends AppCompatActivity {
     String TEXT_KEY = "text";
     String TIMESTAMP_KEY = "timestamp";
     String friendEmail;
+    String friendEmailFragment;
+    String topicName;
+    String userEmail;
+    String userName;
 
-    CollectionReference chat;
+    FirebaseCloudMessengerAdapter fcmAdapter;
+    //SharedPreferences sharedPreferences;
     String from;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_page);
-        SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
+        //SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
-        from = sharedpreferences.getString(FROM_KEY, null);
+        //from = sharedpreferences.getString(FROM_KEY, null);
 
+        //Set up buttons/UI
         TextView friendName = findViewById(R.id.friend_name);
 
-        friendName.setText(getIntent().getExtras().getString("name"));
-        friendEmail = getIntent().getExtras().getString("name");
+        //Get the friend's name and email from intent (just email)
+
+            //else if intent from regular flow
+            friendEmail = getIntent().getExtras().getString(getString(R.string.intent_email_key));
+            friendName.setText(friendEmail);
+            friendEmailFragment = friendEmail.substring(0, friendEmail.indexOf("@"));
+
+        /**
+         * Get the user's email
+         */
+        String user = ActivityMediator.getInstance().getUserEmail();
+        if(user != null) {
+            String completeEmail = user;
+            userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
+            userName = ActivityMediator.getInstance().getUserDisplayName();
+            from = userName;
+        }
+        Log.d(TAG, "The user's email is " + userEmail);
+
+        /**
+         * Set the display name to show who the chat is from.
+         */
+        TextView nameView = findViewById((R.id.user_name));
+        nameView.setText(userName);
+
+
+        //Use the two emails in alphabetical order to determine the topic name linking the two people
+        if(friendEmail.compareTo(userEmail) < 0) {
+            topicName = friendEmailFragment + "%" + userEmail;
+        }
+        else if(friendEmail.compareTo(userEmail) > 0) {
+            topicName = userEmail + "%" + friendEmailFragment;
+        }
+
+        //Initialize Firebase Store
+        FirebaseApp.initializeApp(this);
+        fcmAdapter = new FirebaseCloudMessengerAdapter(this, topicName);
+        fcmAdapter.initMessageUpdateListener();
+        fcmAdapter.subscribeToNotificationsTopic(topicName);
+
 
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View view){
+
                 launchFriendHomepage();
             }
         });
 
         Button message_back_button = findViewById(R.id.message_back_button);
         message_back_button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view){
                 finish();
             }
         });
 
-        FirebaseApp.initializeApp(this);
+        findViewById(R.id.btn_send).setOnClickListener(view -> fcmAdapter.sendMessage(from));
 
-        chat = FirebaseFirestore.getInstance()
-                .collection(COLLECTION_KEY)
-                .document(DOCUMENT_KEY)
-                .collection(MESSAGES_KEY);
-
-        initMessageUpdateListener();
-
-        subscribeToNotificationsTopic();
-
-        findViewById(R.id.btn_send).setOnClickListener(view -> sendMessage());
-
-        EditText nameView = findViewById((R.id.user_name));
-        nameView.setText(from);
-        nameView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                from = s.toString();
-                sharedpreferences.edit().putString(FROM_KEY, from).apply();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        ScrollView chat = findViewById(R.id.scroll_view);
     }
 
+            /*
     private void sendMessage() {
         if (from == null || from.isEmpty()) {
             Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show();
@@ -163,11 +181,12 @@ public class MessagePage extends AppCompatActivity {
                         }
                 );
     }
+    */
 
     public void launchFriendHomepage() {
-        Intent intent = new Intent(this, FriendHomePage.class);
-        intent.putExtra("name", friendEmail); //pass in name
+        ActivityMediator.getInstance().preloadFriendWalkDays(friendEmail);
+        Intent intent = new Intent(this, FriendSummary.class);
+        intent.putExtra("email", friendEmail); //pass in name
         startActivity(intent);
     }
-
 }

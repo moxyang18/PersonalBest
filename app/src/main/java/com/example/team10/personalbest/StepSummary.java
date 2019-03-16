@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.team10.personalbest.fitness.CloudProcessor;
 import com.github.mikephil.charting.charts.BarChart;
@@ -24,30 +25,32 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
-public class BarChartActivity extends AppCompatActivity {
+public class StepSummary extends AppCompatActivity {
 
     private BarChart barChart10;
-    private HashMap<String,WalkDay> user_WalkDays;
     //private DataProcessor dp;
-    private String userEmail;
-    private String userDisplayName;
-
-    private int[] goal_list = {0,0,0,0,0,0,0};
-    private static String TAG = "BarChartActivity";
+    private int[] goal_list = new int[28];
+    private HashMap<String,WalkDay> user_WalkDays;
+    private String userEmail = "";
+    private String displayName = "";
+    private static String TAG = "StepSummary";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bar_chart);
+        setContentView(R.layout.activity_step_summary);
         config();
-        user_WalkDays = ActivityMediator.getUserWalkDays();
+
+        for (int i = 0; i < 28; i++)
+            goal_list[i]=0;
+
+        // from the friends' list, can see the summary char
+        barChart10 = findViewById(R.id.summary_bar_chart);
 //        userEmail = ActivityMediator.getInstance().getUserEmail();
-//        userDisplayName = ActivityMediator.getInstance().getUserDisplayName();
-
-        barChart10 =  findViewById(R.id.bar_chart);
-
-
+        user_WalkDays = ActivityMediator.getUserWalkDays();
+//        displayName = ActivityMediator.getInstance().getUserDisplayName();
         // Get data for chart
         //dp = DataProcessor.getInstance();
 
@@ -56,24 +59,8 @@ public class BarChartActivity extends AppCompatActivity {
     }
 
     private void displayChart() {
-
-        // Determine the day of the week so we can start on Sunday
-        String dayOfWeek = LocalDate.now().getDayOfWeek().toString();
-
-        // How many days must we subtract to get to sunday?
-        int minDays = 0;
-        switch (dayOfWeek) {
-            case "SUNDAY": minDays = 0; break;
-            case "MONDAY": minDays = 1; break;
-            case "TUESDAY": minDays = 2; break;
-            case "WEDNESDAY": minDays = 3; break;
-            case "THURSDAY": minDays = 4; break;
-            case "FRIDAY": minDays = 5; break;
-            case "SATURDAY": minDays = 6; break;
-        }
-
         // Obtain sunday
-        LocalDate sundayDate = LocalDate.now().minusDays(minDays);
+        LocalDate iDate = LocalDate.now();
 
         // create entries of each day's steps of the week
         ArrayList<BarEntry> entries = new ArrayList<>();
@@ -81,45 +68,43 @@ public class BarChartActivity extends AppCompatActivity {
         // Used to get info for each day
         LocalDate dayDate;
         WalkDay day;
-        boolean[] goalMet = new boolean[7];
+        boolean[] goalMet = new boolean[28];
         int goal_max = 0;
         int step_max=0;
-        // Loop over all 7 days of the week
-        for (int i = 0; i < 7; i++) {
+
+        // create the labels for the x-axis
+        ArrayList<String> labels = new ArrayList<>();
+        // Loop over all past 28 days
+        for (int i = 27; i >= 0; i--) {
 
             // Get the day we're processing
-            dayDate = sundayDate.plusDays(i);
+            dayDate = iDate.minusDays(i);
 
+            labels.add(dayDate.toString().substring(5));
             //since we update local walkdays when calling savelocal, no need to read from cloud
-            /*
-            if(dayDate.isEqual(LocalDate.now()))
-                day = day = CloudProcessor.retrieveDay(dayDate,userEmail);
-
-            else
-            */
-                day = user_WalkDays.get(dayDate.toString());
-            //day = CloudProcessor.retrieveDay(dayDate,userEmail);
+            day = user_WalkDays.get(dayDate.toString());
+            //day = dp.retrieveDay(dayDate);
 
             // Add data for that data to the graph
             if (day != null) {
-                entries.add(new BarEntry(i, new float[]
+                entries.add(new BarEntry(27-i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
 
+                // log the untestable data that will be added to the chart
                 Log.i(TAG+"'s Intentional Steps: ", Integer.toString(day.getStepCountIntentional()));
                 Log.i(TAG+"'s Total Steps: ", Integer.toString(day.getStepCountDailyTotal()));
+
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
                     goal_max = day.getGoal();
-
                 if(step_max<day.getStepCountDailyTotal())
                     step_max = day.getStepCountDailyTotal();
-
-                goalMet[i] = day.getGoalMet();
-
+                goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
             } else {
                 entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
+
         }
 
         // Gather up the bars into a set
@@ -138,24 +123,13 @@ public class BarChartActivity extends AppCompatActivity {
         dataSets.add(entrySet);
 
         BarData data = new BarData(dataSets);
-        //data.setValueFormatter(new MyValueFormatter());
         data.setValueTextColor(Color.BLACK);
 
-        // create labels representing the x-axis days
-        ArrayList<String> labels = new ArrayList<>();
-        //String curDay;
-
-        // Determine if check mark should be present
-        labels.add((goalMet[0])? "Sun(✓)":"Sun");
-        labels.add((goalMet[1])? "Mon(✓)":"Mon");
-        labels.add((goalMet[2])? "Tue(✓)":"Tue");
-        labels.add((goalMet[3])? "Wed(✓)":"Wed");
-        labels.add((goalMet[4])? "Thu(✓)":"Thu");
-        labels.add((goalMet[5])? "Fri(✓)":"Fri");
-        labels.add((goalMet[6])? "Sat(✓)":"Sat");
-
+        // create x-axis labels
         XAxis x = barChart10.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
+
+        //x.setCenterAxisLabels(true);
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
         x.setGranularity(1);
         x.setGranularityEnabled(true);
@@ -168,6 +142,8 @@ public class BarChartActivity extends AppCompatActivity {
 
         // put data onto the bar chart
         barChart10.setData(data); //stepData);
+
+        barChart10.setFitBars(true);
         barChart10.animateY(1000);
 
         // display the daily goal limit lines based on which bar of the day gets clicked
@@ -178,12 +154,12 @@ public class BarChartActivity extends AppCompatActivity {
             public void onValueSelected(Entry e, Highlight h) {
                 barChart10.getAxisLeft().removeAllLimitLines();
                 int day_ind = (int)e.getX();
-                //int[] days_goal = {1060,2049, 3059, 3589, 5937, 5738, 4826};
 
-                int day_goal = goal_list[day_ind];
-                Log.i(TAG + "'s Daily Goal is displayed:", Integer.toString(day_goal));
+                int day_goal = goal_list[27-day_ind];
                 if(day_goal !=0)
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
+
+                setDataField(user_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
             }
 
             @Override
@@ -205,13 +181,35 @@ public class BarChartActivity extends AppCompatActivity {
     }
 
     private void config() {
-        Button back_button = findViewById(R.id.back_button);
+        Button back_button = findViewById(R.id.summary_back_button);
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+    }
+
+
+    public BarChart getBarChart() {
+        return barChart10;
+    }
+
+    private void setDataField(WalkDay day) {
+        TextView dataView = findViewById(R.id.summary_data_field);
+
+        float mpH = day.getSpeed_average()*2.236f;
+
+        float distance = day.getDistanceRunTotal()*0.000621371f;
+
+        long millis = day.getTime_run_sec_daily();
+        String time = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+
+        // get the calculated MPH, daily distance and the total walk time on that day
+        String info = "MPH: " + String.format("%.2f",mpH) +" \n" + "Daily Distance: " +  String.format("%.3f",distance) + " \n" + "Total Time: " + time;
+        dataView.setText(info);
     }
 
 }
