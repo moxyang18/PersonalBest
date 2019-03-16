@@ -421,9 +421,9 @@ public class CloudProcessor {
                 .collection(USER_DIR_KEY)
                 .document(reformatEmailForCloud(email))
                 .collection(FRIEND_DIR_KEY)
-                .document(FRIEND_LIST_KEY)
-                .collection("No usage")
-                .document("No usage");
+                .document(FRIEND_LIST_KEY);
+                //.collection("No usage")
+                //.document("No usage");
         // Get database reference @ root directory
         Map<String,Object> map = new HashMap<String,Object>();
         map.put(reformatEmailForCloud(email),ONEDIRECTION);
