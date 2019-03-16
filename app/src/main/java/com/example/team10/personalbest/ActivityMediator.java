@@ -159,12 +159,18 @@ public class ActivityMediator implements Observer, Mediator {
                 CloudProcessor.uploadWalkDay(walkDay,userEmail);
                 //need to update friend list;
                 CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
+                Log.d(TAG, "Read in day from cloud");
             }
 
              //FIXME if we want to do actuall merge.
             //if same day, we only do things if walkDay currently is bad.
              else if(lastInCloud.isAfter(LocalDate.now())){ //couldn't happen
-
+                Log.d(TAG, "Error: impossible");
+                Log.d(TAG, lastInCloud.toString());
+                Log.d(TAG, LocalDate.now().toString());
+                walkDay = CloudProcessor.retrieveDay(LocalDate.now(), userEmail);
+                if(walkDay ==null)
+                    Log.d(TAG, "error, didn't read walkDay from cloud when loading HomePage");
             }else {//same day
                 //lost phone today and get connected or we are just using the app
                 //we can only get the day from cloud. can't rewrite it. since we don't actually local storage.
@@ -197,7 +203,7 @@ public class ActivityMediator implements Observer, Mediator {
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
             //upload other parts for the firstime as well like friend list or simply no.
             //most user info upload are implictly called in linkIdToEmail
-            CloudProcessor.setUpdateInfo(date,LocalTime.now(),userEmail);
+            CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
 
             //then we start using the app.
             preloadUserWalkDays();
@@ -432,7 +438,7 @@ public class ActivityMediator implements Observer, Mediator {
             //dataProcessor.insertDay(date,walkDay);
             userWalkDays.put(date.toString(),walkDay);
             CloudProcessor.uploadWalkDay(walkDay,userEmail);
-            CloudProcessor.setUpdateInfo(date,LocalTime.now(),userEmail);
+            CloudProcessor.setUpdateInfo(LocalDate.now(),LocalTime.now(),userEmail);
 
 
     }
@@ -546,9 +552,7 @@ public class ActivityMediator implements Observer, Mediator {
         return goal_today;
     }
 
-    public void setGoal_today(int g){
-        goal_today = g;
-    }
+    public void setGoal_today(int g){ goal_today = g; }
 
     public void setGoalMet(boolean m){
         goalMet =m;

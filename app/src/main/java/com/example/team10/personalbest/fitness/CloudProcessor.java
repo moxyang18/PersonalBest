@@ -421,9 +421,9 @@ public class CloudProcessor {
                 .collection(USER_DIR_KEY)
                 .document(reformatEmailForCloud(email))
                 .collection(FRIEND_DIR_KEY)
-                .document(FRIEND_LIST_KEY)
-                .collection("No usage")
-                .document("No usage");
+                .document(FRIEND_LIST_KEY);
+                //.collection("No usage")
+                //.document("No usage");
         // Get database reference @ root directory
         Map<String,Object> map = new HashMap<String,Object>();
         map.put(reformatEmailForCloud(email),ONEDIRECTION);
@@ -549,12 +549,17 @@ public class CloudProcessor {
                     //friend B added A before;
                     Log.d(TAG, ("user "+reformatEmailForUser(userEmail)+" doesn't know "+reformatEmailForUser(friendEmail))+" or otherwise");
                     //FIXME Untested
+                    //Map<String,Object> map = new HashMap<String,Object>();
+                    //map.put(reformatEmailForCloud(userEmail),ONEDIRECTION);
+                    //database1.set(map);
+
                     database1.update(reformatEmailForCloud(friendEmail),ONEDIRECTION).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG,"user "+reformatEmailForUser(userEmail)+"adding B as candiate" );
                         }
                     });
+
 
                 }else if(s1.equals(MUTUAL)){
                     //already friend

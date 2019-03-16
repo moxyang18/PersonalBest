@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "978306071252",
-    "firebase_url": "https://personal-best-messaging.firebaseio.com",
-    "project_id": "personal-best-messaging",
-    "storage_bucket": "personal-best-messaging.appspot.com"
+    "project_number": "83228308921",
+    "firebase_url": "https://personal-best-2.firebaseio.com",
+    "project_id": "personal-best-2",
+    "storage_bucket": "personal-best-2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:978306071252:android:d851da1dcd5996b8",
+        "mobilesdk_app_id": "1:83228308921:android:d851da1dcd5996b8",
         "android_client_info": {
           "package_name": "com.example.team10.personalbest"
         }
       },
       "oauth_client": [
         {
-          "client_id": "978306071252-4d9u8tbk3b1kundsocs6novgavirjl6v.apps.googleusercontent.com",
+          "client_id": "83228308921-6gvcgoutbmn58kof5auapduc5qi485mj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.team10.personalbest",
@@ -23,30 +23,13 @@
           }
         },
         {
-
-          "client_id": "978306071252-in61vo73249f0ej9rqrshqhj9k3d939k.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.team10.personalbest",
-            "certificate_hash": "d751123f3975fc99fd8308cc6885c7b66ef69b53"
-          }
-        },
-        {
-          "client_id": "978306071252-lfm4nuol1o5sipq9tlj1ta58bb1ljhj1.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.team10.personalbest",
-            "certificate_hash": "b37cfd6ea6a35bcbee14480c9bd5059add8dbbfd"
-          }
-        },
-        {
-          "client_id": "978306071252-c9ktg25jmu3oouo6bv9k8oht3ocvarq9.apps.googleusercontent.com",
+          "client_id": "83228308921-sp9bd01to1itu4tedojmf9i4a7b1ral8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBOPiLiedBw-klrdlWk6iNtJkqhWPHokqI"
+          "current_key": "AIzaSyDzzlXq8M3XR8M4jynPxaeVyLf2nfDoDn4"
         }
       ],
       "services": {
@@ -57,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "978306071252-c9ktg25jmu3oouo6bv9k8oht3ocvarq9.apps.googleusercontent.com",
+              "client_id": "83228308921-sp9bd01to1itu4tedojmf9i4a7b1ral8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

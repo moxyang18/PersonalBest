@@ -74,6 +74,7 @@ public class FriendSummary extends AppCompatActivity {
         else
             header.setText( this.friendEmail + "'s Step Chart");
         //userEmail = ActivityMediator.getInstance().getUserEmail();
+
         //user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
         friend_WalkDays = ActivityMediator.getFriendWalkDays();
         // Get data for chart
@@ -106,8 +107,9 @@ public class FriendSummary extends AppCompatActivity {
             dayDate = iDate.minusDays(i);
 
             labels.add(dayDate.toString().substring(5));
+
             if(dayDate.isEqual(LocalDate.now())){
-                if(friendEmail !=""){
+                if(friendEmail !=""&&friendEmail!=null){
                     day = CloudProcessor.retrieveDay(dayDate,friendEmail);
                     if(day ==null)
                         day = friend_WalkDays.get(dayDate.toString());
