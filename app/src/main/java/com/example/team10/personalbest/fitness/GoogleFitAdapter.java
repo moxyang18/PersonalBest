@@ -13,6 +13,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.HistoryClient;
+import com.google.android.gms.fitness.SensorsClient;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
@@ -50,8 +52,9 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     private int distance_counter =0;
     private int time_counter = 0;
     private int goal;
-
-
+    private HistoryClient historyClient;
+    private SensorsClient sensorsClient;
+    private GoogleSignInAccount lastSignedInAccount;
     private Object[] result =new Object[]{1,1,1,1};
 
 
@@ -65,6 +68,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         result [1] = step;
         result [2] = distance;
         result [3] = false;
+
 
     }
 
@@ -113,7 +117,10 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                     GoogleSignIn.getLastSignedInAccount(activity),
                     fitnessOptions);
         }
+        lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
 
+        historyClient = Fitness.getHistoryClient(activity, lastSignedInAccount);
+        sensorsClient = Fitness.getSensorsClient(activity, lastSignedInAccount);
         startRecording(); //Record API
         startListen(); //Sensor API
         updateStepCount();
@@ -153,7 +160,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
 
                 mUpdater.postDelayed(this, 200);
-                Log.i(TAG, "passed data into activities");
+                //Log.i(TAG, "passed data into activities");
             }
         };
         mUpdateView.run();
@@ -190,8 +197,8 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
 
 
         //Register Listener
-        Fitness.getSensorsClient(activity, GoogleSignIn.getLastSignedInAccount(activity))
-                .add(
+
+                sensorsClient.add(
                         new SensorRequest.Builder()
                                 //.setDataSource(dataSource) // Optional but recommended for custom data sets.
                                 .setDataType(DataType.TYPE_STEP_COUNT_DELTA) // Can't be omitted.
@@ -213,7 +220,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     }
 
     private void startRecording() {
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+
         if (lastSignedInAccount == null) {
             Log.d(TAG, "No Google Sign In Account at startRecording()");
             return;
@@ -252,11 +259,12 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
     }
 
     public void updateDistance(){
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        //GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (lastSignedInAccount == null) {
             return;
         }
-        Fitness.getHistoryClient(activity, lastSignedInAccount)
+
+        historyClient
                 .readDailyTotal(DataType.TYPE_DISTANCE_DELTA)
                 .addOnSuccessListener(
                         new OnSuccessListener<DataSet>() {
@@ -269,7 +277,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_DISTANCE).asFloat();
                                 distance =total;
                                 setChanged();
-                                Log.i(TAG, "Total distance: " + total);
+                                //Log.i(TAG, "Total distance: " + total);
                             }
                         })
                 .addOnFailureListener(
@@ -288,7 +296,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
         if (lastSignedInAccount == null) {
             return -1;
         }
-        Fitness.getHistoryClient(activity, lastSignedInAccount)
+        historyClient
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
                         new OnSuccessListener<DataSet>() {
@@ -320,14 +328,14 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
      * current timezone.
      */
     public void updateStepCount() {
-        GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
+        //GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(activity);
         if (lastSignedInAccount == null) {
             return;
         }
 
         //Use History API to grab the last stored "Daily Total", then sum that with val to get the
         //updated Daily Step Count value.
-        Fitness.getHistoryClient(activity, lastSignedInAccount)
+        historyClient
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
                         new OnSuccessListener<DataSet>() {
@@ -340,7 +348,7 @@ public class GoogleFitAdapter extends Observable implements FitnessService{
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
                                 step =total;
                                 setChanged();
-                                Log.i(TAG, "Total steps: " + total);
+                                //Log.i(TAG, "Total steps: " + total);
                             }
                         })
                 .addOnFailureListener(

@@ -13,7 +13,7 @@ public class WalkDayTest {
 
     @Before
     public void init() {
-        day = new WalkDay(LocalDate.now());
+        day = new WalkDay(LocalDate.now().toString());
     }
 
     @Test
@@ -42,6 +42,6 @@ public class WalkDayTest {
 
     @Test
     public void getDate() {
-        assertEquals(LocalDate.now(), day.getDate());
+        assertEquals(LocalDate.now().toString(), day.getDate());
     }
 }

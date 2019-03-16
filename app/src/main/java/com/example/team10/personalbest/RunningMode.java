@@ -1,10 +1,14 @@
 package com.example.team10.personalbest;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +22,7 @@ import com.example.team10.personalbest.fitness.GoogleFitAdapter;
 
 
 import java.sql.Array;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -28,7 +33,7 @@ public class RunningMode extends AppCompatActivity{
     //private GoogleFitAdapter fit;
     private Mediator activityMediator;
     //private  DataProcessor dp;
-    private int goal = 0;
+    //private int goal = 0;
     /*
     private int stepCount =0;
     private int stepCountUnintentional =0;
@@ -58,7 +63,6 @@ public class RunningMode extends AppCompatActivity{
 
         setContentView(R.layout.activity_running_mode);
 
-
         // get the buttons we need to set the actions after pressed
         Button end_run_button = findViewById(R.id.end_run);
         Button back_button = findViewById(R.id.back_from_running);
@@ -77,7 +81,6 @@ public class RunningMode extends AppCompatActivity{
         activityMediator.linkRunning(this);
         // when pressed, set a new time in milliseconds
 
-
         // if the end walk/run button gets pressed, stop updating vars on this page,
         // showing the encouragement, but do not go back yet
         end_run_button.setOnClickListener(new View.OnClickListener() {
@@ -86,19 +89,10 @@ public class RunningMode extends AppCompatActivity{
                 // set the boolean value to false to stop updating
                 activityMediator.unlinkRunning();
                 String message;
-                int increment = 0;            //stepCount - yesterdayStepCount
-                if (reachGoal())
-                    message = "Awesome! You have reached today's goal!";
-                else if (increment <= 0)
-                    message = "Great! Keep up the work! ";
-                else
-                    message = "Congratulations! You've increased your " +
-                            "daily steps by " + increment + " steps.";
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
 
             }
         });
-
 
         // after pressing this button, increment current steps by 500
         add_step_button.setOnClickListener(new View.OnClickListener() {
@@ -113,24 +107,71 @@ public class RunningMode extends AppCompatActivity{
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // Condition: If numOfFriends == 0
+                if(ActivityMediator.getFriendList().isEmpty())
+                    friendless_notification();
+
                 finish();
             }
         });
 
     }
 
+    // the legacy function that sends the message from the system automatically
+    public void friendless_notification () {
+
+        String encourage_mes;
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+
+        //WalkDay todayData = activityMediator.
+        WalkDay yesterdayData = ActivityMediator.getUserWalkDays().get(yesterday.toString());
+
+        int todayTotals = activityMediator.getStepCountDailyTotal();
+        int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
+
+        int increment = todayTotals - yesterdayTotals; //stepCount - yesterdayStepCount
+        if (increment <= 0)
+            encourage_mes = "Great! Keep up the work! ";
+        else if (increment <= 100)
+            encourage_mes = "Congratulations! You have reached today's goal!";
+        else
+            encourage_mes = "Awesome! You've increased your " +
+                    "daily steps by " + increment + " steps.";
+
+        // create the notification manager and the channel
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "enc_message_chanel";
+        CharSequence name = "encouragement";
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel encChannel = new NotificationChannel(id, name, importance);
+        encChannel.enableLights(true);
+        notificationManager.createNotificationChannel(encChannel);
+
+        // build the local message sender
+        NotificationCompat.Builder notBuilder = new NotificationCompat.Builder(this, id)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Notification From PersonalBest Team")
+                .setContentText(encourage_mes);
+
+        notificationManager.notify(1, notBuilder.build());
+    }
+
     public void setFitAdaptor() {
 
     }
 
+    public void showGoal(int goal){
+        goalText.setText(Integer.toString(goal));
+    }
 
     public void showStepCount(int stepCount){
         Log.i(TAG, "Textview is updated");
         stepText.setText(Integer.toString(stepCount));
 
     }
-
-
 
     public void showStepCountIntentional(int stepCountIntentional){
         Log.i(TAG, "Textview is updated");
@@ -141,14 +182,12 @@ public class RunningMode extends AppCompatActivity{
         distanceText.setText(String.format("%.3f",distance*0.000621371));//distance*0.000621371));//converted to miles
     }
 
-
-
-
     public void showSpeed(float speed){
         //Log.d( "Textview is updated");
         speedText.setText(String.format("%.2f",speed*2.236f));
 
     }
+
 
     @Override
     protected void onDestroy() {

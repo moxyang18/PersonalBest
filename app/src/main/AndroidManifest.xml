@@ -3,6 +3,7 @@
     package="com.example.team10.personalbest">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,10 +16,6 @@
             android:name=".MessagePage"
             android:label="@string/title_activity_message_page"
             android:parentActivityName=".FriendListPage"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".FriendHomePage"
-            android:label="@string/title_activity_friend_home_page"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".FriendListPage"
@@ -40,11 +37,28 @@
             android:name=".RunningMode"
             android:label="@string/title_activity_running_mode"
             android:theme="@style/AppTheme.NoActionBar" />
+
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_name" />
+
+        <activity
+            android:name=".StepSummary"
+            android:label="@string/title_activity_step_summary"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FriendSummary"
+            android:label="@string/title_activity_friend_summary"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+
         <service android:name=".ChatMessaging.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
     </application>
 
 </manifest>

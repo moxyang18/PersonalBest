@@ -4,7 +4,7 @@ import java.time.LocalDate;
 /**
  * WalkDay
  *
- * A simple class to store a steps associated with a date__.
+ * A simple class to store a steps associated with a date.
  */
 public class WalkDay {
     private int stepCountIntentional =0;
@@ -17,11 +17,11 @@ public class WalkDay {
     private int stepCountDailyTotal = 0;
     private int goal =5000;
     private boolean goalMet =false;
-    private float distanceDaily;
-    private float distanceRunTotal;
+    private float distanceDaily =0.f;
+    private float distanceRunTotal =0.f;
     private long time_run_sec_daily = 0;
-    private float speed_average;
-    private LocalDate date =LocalDate.now();
+    private float speed_average =0.f;
+    private String date =LocalDate.now().toString();
 
 
     public WalkDay(){
@@ -31,13 +31,13 @@ public class WalkDay {
     /**
      * WalkDay ctor
      *
-     * Creates a new WalkDay with a date__. Everything else will
+     * Creates a new WalkDay with a date. Everything else will
      * be 0-initialized.
      *
-     * @param date The date__
+     * @param date The date
      */
 
-    public WalkDay(LocalDate date) {
+    public WalkDay(String date) {
         this.date = date;
     }
 
@@ -83,13 +83,13 @@ public class WalkDay {
     }
 
     /**
-     * setDate__
+     * setString1
      *
-     * Sets the date__
+     * Sets the date
      *
-     * @param date The date__
+     * @param date The date
      */
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -155,13 +155,13 @@ public class WalkDay {
     public int getStepCountDailyReal() { return this.stepCountDailyReal; }
 
     /**
-     * getDate
+     * getString1
      *
-     * Gets the date__ of this day (LocalDate)
+     * Gets the date of this day (LocalDate)
      *
-     * @return LocalDate The date__.
+     * @return String The date.
      */
-    public LocalDate getDate() {
+    public String getDate() {
         return this.date;
     }
 
@@ -255,4 +255,6 @@ public class WalkDay {
     public void setStepCountIntentionalReal(int stepCountIntentionalReal) {
         this.stepCountIntentionalReal = stepCountIntentionalReal;
     }
+
+
 }

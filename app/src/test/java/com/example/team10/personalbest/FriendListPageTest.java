@@ -1,6 +1,5 @@
 package com.example.team10.personalbest;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +14,11 @@ import android.widget.TextView;
 
 import com.example.team10.personalbest.friend.FriendListExpandableListAdapter;
 import com.example.team10.personalbest.friend.TestExpandableListAdapter;
+
+import static org.junit.Assert.*;
+import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +44,6 @@ public class FriendListPageTest {
     private static final String TAG = "FriendListPageTest :: ";
     FriendListPage activity;
     private ShadowActivity shadowActivity;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
-    String emailKey;
 
 
     @Before
@@ -52,26 +53,7 @@ public class FriendListPageTest {
         activity = Robolectric.setupActivity(FriendListPage.class);
         shadowActivity = Shadows.shadowOf(activity);
 
-
-        //Setting up shared preferences. Shared preferences uses Set<String>, Intent uses ArrayList<String>
-        Context context = getInstrumentation().getTargetContext();
-        emailKey = activity.getString(R.string.shared_pref_file_name);
-        sharedPreferences = context.getSharedPreferences( emailKey, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-
-        //Saving list of friends into Shared Preferences
-        Set<String> emailSet = new HashSet<String>();
-
-        emailSet.add("friendo1@gmail.com");
-        emailSet.add("friendo2@gmail.com");
-        emailSet.add("friendo3@gmail.com");
-
-        editor.putStringSet(emailKey, emailSet);
-
-        //Adapter stuff to setup the friend list
-
-
-
+        ActivityMediator.userEmail = "";
     }
 
     /**
@@ -205,12 +187,10 @@ public class FriendListPageTest {
 
 
         //construct expected intent
-        Intent expectedIntent = new Intent(activity, FriendHomePage.class); //TODO replace with Moxuan's class activity later
+        Intent expectedIntent = new Intent(activity, FriendSummary.class); //TODO replace with Moxuan's class activity later
         actualIntent.putExtra(activity.getString(R.string.intent_email_key), email);
 
         //Actual Assert:
         assertTrue(actualIntent.filterEquals(expectedIntent));
     }
-
-
 }

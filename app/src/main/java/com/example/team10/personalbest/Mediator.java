@@ -1,5 +1,7 @@
 package com.example.team10.personalbest;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public interface Mediator {
     void mockStepInHP();
     void mockStepInRM();
@@ -19,6 +21,10 @@ public interface Mediator {
     void timeTravelBackward();
     void timeTravelNow();
     void timeTravelForward();
+
+    void setCurrentUser(FirebaseUser u);
+
+    boolean sync();
 
     boolean getGoalMet();
     void setGoalMet(boolean t);

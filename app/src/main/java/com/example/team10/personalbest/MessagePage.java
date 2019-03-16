@@ -16,8 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team10.personalbest.ChatMessaging.FirebaseCloudMessengerAdapter;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -47,16 +45,16 @@ public class MessagePage extends AppCompatActivity {
     String userName;
 
     FirebaseCloudMessengerAdapter fcmAdapter;
-    SharedPreferences sharedPreferences;
+    //SharedPreferences sharedPreferences;
     String from;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_page);
-        SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
+        //SharedPreferences sharedpreferences = getSharedPreferences("FirebaseLabApp", Context.MODE_PRIVATE);
 
-        from = sharedpreferences.getString(FROM_KEY, null);
+        //from = sharedpreferences.getString(FROM_KEY, null);
 
         //Set up buttons/UI
         TextView friendName = findViewById(R.id.friend_name);
@@ -71,11 +69,12 @@ public class MessagePage extends AppCompatActivity {
         /**
          * Get the user's email
          */
-        GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+        String user = ActivityMediator.getInstance().getUserEmail();
         if(user != null) {
-            String completeEmail = user.getEmail();
+            String completeEmail = user;
             userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
-            userName = user.getDisplayName();
+            userName = ActivityMediator.getInstance().getUserDisplayName();
+            from = userName;
         }
         Log.d(TAG, "The user's email is " + userEmail);
 
@@ -84,7 +83,7 @@ public class MessagePage extends AppCompatActivity {
          */
         TextView nameView = findViewById((R.id.user_name));
         nameView.setText(userName);
-        sharedpreferences.edit().putString(FROM_KEY, userName).apply();
+
 
         //Use the two emails in alphabetical order to determine the topic name linking the two people
         if(friendEmail.compareTo(userEmail) < 0) {
@@ -100,10 +99,12 @@ public class MessagePage extends AppCompatActivity {
         fcmAdapter.initMessageUpdateListener();
         fcmAdapter.subscribeToNotificationsTopic(topicName);
 
+
         Button friend_homepage_button = findViewById(R.id.friend_homepage_button);
         friend_homepage_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
+
                 launchFriendHomepage();
             }
         });
@@ -120,9 +121,72 @@ public class MessagePage extends AppCompatActivity {
 
         ScrollView chat = findViewById(R.id.scroll_view);
     }
-    public void launchFriendHomepage(){
-        Intent intent = new Intent(this, FriendHomePage.class);
-        intent.putExtra("name", friendEmail); //pass in name
+
+            /*
+    private void sendMessage() {
+        if (from == null || from.isEmpty()) {
+            Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        EditText messageView = findViewById(R.id.text_message);
+
+        Map<String, String> newMessage = new HashMap<>();
+        newMessage.put(FROM_KEY, from);
+        newMessage.put(TEXT_KEY, messageView.getText().toString());
+
+        chat.add(newMessage).addOnSuccessListener(result -> {
+            messageView.setText("");
+        }).addOnFailureListener(error -> {
+            Log.e(TAG, error.getLocalizedMessage());
+        });
+    }
+
+    private void initMessageUpdateListener() {
+        chat.orderBy(TIMESTAMP_KEY, Query.Direction.ASCENDING)
+                .addSnapshotListener((newChatSnapShot, error) -> {
+            if (error != null) {
+                Log.e(TAG, error.getLocalizedMessage());
+                return;
+            }
+
+            if (newChatSnapShot != null && !newChatSnapShot.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                List<DocumentChange> documentChanges = newChatSnapShot.getDocumentChanges();
+                documentChanges.forEach(change -> {
+                    QueryDocumentSnapshot document = change.getDocument();
+                    sb.append(document.get(FROM_KEY));
+                    sb.append(":\n");
+                    sb.append(document.get(TEXT_KEY));
+                    sb.append("\n");
+                    sb.append("---\n");
+                });
+
+
+                TextView chatView = findViewById(R.id.chat);
+                chatView.append(sb.toString());
+            }
+        });
+    }
+
+    private void subscribeToNotificationsTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic(DOCUMENT_KEY)
+                .addOnCompleteListener(task -> {
+                            String msg = "Subscribed to notifications";
+                            if (!task.isSuccessful()) {
+                                msg = "Subscribe to notifications failed";
+                            }
+                            Log.d(TAG, msg);
+                            Toast.makeText(MessagePage.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                );
+    }
+    */
+
+    public void launchFriendHomepage() {
+        ActivityMediator.getInstance().preloadFriendWalkDays(friendEmail);
+        Intent intent = new Intent(this, FriendSummary.class);
+        intent.putExtra("email", friendEmail); //pass in name
         startActivity(intent);
     }
 }
