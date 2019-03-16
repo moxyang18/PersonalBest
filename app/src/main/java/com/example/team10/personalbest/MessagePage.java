@@ -67,14 +67,22 @@ public class MessagePage extends AppCompatActivity {
             friendEmailFragment = friendEmail.substring(0, friendEmail.indexOf("@"));
 
         /**
-         * Get the user's email
+         * Mocking for MessagePageChatTest
          */
-        String user = ActivityMediator.getInstance().getUserEmail();
-        if(user != null) {
-            String completeEmail = user;
-            userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
-            userName = ActivityMediator.getInstance().getUserDisplayName();
-            from = userName;
+        if(getIntent().getExtras().getString("from test") != null) {
+            from = getIntent().getExtras().getString("from test");
+        }
+        if(getIntent().getExtras().getString("userEmail test") != null) {
+            userEmail = getIntent().getExtras().getString("userEmail test");
+        } //normal operation for getting userEmail and userName
+        else {
+            String user = ActivityMediator.getInstance().getUserEmail();
+            if (user != null) {
+                String completeEmail = user;
+                userEmail = completeEmail.substring(0, completeEmail.indexOf("@"));
+                userName = ActivityMediator.getInstance().getUserDisplayName();
+                from = userName;
+            }
         }
         Log.d(TAG, "The user's email is " + userEmail);
 
@@ -188,5 +196,9 @@ public class MessagePage extends AppCompatActivity {
         Intent intent = new Intent(this, FriendSummary.class);
         intent.putExtra("email", friendEmail); //pass in name
         startActivity(intent);
+    }
+
+    public String getTopicName() {
+        return this.topicName;
     }
 }

@@ -79,6 +79,7 @@ public class FirebaseCloudMessengerAdapter implements MessageService {
             Log.d(TAG, "no message added");
         });
         Log.d(TAG, "send button being called");
+
     }
 
     public void initMessageUpdateListener() {

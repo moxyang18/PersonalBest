@@ -1,63 +1,64 @@
 package com.example.team10.personalbest;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Build;
+        import android.app.NotificationChannel;
+        import android.app.NotificationManager;
+        import android.app.PendingIntent;
+        import android.content.Context;
+        import android.content.DialogInterface;
+        import android.content.Intent;
+        import android.content.SharedPreferences;
+        import android.os.AsyncTask;
+        import android.os.Build;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+        import android.support.annotation.NonNull;
+        import android.support.annotation.RequiresApi;
+        import android.support.v4.app.NotificationCompat;
+        import android.support.v7.app.AlertDialog;
+        import android.support.v7.app.AppCompatActivity;
+        import android.os.Bundle;
 
-import android.text.InputFilter;
-import android.text.InputType;
-import android.util.Log;
-import android.view.View;
+        import android.text.InputFilter;
+        import android.text.InputType;
+        import android.util.Log;
+        import android.view.View;
 
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
-
-
-import com.example.team10.personalbest.fitness.CloudProcessor;
-import com.example.team10.personalbest.fitness.GoogleFitAdapter;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-
-import com.google.firebase.firestore.CollectionReference;
+        import android.widget.Button;
+        import android.widget.EditText;
+        import android.widget.ImageButton;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
 
+        import com.example.team10.personalbest.fitness.CloudProcessor;
+        import com.example.team10.personalbest.fitness.GoogleFitAdapter;
+        import com.google.android.gms.auth.api.Auth;
+        import com.google.android.gms.auth.api.signin.GoogleSignIn;
+        import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+        import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+        import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+        import com.google.android.gms.common.api.ApiException;
+        import com.google.android.gms.tasks.OnCompleteListener;
+        import com.google.android.gms.tasks.Task;
+        import com.google.firebase.FirebaseApp;
+        import com.google.firebase.auth.AuthCredential;
+        import com.google.firebase.auth.AuthResult;
+        import com.google.firebase.auth.FirebaseAuth;
+        import com.google.firebase.auth.FirebaseUser;
+        import com.google.firebase.auth.GoogleAuthProvider;
+        import com.google.firebase.database.FirebaseDatabase;
+        import com.google.firebase.firestore.FirebaseFirestore;
+        import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+        import com.google.firebase.firestore.CollectionReference;
+
+
+
+        import java.time.LocalDate;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
+        import java.util.Observable;
+        import java.util.Observer;
 
 
 public class HomePage extends AppCompatActivity{
@@ -225,13 +226,17 @@ public class HomePage extends AppCompatActivity{
 
         thresholdNotification();
 
+        if(getIntent().getExtras() != null) {
+            openCongratsDialog();
+        }
+
         //load data into home page and call text view update methods
 
-         /*
-          * Log into Google Account:
-          * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
-          * https://developers.google.com/identity/sign-in/android/sign-in
-          */
+        /*
+         * Log into Google Account:
+         * Configure sign-in to request basic profile (included in DEFAULT_SIGN_IN)
+         * https://developers.google.com/identity/sign-in/android/sign-in
+         */
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -317,9 +322,9 @@ public class HomePage extends AppCompatActivity{
         congratsBuilder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-            openNewGoalDialog();
-        }
-    });
+                openNewGoalDialog();
+            }
+        });
 
         congratsBuilder.setNegativeButton(R.string.not_now, new DialogInterface.OnClickListener() {
             @Override
@@ -523,6 +528,7 @@ public class HomePage extends AppCompatActivity{
             //Log.i(TAG, "Inside checkGoal");
             activityMediator.setGoalMet(true);
             openCongratsDialog();
+            sendCongratsNotification();
         }
         //Log.i(TAG, Boolean.toString(activityMediator.getGoalMet()));
         //Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
@@ -557,6 +563,32 @@ public class HomePage extends AppCompatActivity{
         super.onDestroy();
         activityMediator.saveLocal();
         activityMediator.stop();
+    }
+
+    public void sendCongratsNotification() {
+
+        // create the notification manager and the channel
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "goal_message_channel";
+        CharSequence name = "congratulations";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel goalChannel = new NotificationChannel(id, name, importance);
+        goalChannel.enableLights(true);
+        notificationManager.createNotificationChannel(goalChannel);
+
+        Intent homeIntent = new Intent(this, HomePage.class);
+        homeIntent.putExtra("dialog flag", "true");
+        PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // build the local message sender
+        NotificationCompat.Builder goalBuilder = new NotificationCompat.Builder(this, id)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Notification From PersonalBest Team")
+                .setContentText("Congratulations! You've reached your step goal for today.")
+                .setContentIntent(homePendingIntent);
+
+        notificationManager.notify(23, goalBuilder.build());
     }
 
     private void thresholdNotification() {

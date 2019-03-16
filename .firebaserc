@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "personal-best-messaging",
+    "backup": "personal-best-2"
+  }
+}
