@@ -3,6 +3,7 @@ package com.example.team10.personalbest;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ public class StepSummary extends AppCompatActivity {
     private HashMap<String,WalkDay> user_WalkDays;
     private String userEmail = "";
     private String displayName = "";
+    private static String TAG = "StepSummary";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +48,9 @@ public class StepSummary extends AppCompatActivity {
 
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.summary_bar_chart);
-        userEmail = ActivityMediator.getInstance().getUserEmail();
+//        userEmail = ActivityMediator.getInstance().getUserEmail();
         user_WalkDays = ActivityMediator.getUserWalkDays();
-        displayName = ActivityMediator.getInstance().getUserDisplayName();
+//        displayName = ActivityMediator.getInstance().getUserDisplayName();
         // Get data for chart
         //dp = DataProcessor.getInstance();
 
@@ -86,6 +89,10 @@ public class StepSummary extends AppCompatActivity {
             if (day != null) {
                 entries.add(new BarEntry(27-i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
+
+                // log the untestable data that will be added to the chart
+                Log.i(TAG+"'s Intentional Steps: ", Integer.toString(day.getStepCountIntentional()));
+                Log.i(TAG+"'s Total Steps: ", Integer.toString(day.getStepCountDailyTotal()));
 
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
@@ -181,6 +188,11 @@ public class StepSummary extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+
+    public BarChart getBarChart() {
+        return barChart10;
     }
 
     private void setDataField(WalkDay day) {

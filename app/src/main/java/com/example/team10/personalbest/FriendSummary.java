@@ -32,12 +32,12 @@ public class FriendSummary extends AppCompatActivity {
     private BarChart barChart10;
     //private DataProcessor dp;
     private String friendEmail ="";
-    private String userEmail = "";
+    //private String userEmail = "";
     private TextView header;
     private int[] goal_list = new int[28];
     private static String TAG = "FriendSummary";
 
-    private HashMap<String,WalkDay> user_WalkDays;
+    //private HashMap<String,WalkDay> user_WalkDays;
     private HashMap<String,WalkDay> friend_WalkDays;
     private String displayName = "";
 
@@ -58,7 +58,8 @@ public class FriendSummary extends AppCompatActivity {
 
         // get friends friendEmail and set the chart's header
         Bundle extras = this.getIntent().getExtras();
-        friendEmail = extras.getString("email");
+        if (extras != null)
+            friendEmail = extras.getString("email");
         if(friendEmail == null){
             Log.d(TAG, "ERROR, didn't get friend name");
         }
@@ -72,8 +73,8 @@ public class FriendSummary extends AppCompatActivity {
             header.setText("The Friend's Step Chart");
         else
             header.setText( this.friendEmail + "'s Step Chart");
-        userEmail = ActivityMediator.getInstance().getUserEmail();
-        user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
+        //userEmail = ActivityMediator.getInstance().getUserEmail();
+        //user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
         friend_WalkDays = ActivityMediator.getFriendWalkDays();
         // Get data for chart
         //dp = DataProcessor.getInstance();
@@ -106,9 +107,14 @@ public class FriendSummary extends AppCompatActivity {
 
             labels.add(dayDate.toString().substring(5));
             if(dayDate.isEqual(LocalDate.now())){
-                day = CloudProcessor.retrieveDay(dayDate,userEmail);
-                if(day ==null)
+                if(friendEmail !=""){
+                    day = CloudProcessor.retrieveDay(dayDate,friendEmail);
+                    if(day ==null)
+                        day = friend_WalkDays.get(dayDate.toString());
+                }else{
                     day = friend_WalkDays.get(dayDate.toString());
+                }
+
             }
 
             else{
@@ -120,6 +126,10 @@ public class FriendSummary extends AppCompatActivity {
             if (day != null) {
                 entries.add(new BarEntry(27-i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
+
+                // log the untestable data that will be displayed on the chart
+                Log.i(TAG+"'s Intentional Steps: ", Integer.toString(day.getStepCountIntentional()));
+                Log.i(TAG+"'s Total Steps: ", Integer.toString(day.getStepCountDailyTotal()));
 
                 goal_list[i] =day.getGoal();
                 if(goal_max<day.getGoal())
@@ -188,9 +198,9 @@ public class FriendSummary extends AppCompatActivity {
 
                 if(day_goal !=0) {
                     barChart10.getAxisLeft().addLimitLine(new LimitLine(day_goal, "Goal of the Day"));
-                    Log.i(TAG, Integer.toString(day_goal));
+                    Log.i(TAG+" "+ friendEmail+ "'s Daily Goal", Integer.toString(day_goal));
                 }
-                setDataField(user_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
+                setDataField(friend_WalkDays.get((LocalDate.now().minusDays(27-day_ind)).toString()));
                 //FIXME currently using user walkDays since friend unimplemented
             }
 
@@ -238,7 +248,12 @@ public class FriendSummary extends AppCompatActivity {
 
         // get the calculated MPH, daily distance and the total walk time on that day
         String info = "MPH: " + String.format("%.3f",mpH) +" \n" + "Daily Distance: " + String.format("%.3f",distance) + " \n" + "Total Time: " + time;
+        Log.i(TAG+" "+friendEmail+"'s Data Field is: ", info);
         dataView.setText(info);
+    }
+
+    public BarChart getBarChart() {
+        return this.barChart10;
     }
 
     @Override
