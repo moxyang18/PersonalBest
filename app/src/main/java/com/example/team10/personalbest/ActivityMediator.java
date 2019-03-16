@@ -107,7 +107,7 @@ public class ActivityMediator implements Observer, Mediator {
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
     private FirebaseUser currentUser;
-    private static String userEmail;
+    public static String userEmail;
     private static String userDisplayName;
 
     //all the string of emails in this hashset should be friends
