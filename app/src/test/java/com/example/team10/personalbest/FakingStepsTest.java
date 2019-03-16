@@ -85,21 +85,5 @@ public class FakingStepsTest {
     }
 
 
-    private class FakeFit extends Observable{
-        int steps = 0;
-        float distance = 0;
-        long timeElapsed = 0;
-        String timeString = "";
-        boolean onesecpassed = false;
 
-        private Object result[]= {false, steps, distance, timeElapsed, timeString,onesecpassed};
-
-
-
-        public void setStep(int s){
-            result[1] = s;
-            setChanged();
-            notifyObservers(f.result);
-        }
-    }
 }

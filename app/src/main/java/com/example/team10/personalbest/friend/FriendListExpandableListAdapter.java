@@ -15,6 +15,7 @@ import com.example.team10.personalbest.ActivityMediator;
 import com.example.team10.personalbest.FriendListPage;
 import com.example.team10.personalbest.MessagePage;
 
+import com.example.team10.personalbest.MockMediator;
 import com.example.team10.personalbest.R;
 
 import java.util.ArrayList;
@@ -36,20 +37,21 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter i
     ArrayList<String> incomingRequest;
     ArrayList<String> outgoingRequest;
     ArrayList<String> friends;
+    private boolean flag = true;
 
     //Currently incomingRrequesting and outGoingRequest is postponed.
     //Note:
     //Add Friend Mechanic: Only need to add email address to see their information.
 
     //TODO revise constructor to take in incoming/outgoing request string arraylist
-    public FriendListExpandableListAdapter(Context listActivity, ArrayList<String> friendList ) {
+    public FriendListExpandableListAdapter(Context listActivity, ArrayList<String> friendList, boolean Flag ) {
         //init everything
         friends = friendList;
         incomingRequest = new ArrayList<>();
         outgoingRequest = new ArrayList<>();
         lists = new ArrayList<>();
         activity = (FriendListPage)listActivity;
-
+        flag = Flag;
 
         //make the list title
         lists.add( activity.getString(R.string.incoming_request_header) );
@@ -197,7 +199,12 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter i
         chatButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityMediator.getInstance().preloadFriendWalkDays(email);
+                if ( flag ) {
+                    ActivityMediator.getInstance().preloadFriendWalkDays(email);
+                }
+                else {
+                    MockMediator.getInstance().preloadFriendWalkDays(email);
+                }
                 Intent intent = new Intent(activity, MessagePage.class );
                 intent.putExtra( activity.getString(R.string.intent_email_key), email); //pass in name
 

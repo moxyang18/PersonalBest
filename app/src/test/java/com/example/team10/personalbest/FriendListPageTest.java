@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
@@ -50,7 +51,14 @@ public class FriendListPageTest {
     public void init() {
         //something
         Log.d(TAG, "Setup for test");
-        activity = Robolectric.setupActivity(FriendListPage.class);
+
+        Intent intent = new Intent(RuntimeEnvironment.application, FriendListPage.class);
+        String MEDIATOR_KEY = "GET MEDIATOR";
+        MockMediator mockMediator = new MockMediator();
+        intent.putExtra( MEDIATOR_KEY, "MOCK_MEDIATOR");
+        activity = Robolectric.buildActivity(FriendListPage.class, intent).create().get();
+
+        //activity = Robolectric.setupActivity(FriendListPage.class);
         shadowActivity = Shadows.shadowOf(activity);
 
         ActivityMediator.userEmail = "";
@@ -130,7 +138,7 @@ public class FriendListPageTest {
         emailList.add("Frind1");
         emailList.add("friend2"); //TODO check why shared pref does not work
 
-        FriendListExpandableListAdapter friendListAdapter = new FriendListExpandableListAdapter(activity, emailList);
+        FriendListExpandableListAdapter friendListAdapter = new FriendListExpandableListAdapter(activity, emailList, false);
         listView.setAdapter(friendListAdapter);
 
         //Grab Child VIew

@@ -20,7 +20,7 @@ public class TestExpandableListAdapter implements EListAdapter {
         expListView = listView;
         emailList = friendList;
         activity = (FriendListPage)listActivity;
-        friendAdapter = new FriendListExpandableListAdapter(listActivity, friendList);
+        friendAdapter = new FriendListExpandableListAdapter(listActivity, friendList, false );
         FriendListPage activity = (FriendListPage)listActivity;
         listView.setAdapter(friendAdapter);
         System.out.println("Inside TestAdapter constructor");

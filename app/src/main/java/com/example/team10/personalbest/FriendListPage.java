@@ -27,15 +27,14 @@ import java.util.Set;
 public class FriendListPage extends AppCompatActivity {
     private String TAG = "FriendListPage:";
 
-    //final int INCOMING_INDEX = 0;
-    //final int OUTGOING_INDEX = 0;
     final int FRIEND_INDEX = 2;
 
     ExpandableListView friendExpandableList;
     FriendListExpandableListAdapter listAdapter;
     //TODO use this instead, obtained from ActivityMediator
     private static HashSet<String> friendList = new HashSet<String>();
-
+    Mediator activityMediator;
+    String MEDIATOR_KEY = "GET MEDIATOR";
     String myEmail;
 
     @Override
@@ -47,8 +46,25 @@ public class FriendListPage extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //use this instead, obtained from ActivityMediator
-        friendList = ActivityMediator.getFriendList();
+        //TODO use this instead, obtained from ActivityMediator
+
+        Intent intent = getIntent();
+        String MediatorKey =null;
+
+        if(intent!= null)
+            MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
+
+        if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
+            activityMediator = ActivityMediator.getInstance();
+        }
+        else if (MediatorKey.equals("MOCK_MEDIATOR")){
+            activityMediator = MockMediator.getInstance();
+        }else{
+            Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
+        }
+        friendList = activityMediator.getFriendListByI();
+
+
         Log.d(TAG, "loading friendlistpage, current list is"+friendList.toString());
         for(String s:friendList){
             Log.d(TAG,"have user "+s+" inside friendlist before loading page");
@@ -56,7 +72,8 @@ public class FriendListPage extends AppCompatActivity {
         /**
         GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
          */
-        myEmail = ActivityMediator.userEmail;
+
+        myEmail = activityMediator.getUserEmail();
 
 
         ArrayList<String> emailList = new ArrayList<>();
@@ -71,7 +88,7 @@ public class FriendListPage extends AppCompatActivity {
         Log.d(TAG,"Retrieved email list from Shared Preferences");
 
         //Pass in Friend List
-        listAdapter = new FriendListExpandableListAdapter(this, emailList);
+        listAdapter = new FriendListExpandableListAdapter(this, emailList, true );
 
 
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
@@ -86,7 +103,7 @@ public class FriendListPage extends AppCompatActivity {
                 }
                 //Grab the ExpandableListAdapter
                 FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
-                ActivityMediator.getInstance().preloadFriendWalkDays(myAdapter.getChild(groupPosition, childPosition).toString());
+                activityMediator.preloadFriendWalkDays(myAdapter.getChild(groupPosition, childPosition).toString());
                 Intent intent = new Intent( myAdapter.getActivity(), FriendSummary.class );
                 intent.putExtra("email", myAdapter.getChild(groupPosition, childPosition).toString());
                 myAdapter.getActivity().startActivity(intent);
@@ -171,7 +188,7 @@ public class FriendListPage extends AppCompatActivity {
 
 
                 //currently won't handle refresh page, need to go somewhere else and go back
-                ActivityMediator.addFriend(myEmail,email); // last arg is actually input email which is friend
+                activityMediator.addFriendByI(myEmail,email); // last arg is actually input email which is friend
                 //saveNewFriend(email);
             }
         });
