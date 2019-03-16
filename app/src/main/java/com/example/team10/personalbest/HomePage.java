@@ -570,7 +570,10 @@ public class HomePage extends AppCompatActivity{
         int todayTotals = activityMediator.getStepCountDailyTotal();
         int yesterdayTotals = (yesterdayData==null) ? 0: yesterdayData.getStepCountDailyTotal();
         int increSteps = todayTotals-yesterdayTotals;
-        double increment = todayTotals/yesterdayTotals*1.0; //stepCount - yesterdayStepCount
+        double increment = 0;
+        if (yesterdayTotals > 0) {
+            increment = todayTotals / yesterdayTotals * 1.0; //stepCount - yesterdayStepCount
+        }
         if (increment >= 3.0)
             encourage_mes = "Wonderful! You have tripled yesterday's goal!";
         else if (increment < 3.0 && increment >=2.0)
