@@ -43,4 +43,6 @@ public interface Mediator {
 
     int getStepCountDailyTotal();
     HashSet<String> getFriendListByI();
+    HashMap<String,WalkDay> getUserWalkDays2();
+    HashMap<String,WalkDay> getFriendWalkDays2();
 }

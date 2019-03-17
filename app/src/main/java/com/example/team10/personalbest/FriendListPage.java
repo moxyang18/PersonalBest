@@ -30,11 +30,11 @@ public class FriendListPage extends AppCompatActivity {
     final int FRIEND_INDEX = 2;
 
     ExpandableListView friendExpandableList;
-    FriendListExpandableListAdapter listAdapter;
+    public FriendListExpandableListAdapter listAdapter;
     //TODO use this instead, obtained from ActivityMediator
     private static HashSet<String> friendList = new HashSet<String>();
     Mediator activityMediator;
-    String MEDIATOR_KEY = "GET MEDIATOR";
+    String MEDIATOR_KEY = "GET_MEDIATOR";
     String myEmail;
 
     @Override
@@ -54,7 +54,9 @@ public class FriendListPage extends AppCompatActivity {
         if(intent!= null)
             MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
 
-        if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
+        if(MediatorKey == null){
+            activityMediator = MediatorFactory.getMediator(MEDIATOR_KEY);
+        }else if( MediatorKey.equals("ACTIVITY_MEDIATOR")){
             activityMediator = ActivityMediator.getInstance();
         }
         else if (MediatorKey.equals("MOCK_MEDIATOR")){

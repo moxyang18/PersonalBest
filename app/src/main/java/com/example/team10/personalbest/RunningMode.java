@@ -77,23 +77,31 @@ public class RunningMode extends AppCompatActivity{
         distanceText = findViewById(R.id.cur_miles);
         intentionalStepText = findViewById(R.id.running_steps);
 
+
         Intent intent = getIntent();
         String MediatorKey =null;
 
-        if(intent!= null)
-            MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
 
-        if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
-            activityMediator = ActivityMediator.getInstance();
-        }
-        else if (MediatorKey.equals("MOCK_MEDIATOR")){
-            //MediatorFactory.create(MediatorKey, this);
-            //activityMediator = MediatorFactory.create(MediatorKey, this);
-            activityMediator = MockMediator.getInstance();
-            //System.out.println("USED MOCK MEDIATOR");
+        if(intent!= null) {
+            MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
+            if(MediatorKey == null ){
+                activityMediator = MediatorFactory.getMediator(MEDIATOR_KEY);
+            }
+            else if (MediatorKey.equals("ACTIVITY_MEDIATOR")) {
+                activityMediator = ActivityMediator.getInstance();
+            } else if (MediatorKey.equals("MOCK_MEDIATOR")) {
+                //MediatorFactory.create(MediatorKey, this);
+                //activityMediator = MediatorFactory.create(MediatorKey, this);
+                activityMediator = MockMediator.getInstance();
+                //System.out.println("USED MOCK MEDIATOR");
+            } else {
+                Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
+            }
         }else{
-            Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
+            activityMediator = MediatorFactory.getMediator(MEDIATOR_KEY);
         }
+
+        //activityMediator = MediatorFactory.getMediator(MEDIATOR_KEY);
         activityMediator.linkRunning(this);
         // when pressed, set a new time in milliseconds
 

@@ -135,12 +135,18 @@ public class ActivityMediator implements Observer, Mediator {
     public static HashMap<String, WalkDay> getFriendWalkDays() {
         return friendWalkDays;
     }
+    public HashMap<String, WalkDay> getFriendWalkDays2() {
+        return friendWalkDays;
+    }
 
     public static void setFriendWalkDays(HashMap<String, WalkDay> friendWalkDays) {
         ActivityMediator.friendWalkDays = friendWalkDays;
     }
 
     public static HashMap<String, WalkDay> getUserWalkDays() {
+        return userWalkDays;
+    }
+    public  HashMap<String, WalkDay> getUserWalkDays2() {
         return userWalkDays;
     }
 

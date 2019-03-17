@@ -53,7 +53,7 @@ public class FriendListPageTest {
         Log.d(TAG, "Setup for test");
 
         Intent intent = new Intent(RuntimeEnvironment.application, FriendListPage.class);
-        String MEDIATOR_KEY = "GET MEDIATOR";
+        String MEDIATOR_KEY = "GET_MEDIATOR";
         MockMediator mockMediator = new MockMediator();
         intent.putExtra( MEDIATOR_KEY, "MOCK_MEDIATOR");
         activity = Robolectric.buildActivity(FriendListPage.class, intent).create().get();

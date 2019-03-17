@@ -10,7 +10,7 @@ public class FakeFit extends Observable {
     boolean onesecpassed = false;
     public static FakeFit instance;
 
-    private Object result[]= {true, steps, distance, timeElapsed, timeString,onesecpassed};
+    private Object result[]= {true, steps, distance, onesecpassed};
 
     public FakeFit(){
         instance = this;
@@ -30,6 +30,12 @@ public class FakeFit extends Observable {
 
     public void setDistance(float meters){
         result[2] = meters;
+        setChanged();
+        notifyObservers(result);
+    }
+
+    public void setResult(Object[] arg){
+        result = arg;
         setChanged();
         notifyObservers(result);
     }

@@ -1,5 +1,6 @@
 package com.example.team10.personalbest;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -36,12 +37,33 @@ public class StepSummary extends AppCompatActivity {
     private String userEmail = "";
     private String displayName = "";
     private static String TAG = "StepSummary";
-
+    private Mediator activityMediator;
+    String MEDIATOR_KEY = "GET_MEDIATOR";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_summary);
         config();
+        /*
+        Intent intent = getIntent();
+        String MediatorKey =null;
+
+        if(intent!= null)
+            MediatorKey = intent.getStringExtra(MEDIATOR_KEY);
+
+        if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
+            activityMediator =ActivityMediator.getInstance();
+        }
+        else if (MediatorKey.equals("MOCK_MEDIATOR")){
+            //MediatorFactory.create(MediatorKey, this);
+            activityMediator = MediatorFactory.create(MediatorKey, this);
+            //activityMediator = new MockMediator(this);
+            //System.out.println("USED MOCK MEDIATOR");
+        }else{
+            Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
+        }
+        */
+        activityMediator = activityMediator = MediatorFactory.getMediator(MEDIATOR_KEY);
 
         for (int i = 0; i < 28; i++)
             goal_list[i]=0;
@@ -49,7 +71,10 @@ public class StepSummary extends AppCompatActivity {
         // from the friends' list, can see the summary char
         barChart10 = findViewById(R.id.summary_bar_chart);
 //        userEmail = ActivityMediator.getInstance().getUserEmail();
-        user_WalkDays = ActivityMediator.getUserWalkDays();
+        if(activityMediator == null)
+            user_WalkDays = ActivityMediator.getUserWalkDays();
+        else
+            user_WalkDays = activityMediator.getUserWalkDays2();
 //        displayName = ActivityMediator.getInstance().getUserDisplayName();
         // Get data for chart
         //dp = DataProcessor.getInstance();
@@ -101,7 +126,7 @@ public class StepSummary extends AppCompatActivity {
                     step_max = day.getStepCountDailyTotal();
                 goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
             } else {
-                entries.add(new BarEntry(i, new float[]{0, 0}));
+                entries.add(new BarEntry(27-i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
 

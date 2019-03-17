@@ -44,7 +44,7 @@ public class RunningModeTest {
         HomePage homePage = Robolectric.buildActivity(HomePage.class,intent).create().get();
 
         //mockMediator = new MockMediator();
-        runningMode = Robolectric.buildActivity(RunningMode.class,intent).create().get();
+        runningMode = Robolectric.setupActivity(RunningMode.class);
         //mockMediator.mockStartActivity();
         FakeFit fit = FakeFit.getInstance();
         //mockMediator.linkRunning(runningMode);

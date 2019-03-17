@@ -97,8 +97,8 @@ public class MockMediator implements Mediator,Observer {
     private String timeElapsedStr ="00:00:00";
     protected boolean timeTraveled = false;
     private FirebaseUser currentUser;
-    private static String userEmail ="yad027@ucsd.edu";
-    private static String userDisplayName="Yanzhi Ding";
+    public static String userEmail ="yad027@ucsd.edu";
+    public static String userDisplayName="Yanzhi Ding";
 
     //all the string of emails in this hashset should be friends
     //email.com is stored as email,com in cloud but here should be .com
@@ -123,11 +123,17 @@ public class MockMediator implements Mediator,Observer {
     public static HashMap<String, WalkDay> getFriendWalkDays() {
         return friendWalkDays;
     }
+    public HashMap<String, WalkDay> getFriendWalkDays2() {
+        return friendWalkDays;
+    }
 
     public static void setFriendWalkDays(HashMap<String, WalkDay> friendWalkDays) {
         MockMediator.friendWalkDays = friendWalkDays;
     }
 
+    public HashMap<String, WalkDay> getUserWalkDays2() {
+        return userWalkDays;
+    }
     public static HashMap<String, WalkDay> getUserWalkDays() {
         return userWalkDays;
     }
@@ -437,11 +443,11 @@ public class MockMediator implements Mediator,Observer {
     public void timeTravelForward(){
         saveLocal();
         date =date.plusDays(1);
-        walkDay = CloudProcessor.retrieveDay(date,userEmail);
+        walkDay = userWalkDays.get(date.toString());
         if(walkDay == null){
             walkDay = new WalkDay(date.toString());
             userWalkDays.put(date.toString(),walkDay);
-            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+
         }
         //used to always insertDay, could be redundant,
         // it seems only need to insert when not found in storage
@@ -453,11 +459,11 @@ public class MockMediator implements Mediator,Observer {
     public void timeTravelNow(){
         saveLocal();
         date =LocalDate.now();
-        walkDay = CloudProcessor.retrieveDay(date,userEmail);
+        walkDay =userWalkDays.get(date.toString());
         if(walkDay == null){
             walkDay = new WalkDay(date.toString());
             userWalkDays.put(date.toString(),walkDay);
-            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+            //CloudProcessor.uploadWalkDay(walkDay,userEmail);
         }
         //used to always insertDay, could be redundant,
         // it seems only need to insert when not found in storage
@@ -468,11 +474,11 @@ public class MockMediator implements Mediator,Observer {
     public void timeTravelBackward(){
         saveLocal();
         date = date.minusDays(1);
-        walkDay = CloudProcessor.retrieveDay(date,userEmail);
+        walkDay = userWalkDays.get(date.toString());
         if(walkDay == null){
             walkDay = new WalkDay(date.toString());
             userWalkDays.put(date.toString(),walkDay);
-            CloudProcessor.uploadWalkDay(walkDay,userEmail);
+            //CloudProcessor.uploadWalkDay(walkDay,userEmail);
         }
         //used to always insertDay, could be redundant,
         // it seems only need to insert when not found in storage
@@ -537,13 +543,6 @@ public class MockMediator implements Mediator,Observer {
         }
     }
     public void preloadFriendWalkDays(String friendEmail){
-        Log.d(TAG,"preloading friend walkdays");
-        LocalDate dayDate2 ;
-        for (int j = 0; j < 28; j++) {
-            dayDate2= date.minusDays(j);
-            CloudProcessor.requestDay(dayDate2,friendEmail,false);
-        }
-        return;
     }
 
     public void resetDay(){

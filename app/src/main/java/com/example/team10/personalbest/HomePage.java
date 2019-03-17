@@ -105,10 +105,12 @@ public class HomePage extends AppCompatActivity{
 
         if(MediatorKey == null || MediatorKey.equals("ACTIVITY_MEDIATOR")){
             activityMediator = new ActivityMediator(this);
+            MediatorFactory.putMediator(MEDIATOR_KEY,activityMediator);
         }
         else if (MediatorKey.equals("MOCK_MEDIATOR")){
             //MediatorFactory.create(MediatorKey, this);
             activityMediator = MediatorFactory.create(MediatorKey, this);
+            MediatorFactory.putMediator(MEDIATOR_KEY,activityMediator);
             //activityMediator = new MockMediator(this);
             //System.out.println("USED MOCK MEDIATOR");
         }else{

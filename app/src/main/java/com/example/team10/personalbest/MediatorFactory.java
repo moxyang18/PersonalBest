@@ -11,6 +11,8 @@ public class MediatorFactory {
 
     private static Map<String, BluePrint> blueprints = new HashMap<>();
 
+    private static Map<String, Mediator> mediatorMap = new HashMap<>();
+
     public static void put(String key, BluePrint bluePrint) {
         blueprints.put(key, bluePrint);
     }
@@ -20,7 +22,16 @@ public class MediatorFactory {
         return blueprints.get(key).create(homePage);
     }
 
+    public static Mediator getMediator(String key){
+        return mediatorMap.get(key);
+    }
+    public static void putMediator(String key, Mediator m){
+        mediatorMap.put(key,m);
+    }
+
     public interface BluePrint {
         Mediator create(HomePage homePage);
     }
+
+
 }

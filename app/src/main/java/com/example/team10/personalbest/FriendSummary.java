@@ -40,6 +40,8 @@ public class FriendSummary extends AppCompatActivity {
     //private HashMap<String,WalkDay> user_WalkDays;
     private HashMap<String,WalkDay> friend_WalkDays;
     private String displayName = "";
+    Mediator activityMediator;
+    String MEDIATOR_KEY = "GET_MEDIATOR";
 
     /*
     * Populate the DataProcessor with the friend's monthly data stored in the
@@ -52,6 +54,7 @@ public class FriendSummary extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_summary);
         config();
+        activityMediator =  MediatorFactory.getMediator(MEDIATOR_KEY);
 
         for (int i = 0; i < 28; i++)
             goal_list[i]=0;
@@ -76,7 +79,10 @@ public class FriendSummary extends AppCompatActivity {
         //userEmail = ActivityMediator.getInstance().getUserEmail();
 
         //user_WalkDays = ActivityMediator.getUserWalkDays();//FIXME currently using user walkDays since friend unimplemented
-        friend_WalkDays = ActivityMediator.getFriendWalkDays();
+        if(activityMediator == null)
+            friend_WalkDays = ActivityMediator.getFriendWalkDays();
+        else
+            friend_WalkDays = activityMediator.getFriendWalkDays2();
         // Get data for chart
         //dp = DataProcessor.getInstance();
 
@@ -126,7 +132,7 @@ public class FriendSummary extends AppCompatActivity {
 
             // Add data for that data to the graph
             if (day != null) {
-                entries.add(new BarEntry(27-i, new float[]
+                entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
 
                 // log the untestable data that will be displayed on the chart

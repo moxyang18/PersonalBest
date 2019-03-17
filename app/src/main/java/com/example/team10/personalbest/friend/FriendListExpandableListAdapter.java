@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.example.team10.personalbest.ActivityMediator;
 import com.example.team10.personalbest.FriendListPage;
+import com.example.team10.personalbest.Mediator;
+import com.example.team10.personalbest.MediatorFactory;
 import com.example.team10.personalbest.MessagePage;
 
 import com.example.team10.personalbest.MockMediator;
@@ -200,7 +202,7 @@ public class FriendListExpandableListAdapter extends BaseExpandableListAdapter i
             @Override
             public void onClick(View v) {
                 if ( flag ) {
-                    ActivityMediator.getInstance().preloadFriendWalkDays(email);
+                    MediatorFactory.getMediator("GET_MEDIATOR").preloadFriendWalkDays(email);
                 }
                 else {
                     MockMediator.getInstance().preloadFriendWalkDays(email);
