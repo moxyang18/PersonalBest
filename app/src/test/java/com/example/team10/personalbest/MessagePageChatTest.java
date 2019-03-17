@@ -8,7 +8,9 @@ import android.widget.TextView;
 import com.example.team10.personalbest.ChatMessaging.ChatMessage;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +56,10 @@ public class MessagePageChatTest {
         m.forEach(message -> sb.append(message.toString()));
         chat.append(sb.toString());
         assertEquals(sb.toString(), chat.getText().toString());
+        activity.finish();
+    }
+    @After
+    public void cleanUp(){
     }
 
 }

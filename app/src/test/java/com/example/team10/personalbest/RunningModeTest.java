@@ -30,7 +30,7 @@ public class RunningModeTest {
     TextView intentionalSteps;
     TextView totalSteps;
     MockMediator mockMediator;
-
+    HomePage homePage;
     @Before
     public void init() {
 
@@ -43,7 +43,7 @@ public class RunningModeTest {
 
         Intent intent = new Intent(RuntimeEnvironment.application,HomePage.class);
         intent.putExtra("GET_MEDIATOR","MOCK_MEDIATOR");
-        HomePage homePage = Robolectric.buildActivity(HomePage.class,intent).create().get();
+         homePage = Robolectric.buildActivity(HomePage.class,intent).create().get();
 
         //mockMediator = new MockMediator();
         runningMode = Robolectric.setupActivity(RunningMode.class);
@@ -120,6 +120,7 @@ public class RunningModeTest {
 
     @After
     public void cleanUp(){
+        homePage.finish();
         runningMode.finish();
         MockMediator.instance = null;
         MediatorFactory.resetMap();

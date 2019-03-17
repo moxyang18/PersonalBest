@@ -42,6 +42,7 @@ public class HomePageTest {
         intent.putExtra("GET_MEDIATOR","MOCK_MEDIATOR");
         homePage = Robolectric.buildActivity(HomePage.class,intent).create().get();
         mockMediator = MockMediator.getInstance();
+        mockMediator.setGoal_today(12000);
         //mockMediator = new MockMediator();
         //mockMediator.setHomePage(homePage);
         //mockMediator.mockStartActivity();

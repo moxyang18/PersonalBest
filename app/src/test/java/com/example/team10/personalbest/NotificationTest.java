@@ -34,5 +34,8 @@ public class NotificationTest {
         intent.putExtra("userEmail test", "johndoe123");
         MessagePage messagePage = Robolectric.buildActivity(MessagePage.class, intent).create().get();
         assertEquals("johndoe123%test123", messagePage.getTopicName());
+        messagePage.finish();
     }
+
+
 }
