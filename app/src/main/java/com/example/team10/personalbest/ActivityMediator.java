@@ -330,7 +330,8 @@ public class ActivityMediator implements Observer, Mediator {
             Log.i(TAG,"Incorrect data computed for init");
         if(walkDay.getStepCountIntentional()-stepCountIntentionalTotal <-2 ||walkDay.getStepCountIntentional()-stepCountIntentionalTotal >2 )
             Log.i(TAG,"Incorrect data computed for init");
-        updateHomePage();
+        if(homePage != null)
+            updateHomePage();
         Log.i(TAG,"initialize Activity Mediator");
 
 

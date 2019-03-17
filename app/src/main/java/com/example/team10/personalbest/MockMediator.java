@@ -165,7 +165,11 @@ public class MockMediator implements Mediator,Observer {
 
     public void mockStartActivity(){
         //TODO
-
+        sync();
+        init();
+        build();
+        if (homePage !=null)
+            homePage.runRunner();
 
 
 
@@ -176,12 +180,17 @@ public class MockMediator implements Mediator,Observer {
 
     }
 
+    public void setHomePage(HomePage home){
+        homePage = home;
+    }
+
     //we don't want to call sync too often, only upon potential difference between the local cache and cloud storage
     //we call sync whenever we reload the application
     public boolean sync(){
 
-            LocalDate d = LocalDate.now(); //....
-            walkDay = userWalkDays.get(date.toString());
+        LocalDate d = LocalDate.now(); //....
+        walkDay = userWalkDays.get(date.toString());
+        if(walkDay == null) walkDay = new WalkDay(LocalDate.now().toString());
         return false;
     }
 
@@ -215,7 +224,7 @@ public class MockMediator implements Mediator,Observer {
             Log.i(TAG,"Incorrect data computed for init");
         if(walkDay.getStepCountIntentional()-stepCountIntentionalTotal <-2 ||walkDay.getStepCountIntentional()-stepCountIntentionalTotal >2 )
             Log.i(TAG,"Incorrect data computed for init");
-        updateHomePage();
+        if(homePage!=null)updateHomePage();
         Log.i(TAG,"initialize Activity Mediator");
 
 
@@ -314,7 +323,8 @@ public class MockMediator implements Mediator,Observer {
         in_delta = 0;
         step_delta =0;
         distance_delta = 0;
-        updateHomePage();
+        if(homePage != null)
+            updateHomePage();
         if(isRunning) updateRunningMode();
 
         if((boolean)arr[0] == true){
@@ -355,7 +365,7 @@ public class MockMediator implements Mediator,Observer {
         if(stepCountDailyTotal-stepCountDailyReal-mock_steps_unintentional-mock_steps_intentional >4 )
             Log.i(TAG,"Incorrect data computed for cleanUpAfterRun");
 
-        updateHomePage();
+        if(homePage!=null) updateHomePage();
         time_elapsed_sec_daily += time_elapsed_sec_run;///needs modification
         time_elapsed_sec_run = 0;
         distanceRun =0;

@@ -36,6 +36,7 @@ public interface Mediator {
     void preloadUserWalkDays();
     void preloadFriendWalkDays(String friendEmail);
     void addFriendByI(String userEmail,String friendEmail);
+
     void setUpFireApp();
     void GoogleCloudIntetnSend();
     void firebaseAuthWithGoogle(GoogleSignInAccount acct);

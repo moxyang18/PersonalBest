@@ -1,5 +1,6 @@
 package com.example.team10.personalbest;
 
+import android.content.Intent;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -9,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.lang.reflect.Array;
 import java.time.LocalDate;
@@ -23,10 +25,25 @@ public class HomePageTest {
     Button add_step_button;
     TextView currentGoal;
     TextView totalSteps;
+    MockMediator mockMediator;
 
     @Before
     public void init() {
-        homePage = Robolectric.setupActivity(HomePage.class);
+
+        MediatorFactory.put("MOCK_MEDIATOR", new MediatorFactory.BluePrint() {
+            @Override
+            public Mediator create(HomePage homePage) {
+                return new MockMediator(homePage);
+            }
+        });
+        Intent intent = new Intent(RuntimeEnvironment.application,HomePage.class);
+        intent.putExtra("GET_MEDIATOR","MOCK_MEDIATOR");
+        homePage = Robolectric.buildActivity(HomePage.class,intent).create().get();
+        mockMediator = MockMediator.getInstance();
+        //mockMediator = new MockMediator();
+        //mockMediator.setHomePage(homePage);
+        //mockMediator.mockStartActivity();
+        FakeFit fit = FakeFit.getInstance();
 
         own_summary_button = homePage.findViewById(R.id.selfMonthlyChart);
         add_step_button = homePage.findViewById(R.id.addStepButton);
@@ -39,16 +56,16 @@ public class HomePageTest {
 
         // when no step is taken
         System.out.println(totalSteps.getText().toString());
-        assertEquals(totalSteps.getText().toString(), "TextView");
+        assertEquals( "0",totalSteps.getText().toString());
 
     }
-/*
+
     @Test
     public void mockStepsTest2() {
 
         // mock 500 steps
         add_step_button.performClick();
-        assertTrue(totalSteps.getText().toString() == "500");
+        assertTrue(totalSteps.getText().toString().equals("500"));
 
     }
 
@@ -62,7 +79,7 @@ public class HomePageTest {
         add_step_button.performClick();
         add_step_button.performClick();
         add_step_button.performClick();
-        assertTrue(totalSteps.getText().toString() == "3000");
+        assertTrue(totalSteps.getText().toString().equals("3500"));
 
     }
 
@@ -80,10 +97,10 @@ public class HomePageTest {
         add_step_button.performClick();
         add_step_button.performClick();
         add_step_button.performClick();
-        assertTrue(totalSteps.getText().toString() == "5000");
+        assertTrue(totalSteps.getText().toString().equals("8500"));
 
     }
-*/
+
     @Test
     public void mockTimeTest() {
 

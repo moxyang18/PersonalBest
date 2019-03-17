@@ -27,19 +27,34 @@ public class RunningModeTest {
     TextView currentGoal;
     TextView intentionalSteps;
     TextView totalSteps;
+    MockMediator mockMediator;
 
     @Before
     public void init() {
-        runningMode = Robolectric.setupActivity(RunningMode.class);
+
+        MediatorFactory.put("MOCK_MEDIATOR", new MediatorFactory.BluePrint() {
+            @Override
+            public Mediator create(HomePage homePage) {
+                return new MockMediator(homePage);
+            }
+        });
+
+        Intent intent = new Intent(RuntimeEnvironment.application,HomePage.class);
+        intent.putExtra("GET_MEDIATOR","MOCK_MEDIATOR");
+        HomePage homePage = Robolectric.buildActivity(HomePage.class,intent).create().get();
+
+        //mockMediator = new MockMediator();
+        runningMode = Robolectric.buildActivity(RunningMode.class,intent).create().get();
+        //mockMediator.mockStartActivity();
+        FakeFit fit = FakeFit.getInstance();
+        //mockMediator.linkRunning(runningMode);
+
         end_run_button = runningMode.findViewById(R.id.end_run);
         add_step_button = runningMode.findViewById(R.id.add_steps_in_running);
         currentGoal = runningMode.findViewById(R.id.goal_running_mode);
         totalSteps = runningMode.findViewById(R.id.total_steps_rm);
         intentionalSteps = runningMode.findViewById(R.id.running_steps);
 
-        Intent intent = new Intent(RuntimeEnvironment.application,HomePage.class);
-        intent.putExtra("GET_MEDIATOR","MOCK_MEDIATOR");
-        //HomePage homePage = Robolectric.setupActivity(HomePage.class);
     }
 
     @Test
@@ -50,14 +65,14 @@ public class RunningModeTest {
         assertEquals(totalSteps.getText().toString(), "0");
 
     }
-/*
+
     @Test
     public void mockStepsTest2() {
 
         // mock 500 steps
         add_step_button.performClick();
         assertEquals(intentionalSteps.getText().toString(), "500");
-        assertEquals(totalSteps.getText().toString(), "5500");
+        assertEquals(totalSteps.getText().toString(), "500");
     }
 
     @Test
@@ -70,8 +85,8 @@ public class RunningModeTest {
         add_step_button.performClick();
         add_step_button.performClick();
         add_step_button.performClick();
-        assertEquals(intentionalSteps.getText().toString(), "3000");
-        assertEquals(totalSteps.getText().toString(), "8000");
+        assertEquals("3000",intentionalSteps.getText().toString());
+        assertEquals("3500", totalSteps.getText().toString() );
 
     }
 
@@ -89,11 +104,11 @@ public class RunningModeTest {
         add_step_button.performClick();
         add_step_button.performClick();
         add_step_button.performClick();
-        assertEquals(intentionalSteps.getText().toString(), "5000");
-        assertEquals(totalSteps.getText().toString(), "10000");
+        assertEquals("5000",intentionalSteps.getText().toString());
+        assertEquals("8500",totalSteps.getText().toString());
 
     }
-*/
+
     @Test
     public void mockTimeTest() {
 

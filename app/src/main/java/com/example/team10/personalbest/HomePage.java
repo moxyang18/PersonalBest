@@ -87,7 +87,7 @@ public class HomePage extends AppCompatActivity{
     String from;
     String userEmail;
     CollectionReference chat;
-    String MEDIATOR_KEY = "GET MEDIATOR";
+    String MEDIATOR_KEY = "GET_MEDIATOR";
 
 
     @Override
@@ -106,8 +106,10 @@ public class HomePage extends AppCompatActivity{
             activityMediator = new ActivityMediator(this);
         }
         else if (MediatorKey.equals("MOCK_MEDIATOR")){
-
+            //MediatorFactory.create(MediatorKey, this);
             activityMediator = MediatorFactory.create(MediatorKey, this);
+            //activityMediator = new MockMediator(this);
+            //System.out.println("USED MOCK MEDIATOR");
         }else{
             Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
         }
@@ -502,6 +504,12 @@ public class HomePage extends AppCompatActivity{
         //Log.i(TAG, "Step Count: " + Integer.toString(activityMediator.getStepCountDailyTotal()));
         //Log.i(TAG, "Current Goal: " + Integer.toString(activityMediator.getGoal_today()));
     }
+
+    public void runRunner(){
+        runner = new AsyncTaskRunner();
+        runner.execute();
+    }
+
 
     private class AsyncTaskRunner extends AsyncTask<String,String,String> {
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
