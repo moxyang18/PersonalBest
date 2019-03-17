@@ -543,6 +543,7 @@ public class MockMediator implements Mediator,Observer {
             dayDate2= date.minusDays(j);
             CloudProcessor.requestDay(dayDate2,friendEmail,false);
         }
+        return;
     }
 
     public void resetDay(){

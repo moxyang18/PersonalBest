@@ -27,8 +27,6 @@ import java.util.Set;
 public class FriendListPage extends AppCompatActivity {
     private String TAG = "FriendListPage:";
 
-    //final int INCOMING_INDEX = 0;
-    //final int OUTGOING_INDEX = 0;
     final int FRIEND_INDEX = 2;
 
     ExpandableListView friendExpandableList;
@@ -46,8 +44,7 @@ public class FriendListPage extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //newly added
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //TODO use this instead, obtained from ActivityMediator
 
@@ -61,35 +58,36 @@ public class FriendListPage extends AppCompatActivity {
             activityMediator = ActivityMediator.getInstance();
         }
         else if (MediatorKey.equals("MOCK_MEDIATOR")){
-
             activityMediator = MockMediator.getInstance();
         }else{
             Log.d(TAG, "ERROR, WRONG KEY FROM INTENT");
         }
         friendList = activityMediator.getFriendListByI();
+
         Log.d(TAG, "loading friendlistpage, current list is"+friendList.toString());
         for(String s:friendList){
             Log.d(TAG,"have user "+s+" inside friendlist before loading page");
         }
+        /**
         GoogleSignInAccount user = GoogleSignIn.getLastSignedInAccount(this);
+         */
+
         myEmail = activityMediator.getUserEmail();
 
-        //SharedPreferences friendPreferences = getSharedPreferences("friend_list", MODE_PRIVATE);
-        //SharedPreferences.Editor editor = friendPreferences.edit();
-        ArrayList<String> emailList = new ArrayList<>(); //TODO Grab from shared Preference
 
+        ArrayList<String> emailList = new ArrayList<>();
 
 
 
         //TODO: switch to use friendList
         //TODO: write an init()/refresh() method to reload Page
         //get list of current friends' emails
-        //Set<String> emailSet = friendPreferences.getStringSet("emailList", new HashSet<String>());
+
         emailList.addAll(friendList);
         Log.d(TAG,"Retrieved email list from Shared Preferences");
 
         //Pass in Friend List
-        listAdapter = new FriendListExpandableListAdapter(this, emailList);
+        listAdapter = new FriendListExpandableListAdapter(this, emailList, true );
 
 
         friendExpandableList = (ExpandableListView) findViewById(R.id.expandable_friend_list_view);
@@ -113,7 +111,21 @@ public class FriendListPage extends AppCompatActivity {
         });
     }
 
+    public boolean setOnChildClickListener(ExpandableListView parent, int groupPosition, int childPosition) {
+        if( groupPosition != 2 ) {
+            return false;
+        }
+        //Grab the ExpandableListAdapter
+        launchFriendHomePage(parent, groupPosition, childPosition);
+        return true;
+    }
 
+    public void launchFriendHomePage(ExpandableListView parent, int groupPosition, int childPosition) {
+        FriendListExpandableListAdapter myAdapter = ((FriendListExpandableListAdapter)parent.getExpandableListAdapter());
+        Intent intent = new Intent( myAdapter.getActivity(), FriendSummary.class );
+        intent.putExtra(getString(R.string.intent_email_key), myAdapter.getChild(groupPosition, childPosition).toString());
+        myAdapter.getActivity().startActivity(intent);
+    }
 
     // create a custom action bar button
     @Override
