@@ -171,30 +171,6 @@ public class FriendExtraScenarioTest {
 
 
 
-    @Test
-    public void dcheckReceivedWifeMessage() {
-        Context context = getInstrumentation().getTargetContext();
-        FirebaseApp.initializeApp(context);
-        List<ChatMessage> m = new ArrayList<>();
-        m.add(new ChatMessage("Richard", "Hi there"));
-        m.add(new ChatMessage("Lisa", "Good."));
-        m.add(new ChatMessage("Lisa", "Let's go to walk"));
-        m.add(new ChatMessage("Lisa", "You can do it"));
-
-        Intent intent = TestUtils.getMessagePageIntent(TestUtils.getChatMessageService(m), TestUtils.getNotificationService("chat1"));
-        intent.putExtra("email", "Richard@gmail.com");
-        intent.putExtra("from test", "Richard");
-        intent.putExtra("userEmail test", "Richard");
-        MessagePage activity = Robolectric.buildActivity(MessagePage.class, intent).create().get();
-
-        TextView chat = activity.findViewById(R.id.chat);
-
-        StringBuilder sb = new StringBuilder();
-        m.forEach(message -> sb.append(message.toString()));
-        chat.append(sb.toString());
-        assertEquals(sb.toString(), chat.getText().toString());
-        System.out.println(sb.toString());
-    }
 
     @Test
     public void eCheckRichardWalkAfterChat(){
