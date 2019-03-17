@@ -229,6 +229,7 @@ public class StepSummaryTest {
     @After
     public void cleanUp(){
         MediatorFactory.resetMap();
+
     }
 
 }
