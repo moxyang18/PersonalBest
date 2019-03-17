@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -200,5 +201,11 @@ public class FriendListPageTest {
 
         //Actual Assert:
         assertTrue(actualIntent.filterEquals(expectedIntent));
+    }
+
+    @After
+    public void cleanUp(){
+        activity.finish();
+        MockMediator.instance = null;
     }
 }

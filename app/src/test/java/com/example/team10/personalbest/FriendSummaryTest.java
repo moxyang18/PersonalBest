@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -224,6 +225,12 @@ public class FriendSummaryTest {
         float [] y = barChart.getBarData().getDataSets().get(0).getEntryForIndex(0).getYVals();
         assertTrue(y.length == 2);
         assertTrue(barChart.getBarData().getDataSetByIndex(0).getYMin() == 0.0);
+    }
+
+    @After
+    public void cleanUp(){
+        friendSummary.finish();
+        MockMediator.instance = null;
     }
 
 }

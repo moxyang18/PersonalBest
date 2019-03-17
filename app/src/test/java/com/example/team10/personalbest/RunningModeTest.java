@@ -6,6 +6,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import static org.junit.Assert.*;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -114,6 +116,12 @@ public class RunningModeTest {
 
         assertTrue(true);
 
+    }
+
+    @After
+    public void cleanUp(){
+        runningMode.finish();
+        MockMediator.instance = null;
     }
 
 

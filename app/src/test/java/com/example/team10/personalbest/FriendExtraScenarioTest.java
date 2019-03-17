@@ -14,6 +14,7 @@ import com.example.team10.personalbest.friend.FriendListExpandableListAdapter;
 import com.github.mikephil.charting.charts.BarChart;
 import com.google.firebase.FirebaseApp;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -200,6 +201,12 @@ public class FriendExtraScenarioTest {
         Object [] arr = {true,5000,0.f,false};
         fit.setResult(arr);
         assertTrue(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString().equals("5000"));
+    }
+
+    @After
+    public void cleanUp(){
+        homePage.finish();
+        MockMediator.instance = null;
     }
 
 

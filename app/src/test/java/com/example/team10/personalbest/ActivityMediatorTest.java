@@ -21,6 +21,7 @@ public class ActivityMediatorTest {
 
     @After
     public void tearDown() throws Exception {
+        homePage.finish();
     }
 
     @Test

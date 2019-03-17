@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -126,6 +127,12 @@ public class StepSummaryExtraScenarioTest {
         System.out.println("Today step is: "+y[0]);
         assertTrue(y[0] == 5000.f);
 
+    }
+
+    @After
+    public void cleanUp(){
+        homePage.finish();
+        MockMediator.instance = null;
     }
 
 
