@@ -74,38 +74,48 @@ public class StepSummaryExtraScenarioTest {
 
         mockMediator.timeTravelBackward();
         mockMediator.timeTravelBackward();
+        System.out.println("Backed! "+mockMediator.date.toString());
         //starts 2 day behind;
 
     }
 
     @Test
-    public void testTakingIntentionalWalkAndGoBack(){
+    public void testIntentionalWalk(){
         runningMode = Robolectric.setupActivity(RunningMode.class);
-        Object [] arr = {true,440,0.f,true};
+        Object [] arr = {true,550,0.f,true};
         fit.setResult(arr);
-        assertTrue(((TextView)(runningMode.findViewById(R.id.running_steps))).getText().toString().equals("440"));
-        assertTrue(((TextView)(runningMode.findViewById(R.id.total_steps_rm))).getText().toString().equals("440"));
+        assertTrue(((TextView)(runningMode.findViewById(R.id.running_steps))).getText().toString().equals("550"));
+        assertTrue(((TextView)(runningMode.findViewById(R.id.total_steps_rm))).getText().toString().equals("550"));
+
+
+        mockMediator.unlinkRunning();
         runningMode.finish();
-    }
 
-    @Test
-    public void testTakingUnntentionalWalknNextDay(){
+        System.out.println("testUnntentionalWalknNextDay");
+        System.out.println(mockMediator.date.toString());
+
         mockMediator.timeTravelForward();
-        Object [] arr = {true,5000,0.f,false};
-        fit.setResult(arr);
-        assertTrue(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString().equals("5000"));
-    }
 
-    @Test
-    public void testTakingUnntentionalWalknToday(){
+        System.out.println(mockMediator.date.toString());
+
+        Object[] arr2 = {true,5000,0.f,false};
+        fit.setResult(arr2);
+
+        System.out.println(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString());
+        assertTrue(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString().equals("5000"));
+
+        System.out.println("testUnintentionalWalkForToday");
         mockMediator.timeTravelNow();
-        Object [] arr = {true,5000,0.f,false};
-        fit.setResult(arr);
-        assertTrue(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString().equals("5000"));
-    }
+        System.out.println(mockMediator.date.toString());
+        Object [] arr3 = {true,5000,0.f,false};
+        fit.setResult(arr3);
 
-    @Test
-    public void testStepSummary(){
+        System.out.println(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString());
+        assertTrue(((TextView)(homePage.findViewById(R.id.stepsCount))).getText().toString().equals("5000"));
+
+
+
+        System.out.println("testStepSummaryAfterAllTheseSteps");
         userSummary = Robolectric.setupActivity(StepSummary.class);
         barChart = userSummary.getBarChart();
         assertTrue( barChart.getBarData().getEntryCount() == 28 );
@@ -115,19 +125,19 @@ public class StepSummaryExtraScenarioTest {
         assertTrue(barChart.getBarData().getDataSetByIndex(0).getYMax() == 5000.0);
         assertTrue(barChart.getBarData().getDataSetByIndex(0).getYMin() == 0.0);
         float [] y = barChart.getBarData().getDataSets().get(0).getEntryForIndex(25).getYVals();
-        System.out.println("The day before yesterday step is: "+y[0]);
+        System.out.println("The day before yesterday step is: "+y[1]);
         assertTrue(y.length == 2);
-        assertTrue(y[1] == 440.f);
-        y = barChart.getBarData().getDataSets().get(0).getEntryForIndex(26).getYVals();
-        System.out.println("Yesterday step is: "+y[0]);
-        assertTrue(y.length == 2);
-        assertTrue(y[0] == 5000.f);
-        y = barChart.getBarData().getDataSets().get(0).getEntryForIndex(27).getYVals();
-        assertTrue(y.length == 2);
-        System.out.println("Today step is: "+y[0]);
-        assertTrue(y[0] == 5000.f);
-
+        assertTrue(y[1] == 550.f);
+        float[] z = barChart.getBarData().getDataSets().get(0).getEntryForIndex(26).getYVals();
+        System.out.println("Yesterday step is: "+z[0]);
+        assertTrue(z.length == 2);
+        assertTrue(z[0] == 5000.f);
+        float[] f = barChart.getBarData().getDataSets().get(0).getEntryForIndex(27).getYVals();
+        assertTrue(f.length == 2);
+        System.out.println("Today step is: "+f[0]);
+        assertTrue(f[0] == 5000.f);
     }
+
 
     @After
     public void cleanUp(){

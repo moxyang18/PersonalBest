@@ -53,26 +53,17 @@ public class HomePageTest {
         totalSteps = homePage.findViewById(R.id.stepsCount);
     }
 
+
     @Test
-    public void mockStepsTest1() {
+    public void mockStepsTest() {
 
         // when no step is taken
         System.out.println(totalSteps.getText().toString());
         assertEquals( "0",totalSteps.getText().toString());
 
-    }
-
-    @Test
-    public void mockStepsTest2() {
-
         // mock 500 steps
         add_step_button.performClick();
         assertTrue(totalSteps.getText().toString().equals("500"));
-
-    }
-
-    @Test
-    public void mockStepsTest3() {
 
         // mock 3000 steps
         add_step_button.performClick();
@@ -83,10 +74,6 @@ public class HomePageTest {
         add_step_button.performClick();
         assertTrue(totalSteps.getText().toString().equals("3500"));
 
-    }
-
-    @Test
-    public void mockStepsTest4() {
 
         // mock 5000 steps
         add_step_button.performClick();
@@ -103,16 +90,11 @@ public class HomePageTest {
 
     }
 
-    @Test
-    public void mockTimeTest() {
 
-        assertTrue(true);
-
-    }
 
     @After
     public void cleanUp(){
-        homePage.finish();
+        if(homePage != null)homePage.finish();
         MockMediator.instance = null;
         MediatorFactory.resetMap();
     }

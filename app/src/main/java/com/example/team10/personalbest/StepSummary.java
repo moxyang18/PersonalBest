@@ -112,7 +112,7 @@ public class StepSummary extends AppCompatActivity {
 
             // Add data for that data to the graph
             if (day != null) {
-                entries.add(new BarEntry(27-i, new float[]
+                entries.add(new BarEntry(i, new float[]
                         {day.getStepCountUnintentional(), day.getStepCountIntentional()}));
 
                 // log the untestable data that will be added to the chart
@@ -126,7 +126,7 @@ public class StepSummary extends AppCompatActivity {
                     step_max = day.getStepCountDailyTotal();
                 goalMet[i] = day.getStepCountDailyTotal() >= day.getGoal();
             } else {
-                entries.add(new BarEntry(27-i, new float[]{0, 0}));
+                entries.add(new BarEntry(i, new float[]{0, 0}));
                 goalMet[i] = false;
             }
 

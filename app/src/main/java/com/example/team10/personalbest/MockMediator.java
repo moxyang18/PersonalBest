@@ -103,7 +103,7 @@ public class MockMediator implements Mediator,Observer {
     //all the string of emails in this hashset should be friends
     //email.com is stored as email,com in cloud but here should be .com
     private static HashSet<String> friendList = new HashSet<>();
-    protected FirebaseAuth firebaseAuth;
+    //protected FirebaseAuth firebaseAuth;
 
     public MockMediator(){
         instance = this;
@@ -210,9 +210,13 @@ public class MockMediator implements Mediator,Observer {
         mock_steps_unintentional = walkDay.getMock_steps_unintentional();
         mock_steps_intentional = walkDay.getMock_steps_intentional();
 
+        mock_steps_run = 0;
         distanceDailyTotal =walkDay.getDistanceDaily();
         distanceRunTotal = walkDay.getDistanceRunTotal();
         time_elapsed_sec_daily = walkDay.getTime_run_sec_daily();
+
+
+        stepCountRun = 0;
 
         //not using direct read
         //stepCountIntentionalTotal =walkDay.getStepCountIntentional();
@@ -362,7 +366,7 @@ public class MockMediator implements Mediator,Observer {
     public void cleanUpAfterRun(){
         mock_steps_intentional += mock_steps_run;
         mock_steps_run = 0;
-        stepCountIntentionalReal +=stepCountRun;
+        //stepCountIntentionalReal +=stepCountRun;
         stepCountRun =0;
         stepCountIntentionalBeforeRun = stepCountIntentionalReal;
         stepCountIntentionalTotal = stepCountIntentionalReal + mock_steps_intentional;
