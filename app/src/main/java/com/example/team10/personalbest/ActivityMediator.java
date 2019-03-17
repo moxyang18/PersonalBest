@@ -758,4 +758,16 @@ public class ActivityMediator implements Observer, Mediator {
         if (increment >1.0)
             notificationManager.notify(1, notBuilder.build());
     }
+    public static void reset(){
+
+        instance = null;
+
+        walkDay =null;
+        HashMap<String,WalkDay> userWalkDays = new HashMap<String,WalkDay>();
+        HashMap<String,WalkDay> friendWalkDays = new HashMap<String,WalkDay>();
+        //all the string of emails in this hashset should be friends
+        //email.com is stored as email,com in cloud but here should be .com
+        HashSet<String> friendList = new HashSet<>();
+
+    }
 }

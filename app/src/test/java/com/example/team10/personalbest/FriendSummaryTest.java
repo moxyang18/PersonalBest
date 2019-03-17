@@ -231,6 +231,8 @@ public class FriendSummaryTest {
     public void cleanUp(){
         friendSummary.finish();
         MockMediator.instance = null;
+        MediatorFactory.resetMap();
+        MockMediator.reset();
     }
 
 }

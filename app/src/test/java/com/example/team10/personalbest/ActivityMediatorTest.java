@@ -22,6 +22,8 @@ public class ActivityMediatorTest {
     @After
     public void tearDown() throws Exception {
         homePage.finish();
+        MediatorFactory.resetMap();
+        ActivityMediator.reset();
     }
 
     @Test
@@ -32,4 +34,6 @@ public class ActivityMediatorTest {
         assertEquals(mediator.stepCountDailyReal-mediator.stepCountUnintentionalReal, mediator.stepCountUnintentionalReal);
         assertEquals(mediator.stepCountIntentionalTotal -mediator.mock_steps_intentional, mediator.stepCountRunWithMock+mediator.stepCountIntentionalBeforeRun);
     }
+
+
 }

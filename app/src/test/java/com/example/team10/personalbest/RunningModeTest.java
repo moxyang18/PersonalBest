@@ -64,7 +64,7 @@ public class RunningModeTest {
 
         // when no step is taken
         System.out.println(totalSteps.getText().toString());
-        assertEquals(totalSteps.getText().toString(), "0");
+        assertTrue(totalSteps.getText().toString().equals("0"));
 
     }
 
@@ -73,8 +73,8 @@ public class RunningModeTest {
 
         // mock 500 steps
         add_step_button.performClick();
-        assertEquals(intentionalSteps.getText().toString(), "500");
-        assertEquals(totalSteps.getText().toString(), "500");
+        assertEquals("500",intentionalSteps.getText().toString());
+        assertEquals("500",totalSteps.getText().toString());
     }
 
     @Test
@@ -122,6 +122,8 @@ public class RunningModeTest {
     public void cleanUp(){
         runningMode.finish();
         MockMediator.instance = null;
+        MediatorFactory.resetMap();
+        MockMediator.reset();
     }
 
 

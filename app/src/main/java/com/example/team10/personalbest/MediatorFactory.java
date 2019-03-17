@@ -29,6 +29,10 @@ public class MediatorFactory {
         mediatorMap.put(key,m);
     }
 
+    public static void resetMap(){
+        mediatorMap = new HashMap<String,Mediator>();
+    }
+
     public interface BluePrint {
         Mediator create(HomePage homePage);
     }

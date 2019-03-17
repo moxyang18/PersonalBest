@@ -109,9 +109,9 @@ public class FriendExtraScenarioTest {
         ExpandableListView listView = friendListPage.findViewById(R.id.expandable_friend_list_view);
         ArrayList<String> emailList = new ArrayList<>();
         emailList.add("lisa@gmail.com");
-        FriendListExpandableListAdapter friendListAdapter = friendListPage.listAdapter;
-        //FriendListExpandableListAdapter friendListAdapter = new FriendListExpandableListAdapter(friendListPage, emailList, false);
-        //listView.setAdapter(friendListAdapter);
+        //FriendListExpandableListAdapter friendListAdapter = friendListPage.listAdapter;
+        FriendListExpandableListAdapter friendListAdapter = new FriendListExpandableListAdapter(friendListPage, emailList, false);
+        listView.setAdapter(friendListAdapter);
 
         //Grab Child VIew
         View friend =  friendListAdapter.getChildView(2,0,false, null, null);
@@ -207,6 +207,8 @@ public class FriendExtraScenarioTest {
     public void cleanUp(){
         homePage.finish();
         MockMediator.instance = null;
+        MediatorFactory.resetMap();
+        MockMediator.reset();
     }
 
 

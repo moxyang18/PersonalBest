@@ -207,5 +207,7 @@ public class FriendListPageTest {
     public void cleanUp(){
         activity.finish();
         MockMediator.instance = null;
+        MediatorFactory.resetMap();
+        MockMediator.reset();
     }
 }

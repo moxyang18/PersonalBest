@@ -114,6 +114,7 @@ public class HomePageTest {
     public void cleanUp(){
         homePage.finish();
         MockMediator.instance = null;
+        MediatorFactory.resetMap();
     }
 
 

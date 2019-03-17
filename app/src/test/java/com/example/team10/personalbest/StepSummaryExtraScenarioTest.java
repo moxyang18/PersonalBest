@@ -133,6 +133,7 @@ public class StepSummaryExtraScenarioTest {
     public void cleanUp(){
         homePage.finish();
         MockMediator.instance = null;
+        MockMediator.reset();
     }
 
 

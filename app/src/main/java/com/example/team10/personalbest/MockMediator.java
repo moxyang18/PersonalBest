@@ -33,7 +33,7 @@ import java.util.Observer;
 
 public class MockMediator implements Mediator,Observer {
 
-    protected static MockMediator instance;
+    protected static MockMediator instance = null;
     private final int RC_SIGN_IN = 1;
 
 
@@ -572,4 +572,17 @@ public class MockMediator implements Mediator,Observer {
         Log.d(TAG, "friendlist in AM is now: "+friendList.toString());
     }
 
+
+    public static void reset(){
+
+        instance = null;
+
+        walkDay =null;
+        HashMap<String,WalkDay> userWalkDays = new HashMap<String,WalkDay>();
+        HashMap<String,WalkDay> friendWalkDays = new HashMap<String,WalkDay>();
+        //all the string of emails in this hashset should be friends
+        //email.com is stored as email,com in cloud but here should be .com
+        HashSet<String> friendList = new HashSet<>();
+
+    }
 }
